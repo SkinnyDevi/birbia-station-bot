@@ -36,7 +36,7 @@ class music_cog(commands.Cog):
         self.playing = None
 
         self.YDL_CFG = {'format': 'bestaudio/best',
-                        'noplaylist': 'True', 'audioformat': 'wav', 'noplaylist': 'True'}
+                        'noplaylist': 'True', 'audioformat': 'wav', 'noplaylist': 'True', 'rm-cache-dir': 'True'}
         self.FFMPEG_CFG = {
             'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
@@ -57,8 +57,9 @@ class music_cog(commands.Cog):
             try:
                 info = ydl.extract_info(f"ytsearch:{query}", download=False)[
                     'entries'][0]
-            except Exception:
-                return False
+            except Exception as error:
+                raise Exception(
+                    "There was an error trying to find the specified youtube video: " + str(error))
         return {'source': info['formats'][0]['url'], 'title': info['title'], "yt_url": 'https://www.youtube.com/watch?v=' + info['id'], 'length': info['duration']}
 
     def queue_next(self):
@@ -132,26 +133,29 @@ class music_cog(commands.Cog):
             if self.allow_cmd:
                 vc = vc.channel
                 await ctx.send("Birbia is sending it's hawks to fetch your audio...")
-                audio = self.search_audio(params)
-                if isinstance(type(audio), type(True)):
-                    await ctx.send("Birbia sent out it's fastest eagles, but could not get your audio back. Try again!")
-                else:
-                    self.queue.append([audio, vc])
-                    newaudio = discord.Embed(
-                        title="Added to radio queue!", color=0xff5900)
+                try:
+                    audio = self.search_audio(params)
+                    if isinstance(type(audio), type(True)):
+                        await ctx.send("Birbia sent out it's fastest eagles, but could not get your audio back. Try again!")
+                    else:
+                        self.queue.append([audio, vc])
+                        newaudio = discord.Embed(
+                            title="Added to radio queue!", color=0xff5900)
 
-                    audio_length = timedelta(seconds=int(audio['length']))
-                    audio_length = (str(audio_length)[2:], audio_length)[
-                        int(audio['length']) > 3600]
+                        audio_length = timedelta(seconds=int(audio['length']))
+                        audio_length = (str(audio_length)[2:], audio_length)[
+                            int(audio['length']) > 3600]
 
-                    newaudio.add_field(
-                        name=f"{audio['title']}", value=f"{audio['yt_url']} - {audio_length}")
-                    await ctx.send(embed=newaudio)
+                        newaudio.add_field(
+                            name=f"{audio['title']}", value=f"{audio['yt_url']} - {audio_length}")
+                        await ctx.send(embed=newaudio)
 
-                    if self.is_playing is False:
-                        await self.play_audio(ctx)
+                        if self.is_playing is False:
+                            await self.play_audio(ctx)
 
-                    await self._command_timeout()
+                        await self._command_timeout()
+                except Exception:
+                    await ctx.send("Birbia had a tough battle and could not send back your audio. Try ***stopping*** and ***playing*** again the Birbia Station.")
             else:
                 await self._timeout_warn(ctx)
 
