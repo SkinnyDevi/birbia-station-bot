@@ -46,7 +46,13 @@ class music_cog(commands.Cog):
         return self.queue[0][0]['source']
 
     def search_audio(self, query):
-        query = (query.split("&")[0], query)[query.find("&") == -1]
+        query = (query.split("&")[0], query)[
+            query.find("&") == -1]  # remove any url params
+
+        if query.find("shorts/") != -1:
+            query = 'https://www.youtube.com/watch?v=' + \
+                query.split("shorts/")[1]
+
         with YoutubeDL(self.YDL_CFG) as ydl:
             try:
                 info = ydl.extract_info(f"ytsearch:{query}", download=False)[
