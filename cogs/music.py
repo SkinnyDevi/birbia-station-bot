@@ -36,7 +36,7 @@ class music_cog(commands.Cog):
         self.playing = None
 
         self.YDL_CFG = {'format': 'bestaudio/best',
-                        'noplaylist': 'True', 'audioformat': 'wav', 'noplaylist': 'True', 'rm-cache-dir': 'True'}
+                        'noplaylist': 'True', 'audioformat': 'wav', 'noplaylist': 'True', 'no-cache-dir': 'True'}
         self.FFMPEG_CFG = {
             'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
@@ -55,6 +55,7 @@ class music_cog(commands.Cog):
 
         with YoutubeDL(self.YDL_CFG) as ydl:
             try:
+                ydl.cache.remove()
                 info = ydl.extract_info(f"ytsearch:{query}", download=False)[
                     'entries'][0]
             except Exception as error:
