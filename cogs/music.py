@@ -1,11 +1,39 @@
 import discord
 import time
 import asyncio
-import pathlib
 from datetime import timedelta
 from discord.ext import commands
 from youtube_dl import YoutubeDL
 from decouple import config
+
+
+YT_BASE_URL = 'https://www.youtube.com/watch?v='
+YT_SHORTS_URL = "https://www.youtube.com/shorts/"
+URL_TESTS = [
+    "http://www.youtube.com/watch?v=-wtIMTCHWuI",
+    "http://www.youtube.com/v/-wtIMTCHWuI?version=3&autohide=1",
+    "http://youtu.be/-wtIMTCHWuI",
+    "https://youtube.com/shorts/I1I1i1i1I1I?feature=share",
+    "https://www.youtube.com/shorts/1ioBJ-3NXxQ"
+]
+
+
+def urlCorrector(url):
+    if len(url.split("?v=")) >= 2:
+        return YT_BASE_URL + url.split("?v=")[1][:11]
+    if len(url.split("/v/")) >= 2:
+        return YT_BASE_URL + url.split("/v/")[1][:11]
+    if len(url.split("/youtu.be/")) >= 2:
+        return YT_SHORTS_URL + url.split("/youtu.be/")[1][:11]
+    if len(url.split("/shorts/")) >= 2:
+        return YT_SHORTS_URL + url.split("/shorts/")[1][:11]
+
+
+def testUrls():
+    for t in URL_TESTS:
+        if urlCorrector(t) is None:
+            return -1
+    return 0
 
 
 class AudioSourceTracked(discord.AudioSource):
@@ -35,10 +63,21 @@ class music_cog(commands.Cog):
         self.queue = []
         self.playing = None
 
-        self.YDL_CFG = {'format': 'bestaudio/best',
-                        'noplaylist': 'True', 'audioformat': 'wav', 'noplaylist': 'True', 'no-cache-dir': 'True', "force-ipv4": 'True', "cookies": "cookies.txt"}
+        self.YDL_CFG = {
+            'format': 'bestaudio/best',
+            'noplaylist': 'True',
+            'audioformat': 'wav',
+            'noplaylist': 'True',
+            'no-cache-dir': 'True',
+            "force-ipv4": 'True',
+            "cookies": "cookies.txt",
+            "ignore-errors": "True"
+        }
+
         self.FFMPEG_CFG = {
-            'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+            'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+            'options': '-vn'
+        }
 
         self.vc = None
 
@@ -46,22 +85,18 @@ class music_cog(commands.Cog):
         return self.queue[0][0]['source']
 
     def search_audio(self, query):
-        query = (query.split("&")[0], query)[
-            query.find("&") == -1]  # remove any url params
-
-        if query.find("shorts/") != -1:
-            query = 'https://www.youtube.com/watch?v=' + \
-                query.split("shorts/")[1]
+        query = (f"ytsearch:{query}", urlCorrector(query))[
+            query.find("http") > -1]
 
         with YoutubeDL(self.YDL_CFG) as ydl:
             try:
                 ydl.cache.remove()
-                info = ydl.extract_info(f"ytsearch:{query}", download=False)[
+                info = ydl.extract_info(query, download=False)[
                     'entries'][0]
             except Exception as error:
                 raise Exception(
                     "There was an error trying to find the specified youtube video: " + str(error))
-        return {'source': info['formats'][0]['url'], 'title': info['title'], "yt_url": 'https://www.youtube.com/watch?v=' + info['id'], 'length': info['duration']}
+        return {'source': info['formats'][0]['url'], 'title': info['title'], "yt_url": (YT_BASE_URL + info['id'], YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1], 'length': info['duration']}
 
     def queue_next(self):
         if len(self.queue) == 0:
