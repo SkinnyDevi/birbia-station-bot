@@ -24,9 +24,9 @@ def urlCorrector(url):
     if len(url.split("/v/")) >= 2:
         return YT_BASE_URL + url.split("/v/")[1][:11]
     if len(url.split("/youtu.be/")) >= 2:
-        return YT_SHORTS_URL + url.split("/youtu.be/")[1][:11]
+        return YT_BASE_URL + url.split("/youtu.be/")[1][:11]
     if len(url.split("/shorts/")) >= 2:
-        return YT_SHORTS_URL + url.split("/shorts/")[1][:11]
+        return YT_BASE_URL + url.split("/shorts/")[1][:11]
 
 
 def testUrls():
@@ -87,7 +87,7 @@ class music_cog(commands.Cog):
     def search_audio(self, query):
         query = (f"ytsearch:{query}", urlCorrector(query))[
             query.find("http") > -1]
-        print("-------------QUERY: " + query)
+        print("-----------QUERY: " + query)
 
         with YoutubeDL(self.YDL_CFG) as ydl:
             try:
