@@ -87,6 +87,7 @@ class music_cog(commands.Cog):
     def search_audio(self, query):
         query = (f"ytsearch:{query}", urlCorrector(query))[
             query.find("http") > -1]
+        print("-------------QUERY: " + query)
 
         with YoutubeDL(self.YDL_CFG) as ydl:
             try:
