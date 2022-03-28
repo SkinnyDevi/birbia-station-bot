@@ -94,6 +94,7 @@ class music_cog(commands.Cog):
                 ydl.cache.remove()
                 info = ydl.extract_info(query, download=False)[
                     'entries'][0]
+                print("OUTT: " + info)
             except Exception as error:
                 raise Exception(
                     "There was an error trying to find the specified youtube video: " + str(error))
