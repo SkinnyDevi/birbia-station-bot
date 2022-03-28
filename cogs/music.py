@@ -191,7 +191,8 @@ class music_cog(commands.Cog):
                             await self.play_audio(ctx)
 
                         await self._command_timeout()
-                except Exception:
+                except Exception as error:
+                    print("WHEW! FEW ERRORS: " + str(error))
                     await ctx.send("Birbia had a tough battle and could not send back your audio. Try ***stopping*** and ***playing*** again the Birbia Station.")
             else:
                 await self._timeout_warn(ctx)
