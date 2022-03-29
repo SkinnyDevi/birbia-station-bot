@@ -84,7 +84,7 @@ class music_cog(commands.Cog):
     def _getSrcUrl(self):
         return self.queue[0][0]['source']
 
-    def getDuration(seconds):
+    def getDuration(self, seconds):
         seconds = seconds % (24 * 3600)
         hour = seconds // 3600
         seconds %= 3600
