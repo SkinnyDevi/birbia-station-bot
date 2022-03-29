@@ -1,10 +1,8 @@
 import discord
 import time
 import asyncio
-from datetime import timedelta
 from discord.ext import commands
 from yt_dlp import YoutubeDL
-from decouple import config
 
 
 YT_BASE_URL = 'https://www.youtube.com/watch?v='
@@ -63,6 +61,8 @@ class music_cog(commands.Cog):
         self.queue = []
         self.playing = None
 
+        self.DISCONNECT_DELAY = 300  # 300s = 5 min
+
         self.YDL_CFG = {
             'format': 'bestaudio/best',
             'noplaylist': 'True',
@@ -101,12 +101,28 @@ class music_cog(commands.Cog):
         return {
             'source': info['url'],
             'title': info['title'],
-            "yt_url": (YT_BASE_URL + info['id'], YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1],
+            'yt_url': (YT_BASE_URL + info['id'], YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1],
             'length': info['duration_string'],
             'seconds': info['duration']
         }
 
-    async def queue_next(self, ctx):
+    async def _timeout_quit(self, ctx):
+        time = 0
+        while True:
+            if not self.vc.is_connected():
+                break
+
+            await asyncio.sleep(1)
+
+            time += 1
+
+            if self.vc.is_playing() and not self.vc.is_paused():
+                time = 0
+            if time == self.DISCONNECT_DELAY:
+                await self.vc.disconnect()
+                await ctx.send("Birbia's radio has turned off, but will return once you wish to have more music.")
+
+    def queue_next(self):
         if len(self.queue) == 0:
             self.is_playing = False
             self.playing = None
@@ -120,7 +136,6 @@ class music_cog(commands.Cog):
         self.vc.play(source, after=lambda e: self.queue_next())
 
         self.playing = self.queue.pop(0)
-        await self.timeout_quit(int(self.playing[0]['seconds'])+300, ctx)
 
     async def play_audio(self, ctx):
         if len(self.queue) == 0:
@@ -140,7 +155,7 @@ class music_cog(commands.Cog):
 
         source = discord.FFmpegPCMAudio(
             self._getSrcUrl(), **self.FFMPEG_CFG)
-        self.vc.play(source, after=lambda e: self.queue_next(ctx))
+        self.vc.play(source, after=lambda e: self.queue_next())
 
         self.playing = self.queue.pop(0)
 
@@ -151,12 +166,6 @@ class music_cog(commands.Cog):
 
     async def _timeout_warn(self, ctx):
         await ctx.send("Birbia warns you to wait at least 3 seconds before running the next command.")
-
-    async def timeout_quit(self, timeout, ctx):
-        if self.vc is not None:
-            await asyncio.sleep(timeout)
-            self.vc.disconnect()
-            await ctx.send("Birbia's radio has turned off, but will return once you wish to have more music.")
 
     @commands.command(name="play", help="Play audio through Birbia's most famous radio station.")
     async def play(self, ctx, *args):
@@ -197,6 +206,7 @@ class music_cog(commands.Cog):
                             await self.play_audio(ctx)
 
                         await self._command_timeout()
+                        await self._timeout_quit(ctx)
                 except Exception as error:
                     print("WHEW! FEW ERRORS: " + str(error))
                     await ctx.send("Birbia had a tough battle and could not send back your audio. Try ***stopping*** and ***playing*** again the Birbia Station.")
