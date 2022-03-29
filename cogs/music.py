@@ -3,7 +3,7 @@ import time
 import asyncio
 from datetime import timedelta
 from discord.ext import commands
-from youtube_dl import YoutubeDL
+from yt_dlp import YoutubeDL
 from decouple import config
 
 
