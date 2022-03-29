@@ -96,9 +96,15 @@ class music_cog(commands.Cog):
             except Exception as error:
                 raise Exception(
                     "There was an error trying to find the specified youtube video: " + str(error))
-        return {'source': info['formats'][0]['url'], 'title': info['title'], "yt_url": (YT_BASE_URL + info['id'], YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1], 'length': info['duration']}
+        return {
+            'source': info['url'],
+            'title': info['title'],
+            "yt_url": (YT_BASE_URL + info['id'], YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1],
+            'length': info['duration_string'],
+            'seconds': info['duration']
+        }
 
-    def queue_next(self):
+    async def queue_next(self, ctx):
         if len(self.queue) == 0:
             self.is_playing = False
             self.playing = None
@@ -109,11 +115,10 @@ class music_cog(commands.Cog):
 
         source = discord.FFmpegPCMAudio(
             self._getSrcUrl(), **self.FFMPEG_CFG)
-        # source = discord.FFmpegPCMAudio(
-        #     self._getSrcUrl(), **self.FFMPEG_CFG, executable=f"{pathlib.Path().resolve()}/{config('ffmpeg')}")
         self.vc.play(source, after=lambda e: self.queue_next())
 
         self.playing = self.queue.pop(0)
+        await self.timeout_quit(int(self.playing[0]['seconds'])+300, ctx)
 
     async def play_audio(self, ctx):
         if len(self.queue) == 0:
@@ -133,9 +138,7 @@ class music_cog(commands.Cog):
 
         source = discord.FFmpegPCMAudio(
             self._getSrcUrl(), **self.FFMPEG_CFG)
-        # source = discord.FFmpegPCMAudio(
-        #     self._getSrcUrl(), **self.FFMPEG_CFG, executable=f"{pathlib.Path().resolve()}/{config('ffmpeg')}")
-        self.vc.play(source, after=lambda e: self.queue_next())
+        self.vc.play(source, after=lambda e: self.queue_next(ctx))
 
         self.playing = self.queue.pop(0)
 
@@ -146,6 +149,12 @@ class music_cog(commands.Cog):
 
     async def _timeout_warn(self, ctx):
         await ctx.send("Birbia warns you to wait at least 3 seconds before running the next command.")
+
+    async def timeout_quit(self, timeout, ctx):
+        if self.vc is not None:
+            await asyncio.sleep(timeout)
+            self.vc.disconnect()
+            await ctx.send("Birbia's radio has turned off, but will return once you wish to have more music.")
 
     @commands.command(name="play", help="Play audio through Birbia's most famous radio station.")
     async def play(self, ctx, *args):
@@ -178,12 +187,8 @@ class music_cog(commands.Cog):
                         newaudio = discord.Embed(
                             title="Added to radio queue!", color=0xff5900)
 
-                        audio_length = timedelta(seconds=int(audio['length']))
-                        audio_length = (str(audio_length)[2:], audio_length)[
-                            int(audio['length']) > 3600]
-
                         newaudio.add_field(
-                            name=f"{audio['title']}", value=f"{audio['yt_url']} - {audio_length}")
+                            name=f"{audio['title']}", value=f"{audio['yt_url']} - {audio['length']}")
                         await ctx.send(embed=newaudio)
 
                         if self.is_playing is False:
@@ -244,11 +249,7 @@ class music_cog(commands.Cog):
             for i in range(0, len(self.queue)):
                 if i > 15:
                     break
-                audio_length = timedelta(
-                    seconds=int(self.queue[i][0]['length']))
-                audio_length = (str(audio_length)[2:], audio_length)[
-                    int(self.queue[i][0]['length']) > 3600]
-                q += f"{i+1}. [{self.queue[i][0]['title']}]({self.queue[i][0]['yt_url']}) - {audio_length}\n"
+                q += f"{i+1}. [{self.queue[i][0]['title']}]({self.queue[i][0]['yt_url']}) - {self.queue[i][0]['length']}\n"
 
             if self.queue != []:
                 await ctx.send(embed=discord.Embed(
@@ -263,11 +264,7 @@ class music_cog(commands.Cog):
     async def now(self, ctx):
         if self.allow_cmd:
             if self.playing is not None:
-                audio_length = timedelta(
-                    seconds=int(self.playing[0]['length']))
-                audio_length = (str(audio_length)[2:], audio_length)[
-                    int(self.playing[0]['length']) > 3600]
-                song = f"[{self.playing[0]['title']}]({self.playing[0]['yt_url']}) - {audio_length}"
+                song = f"[{self.playing[0]['title']}]({self.playing[0]['yt_url']}) - {self.playing[0]['length']}"
 
                 await ctx.send(embed=discord.Embed(
                     title="Birbia Station's Currently Playing Song", color=0xff5900, description=song))

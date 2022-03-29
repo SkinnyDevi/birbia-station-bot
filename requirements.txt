@@ -54,3 +54,4 @@ websockets==3.4
 wrapt==1.13.3
 yarl==1.5.1
 youtube-dl==2021.12.17
+yt-dlp==2022.3.8.2
