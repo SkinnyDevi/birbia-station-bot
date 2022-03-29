@@ -95,6 +95,8 @@ class music_cog(commands.Cog):
                 info = ydl.extract_info(query, download=False)
                 if 'entries' in info.keys():
                     info = info['entries'][0]
+                length_display = (
+                    info["duration_string"] + "s", info["duration_string"])[":" in info['duration_string']]
             except Exception as error:
                 raise Exception(
                     "There was an error trying to find the specified youtube video: " + str(error))
@@ -102,7 +104,7 @@ class music_cog(commands.Cog):
             'source': info['url'],
             'title': info['title'],
             'yt_url': (YT_BASE_URL + info['id'], YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1],
-            'length': info['duration_string'],
+            'length': length_display,
             'seconds': info['duration']
         }
 
@@ -121,6 +123,7 @@ class music_cog(commands.Cog):
             if time == self.DISCONNECT_DELAY:
                 await self.vc.disconnect()
                 await ctx.send("Birbia's radio has turned off, but will return once you wish to have more music.")
+                break
 
     def queue_next(self):
         if len(self.queue) == 0:
