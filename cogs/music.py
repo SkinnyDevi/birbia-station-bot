@@ -2,7 +2,7 @@ import discord
 import time
 import asyncio
 from discord.ext import commands
-from yt_dlp import YoutubeDL
+from youtube_dlc import YoutubeDL
 
 
 YT_BASE_URL = 'https://www.youtube.com/watch?v='
@@ -84,6 +84,20 @@ class music_cog(commands.Cog):
     def _getSrcUrl(self):
         return self.queue[0][0]['source']
 
+    def getDuration(seconds):
+        seconds = seconds % (24 * 3600)
+        hour = seconds // 3600
+        seconds %= 3600
+        minutes = seconds // 60
+        seconds %= 60
+
+        if hour > 0:
+            return "%d:%02d:%02d" % (hour, minutes, seconds)
+        if minutes > 0:
+            return "%02d:%02d" % (minutes, seconds)
+        if seconds > 0:
+            return "%ds" % (seconds)
+
     def search_audio(self, query):
         query = (f"ytsearch:{query}", urlCorrector(query))[
             query.find("http") > -1]
@@ -95,8 +109,6 @@ class music_cog(commands.Cog):
                 info = ydl.extract_info(query, download=False)
                 if 'entries' in info.keys():
                     info = info['entries'][0]
-                length_display = (
-                    info["duration_string"] + "s", info["duration_string"])[":" in info['duration_string']]
             except Exception as error:
                 raise Exception(
                     "There was an error trying to find the specified youtube video: " + str(error))
@@ -104,8 +116,7 @@ class music_cog(commands.Cog):
             'source': info['url'],
             'title': info['title'],
             'yt_url': (YT_BASE_URL + info['id'], YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1],
-            'length': length_display,
-            'seconds': info['duration']
+            'length': self.getDuration(info['duration']),
         }
 
     async def _timeout_quit(self, ctx):
