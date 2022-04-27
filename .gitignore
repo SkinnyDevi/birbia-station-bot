@@ -3,3 +3,4 @@ certificate_error_fix.py
 __pycache__
 ffmpeg*
 testing.py
+venv
