@@ -16,6 +16,10 @@ URL_TESTS = [
 
 
 def urlCorrector(url):
+    """
+    Corrects any URLs passed in to find the correct audio.
+    """
+
     if len(url.split("?v=")) >= 2:
         return YT_BASE_URL + url.split("?v=")[1][:11]
     if len(url.split("/v/")) >= 2:
@@ -34,6 +38,11 @@ def testUrls():
 
 
 class AudioSourceTracked(discord.AudioSource):
+    """
+    (Unused Untested)
+    Used to track the audio's time for the 'now' command.
+    """
+
     def __init__(self, source):
         self._source = source
         self.count_20ms = 0
@@ -46,6 +55,10 @@ class AudioSourceTracked(discord.AudioSource):
 
     @property
     def progress(self) -> float:
+        """
+        Reads at what point of the audio it is located.
+        """
+
         return (self.count_20ms * 0.02)  # count_20ms * 20ms
 
 
@@ -87,11 +100,21 @@ class music_cog(commands.Cog):
         self.vc = None
 
     def _getSrcUrl(self, getOpusSrc=False):
+        """
+        Gets the current audio's source for playback.
+
+        Can be obtained as an FFmpegOpusAudio type or a string url with the audio.
+        """
+
         if getOpusSrc:
             return self.queue[0][2]
         return self.queue[0][0]['source']
 
     def getDuration(self, seconds):
+        """
+        Formats the duration of the audio.
+        """
+
         seconds = seconds % (24 * 3600)
         hour = seconds // 3600
         seconds %= 3600
@@ -106,6 +129,12 @@ class music_cog(commands.Cog):
             return "%ds" % (seconds)
 
     def search_audio(self, query):
+        """
+        Searches for a query in YouTube using yt_dl.
+
+        The query can be inputted text like a search bar or a specific video URL.
+        """
+
         query = (f"ytsearch:{query}", urlCorrector(query))[
             query.find("http") > -1]
         print("\n-----------QUERY: " + query + "\n")
@@ -132,6 +161,13 @@ class music_cog(commands.Cog):
         }
 
     async def _timeout_quit(self, ctx):
+        """
+        Creates a timer when connected to voicechat
+
+        If it doesn't play anything within the {self.DISCONNECT_DELAY}, it will automatically
+        leave the voicechat.
+        """
+
         time = 0
         while True:
             if not self.vc.is_connected():
@@ -151,6 +187,10 @@ class music_cog(commands.Cog):
                 break
 
     def queue_next(self):
+        """
+        Queues another audio for playback.
+        """
+
         if len(self.queue) == 0:
             self.is_playing = False
             self.playing = None
@@ -165,6 +205,10 @@ class music_cog(commands.Cog):
         self.playing = self.queue.pop(0)
 
     async def play_audio(self, ctx):
+        """
+        Plays the next audio from the queue to the voicechat.
+        """
+
         if len(self.queue) == 0:
             self.is_playing = False
             return
@@ -188,11 +232,19 @@ class music_cog(commands.Cog):
         self.playing = self.queue.pop(0)
 
     async def _command_timeout(self):
+        """
+        A timeout of 2 seconds to wait for each command.
+        """
+
         self.allow_cmd = False
-        await asyncio.sleep(3)
+        await asyncio.sleep(2)
         self.allow_cmd = True
 
     async def _timeout_warn(self, ctx):
+        """
+        Warns the user if they are still in command timeout.
+        """
+
         await ctx.send(
             "Birbia warns you to wait at least 3 seconds before running the next command."
         )
@@ -200,6 +252,10 @@ class music_cog(commands.Cog):
     @commands.command(
         name="play", help="Play audio through Birbia's most famous radio station.")
     async def play(self, ctx, *args):
+        """
+        Bot command used to search and play a song/audio/video/short from YouTube.
+        """
+
         params = " ".join(args)
 
         if params == "" or params == " ":
@@ -254,6 +310,10 @@ class music_cog(commands.Cog):
 
     @commands.command(name="pause", help="Pause Birbia's radio station.")
     async def pause(self, ctx):
+        """
+        Pauses the current audio playing.
+        """
+
         if self.allow_cmd:
             if self.is_playing:
                 self.vc.pause()
@@ -270,6 +330,10 @@ class music_cog(commands.Cog):
     @commands.command(name="resume",
                       help="Resume the audio frozen in Birbia's radio station.")
     async def resume(self, ctx):
+        """
+        Resumes the paused audio.
+        """
+
         if self.allow_cmd:
             if self.is_paused:
                 self.vc.resume()
@@ -287,6 +351,10 @@ class music_cog(commands.Cog):
         name="skip",
         help="Skip that one song you don't like from Birbia's radio station.")
     async def skip(self, ctx):
+        """
+        Skips the current song onto the next in queue.
+        """
+
         if self.allow_cmd:
             if self.vc is not None and self.vc:
                 self.vc.stop()
@@ -302,6 +370,10 @@ class music_cog(commands.Cog):
         aliases=["q"],
         help="Display Birbia's radio station pending play requests.")
     async def queue(self, ctx):
+        """
+        Displays the queue with the pending songs left for playback.
+        """
+
         if self.allow_cmd:
             q = ""
 
@@ -326,6 +398,10 @@ class music_cog(commands.Cog):
     @commands.command(name="now",
                       help="Display the radio's currently playing song.")
     async def now(self, ctx):
+        """
+        Gets the name and duration of the audio currently playing.
+        """
+
         if self.allow_cmd:
             if self.playing is not None:
                 song = f"[{self.playing[0]['title']}]({self.playing[0]['yt_url']}) - {self.playing[0]['length']}"
@@ -347,6 +423,10 @@ class music_cog(commands.Cog):
         name="clear",
         help="Removes every current request from Birbia's radio station")
     async def clear(self, ctx):
+        """
+        Clears the queue.
+        """
+
         if self.allow_cmd:
             if self.vc is not None:
                 self.queue = []
@@ -362,6 +442,10 @@ class music_cog(commands.Cog):
                       aliases=["stop"],
                       help="Make Birbia's Radio Station stop for the day.")
     async def leave(self, ctx):
+        """
+        Stops audio playback and leaves the voicechat.
+        """
+
         if self.allow_cmd:
             self.is_playing = False
             self.is_paused = False
