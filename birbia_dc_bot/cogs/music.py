@@ -99,7 +99,7 @@ class music_cog(commands.Cog):
             'options': '-vn',
         }
 
-        self.vc = None
+        self.vc: discord.VoiceClient = None
 
     def _getSrcUrl(self, getOpusSrc=False):
         """
@@ -167,11 +167,15 @@ class music_cog(commands.Cog):
         Disconnects the bot from the voice channel by playing an audio file.
         """
 
-        disconnect_audio = discord.FFmpegPCMAudio(
-            os.getcwd() + "/audios/vc_disconnect.mp3")
-        self.vc.play(disconnect_audio, after=None)
-        while self.vc.is_playing():
-            await asyncio.sleep(0.5)
+        try:
+            disconnect_audio = discord.FFmpegPCMAudio(
+                os.getcwd() + "/audios/vc_disconnect.mp3")
+            self.vc.play(disconnect_audio, after=None)
+            while self.vc.is_playing():
+                await asyncio.sleep(0.5)
+        except Exception:
+            print("Could not play disconnect audio.")
+
         await self.vc.disconnect()
 
         self.vc = None
@@ -319,7 +323,7 @@ class music_cog(commands.Cog):
                             await self.play_audio(ctx)
 
                         await self._command_timeout()
-                        await self._timeout_quit(ctx)
+                        await self._timeout_quit()
                 except Exception as error:
                     print("\nWHEW! FEW ERRORS: " + str(error))
                     await ctx.send(
@@ -467,8 +471,23 @@ class music_cog(commands.Cog):
         """
 
         if self.allow_cmd:
-            self.__disconnect()
+            await self.__disconnect()
             await ctx.send("Birbia's Radio Station will stop for today sadly.")
             await self._command_timeout()
         else:
             await self._timeout_warn(ctx)
+
+    @commands.command(name="join", help="Allows Birbia to join your party!")
+    async def join(self, ctx):
+        """
+        Join the bot to the requesting user's voice channel.
+        """
+
+        vc = ctx.author.voice
+
+        if vc is None:
+            await ctx.send(
+                "To use Birbia Radio, please connect to a voice channel first.")
+        else:
+            self.vc = await vc.channel.connect()
+            await self._timeout_quit()
