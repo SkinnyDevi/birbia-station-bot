@@ -72,6 +72,7 @@ class music_cog(commands.Cog):
         self.is_paused = False
         self.queue = []
         self.playing = None
+        self.started_quit_timeout = False
 
         self.DISCONNECT_DELAY = 300  # 300s = 5 min
 
@@ -168,7 +169,11 @@ class music_cog(commands.Cog):
         leave the voicechat.
         """
 
+        if self.started_quit_timeout:
+            return
+
         time = 0
+        self.started_quit_timeout = True
         while True:
             if not self.vc.is_connected():
                 break
