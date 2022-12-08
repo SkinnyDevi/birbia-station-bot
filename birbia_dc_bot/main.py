@@ -7,7 +7,9 @@ from discord.ext import commands
 from cogs.music import music_cog
 from cogs.help import help_cog
 
-bot = commands.Bot(command_prefix="birbia ", intents=discord.Intents.all())
+isDev = True
+bot = commands.Bot(command_prefix="birbia-beta ",
+                   intents=discord.Intents.all())
 
 
 @bot.event
@@ -25,6 +27,6 @@ async def main():
 asyncio.run(main())
 
 try:
-    bot.run(os.environ.get("TOKEN"))
+    bot.run(os.environ.get("TOKEN" if not isDev else "DEV_TOKEN"))
 except discord.errors.HTTPException:
-    print("\n\n\nBLOCKED BY RATE LIMITS\nRESTARTING NOW\n\n\n")
+    print("\n\n\nBLOCKED BY RATE LIMITS\n\n\n")

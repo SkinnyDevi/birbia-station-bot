@@ -4,3 +4,4 @@ testing.py
 venv
 ffmpeg
 Dockerfile
+.DS_Store
