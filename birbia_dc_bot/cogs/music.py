@@ -1,6 +1,7 @@
 import discord
 import time
 import asyncio
+import os
 from discord.ext import commands
 from youtube_dl import YoutubeDL
 
@@ -74,7 +75,7 @@ class music_cog(commands.Cog):
         self.playing = None
         self.started_quit_timeout = False
 
-        self.DISCONNECT_DELAY = 300  # 300s = 5 min
+        self.DISCONNECT_DELAY = 600  # 300s = 5 min
 
         self.YDL_CFG = {
             'format': 'bestaudio/best',
@@ -185,10 +186,16 @@ class music_cog(commands.Cog):
             if self.vc.is_playing() and not self.vc.is_paused():
                 time = 0
             if time == self.DISCONNECT_DELAY:
+                a = discord.FFmpegPCMAudio(
+                    os.getcwd() + "/audios/vc_disconnect.mp3")
+                self.vc.play(a, after=None)
+                while self.vc.is_playing():
+                    await asyncio.sleep(0.5)
                 await self.vc.disconnect()
-                await ctx.send(
-                    "Birbia's radio has turned off, but will return once you wish to have more music."
-                )
+                self.vc = None
+                # await ctx.send(
+                #     "Birbia's radio has turned off, but will return once you wish to have more music."
+                # )
                 break
 
     def queue_next(self):
