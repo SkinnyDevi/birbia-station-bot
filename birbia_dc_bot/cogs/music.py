@@ -162,7 +162,24 @@ class music_cog(commands.Cog):
             self.getDuration(info['duration']),
         }
 
-    async def _timeout_quit(self, ctx):
+    async def __disconnect(self):
+        """
+        Disconnects the bot from the voice channel by playing an audio file.
+        """
+
+        disconnect_audio = discord.FFmpegPCMAudio(
+            os.getcwd() + "/audios/vc_disconnect.mp3")
+        self.vc.play(disconnect_audio, after=None)
+        while self.vc.is_playing():
+            await asyncio.sleep(0.5)
+        await self.vc.disconnect()
+
+        self.vc = None
+        self.is_playing = False
+        self.is_paused = False
+        self.queue = []
+
+    async def _timeout_quit(self):
         """
         Creates a timer when connected to voicechat
 
@@ -186,16 +203,7 @@ class music_cog(commands.Cog):
             if self.vc.is_playing() and not self.vc.is_paused():
                 time = 0
             if time == self.DISCONNECT_DELAY:
-                a = discord.FFmpegPCMAudio(
-                    os.getcwd() + "/audios/vc_disconnect.mp3")
-                self.vc.play(a, after=None)
-                while self.vc.is_playing():
-                    await asyncio.sleep(0.5)
-                await self.vc.disconnect()
-                self.vc = None
-                # await ctx.send(
-                #     "Birbia's radio has turned off, but will return once you wish to have more music."
-                # )
+                await self.__disconnect()
                 break
 
     def queue_next(self):
@@ -258,7 +266,7 @@ class music_cog(commands.Cog):
         """
 
         await ctx.send(
-            "Birbia warns you to wait at least 3 seconds before running the next command."
+            "Birbia warns you to wait at least 2 seconds before running the next command."
         )
 
     @commands.command(
@@ -459,10 +467,7 @@ class music_cog(commands.Cog):
         """
 
         if self.allow_cmd:
-            self.is_playing = False
-            self.is_paused = False
-            self.queue = []
-            await self.vc.disconnect()
+            self.__disconnect()
             await ctx.send("Birbia's Radio Station will stop for today sadly.")
             await self._command_timeout()
         else:
