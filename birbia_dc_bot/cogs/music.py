@@ -75,7 +75,7 @@ class music_cog(commands.Cog):
         self.playing = None
         self.started_quit_timeout = False
 
-        self.DISCONNECT_DELAY = 600  # 300s = 5 min
+        self.DISCONNECT_DELAY = 20  # 300s = 5 min
 
         self.YDL_CFG = {
             'format': 'bestaudio/best',
@@ -167,14 +167,15 @@ class music_cog(commands.Cog):
         Disconnects the bot from the voice channel by playing an audio file.
         """
 
-        try:
-            disconnect_audio = discord.FFmpegPCMAudio(
-                os.getcwd() + "/audios/vc_disconnect.mp3")
-            self.vc.play(disconnect_audio, after=None)
-            while self.vc.is_playing():
-                await asyncio.sleep(0.5)
-        except Exception:
-            print("Could not play disconnect audio.")
+        if len(self.vc.channel.members) > 0 and not self.vc.is_playing():
+            try:
+                disconnect_audio = discord.FFmpegPCMAudio(
+                    os.getcwd() + "/birbia_dc_bot/audios/vc_disconnect.mp3")
+                self.vc.play(disconnect_audio, after=None)
+                while self.vc.is_playing():
+                    await asyncio.sleep(0.5)
+            except Exception:
+                print("Could not play disconnect audio.")
 
         await self.vc.disconnect()
 
@@ -183,7 +184,7 @@ class music_cog(commands.Cog):
         self.is_paused = False
         self.queue = []
 
-    async def _timeout_quit(self):
+    async def __timeout_quit(self):
         """
         Creates a timer when connected to voicechat
 
@@ -195,6 +196,7 @@ class music_cog(commands.Cog):
             return
 
         time = 0
+        ax = 0
         self.started_quit_timeout = True
         while True:
             if not self.vc.is_connected():
@@ -204,11 +206,15 @@ class music_cog(commands.Cog):
 
             time += 1
 
-            if self.vc.is_playing() and not self.vc.is_paused():
+            if self.vc is not None and self.vc.is_playing() and not self.vc.is_paused():
                 time = 0
             if time == self.DISCONNECT_DELAY:
                 await self.__disconnect()
                 break
+
+            ax += 1
+            print(
+                f"Disconnect Timer[{ax}]: {time}/{self.DISCONNECT_DELAY}") if time % 5 == 0 and time != 0 else None
 
     def queue_next(self):
         """
@@ -323,7 +329,7 @@ class music_cog(commands.Cog):
                             await self.play_audio(ctx)
 
                         await self._command_timeout()
-                        await self._timeout_quit()
+                        await self.__timeout_quit()
                 except Exception as error:
                     print("\nWHEW! FEW ERRORS: " + str(error))
                     await ctx.send(
@@ -490,4 +496,4 @@ class music_cog(commands.Cog):
                 "To use Birbia Radio, please connect to a voice channel first.")
         else:
             self.vc = await vc.channel.connect()
-            await self._timeout_quit()
+            await self.__timeout_quit()

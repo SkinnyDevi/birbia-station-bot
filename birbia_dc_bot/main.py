@@ -28,6 +28,6 @@ async def main():
 asyncio.run(main())
 
 try:
-    bot.run(os.environ.get("TOKEN" if not isDev else "DEV_TOKEN"))
+    bot.run(os.environ.get("POETRY_TOKEN" if not isDev else "POETRY_DEV_TOKEN"))
 except discord.errors.HTTPException:
     print("\n\n\nBLOCKED BY RATE LIMITS\n\n\n")
