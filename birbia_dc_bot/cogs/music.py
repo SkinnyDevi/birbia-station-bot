@@ -2,7 +2,6 @@ import discord
 import time
 import asyncio
 import os
-from datetime import datetime
 from discord.ext import commands
 from youtube_dl import YoutubeDL
 
@@ -102,7 +101,7 @@ class music_cog(commands.Cog):
 
         self.vc: discord.VoiceClient = None
 
-    def _getSrcUrl(self, getOpusSrc=False):
+    def __getSrcUrl(self, getOpusSrc=False):
         """
         Gets the current audio's source for playback.
 
@@ -200,8 +199,9 @@ class music_cog(commands.Cog):
         time = 0
         self.started_quit_timeout = True
         while True:
-            if not self.vc.is_connected():
-                break
+            if self.vc is not None:
+                if not self.vc.is_connected():
+                    break
 
             await asyncio.sleep(1)
 
@@ -212,12 +212,6 @@ class music_cog(commands.Cog):
             if time == self.DISCONNECT_DELAY:
                 await self.__disconnect()
                 break
-
-            if time % 5 == 0 and time > 0:
-                now = datetime.now()
-                current_time = now.strftime("%H:%M:%S")
-                print(
-                    f"[{current_time}] Disconnect Timer: {time}/{self.DISCONNECT_DELAY}")
 
     def queue_next(self):
         """
@@ -232,7 +226,7 @@ class music_cog(commands.Cog):
 
         self.is_playing = True
 
-        self.vc.play(self._getSrcUrl(getOpusSrc=True),
+        self.vc.play(self.__getSrcUrl(getOpusSrc=True),
                      after=lambda e: self.queue_next())
 
         self.playing = self.queue.pop(0)
@@ -259,7 +253,7 @@ class music_cog(commands.Cog):
         else:
             await self.vc.move_to(self.queue[0][1])
 
-        self.vc.play(self._getSrcUrl(getOpusSrc=True),
+        self.vc.play(self.__getSrcUrl(getOpusSrc=True),
                      after=lambda e: self.queue_next())
 
         self.playing = self.queue.pop(0)
