@@ -76,7 +76,7 @@ class music_cog(commands.Cog):
         self.playing = None
         self.started_quit_timeout = False
 
-        self.DISCONNECT_DELAY = 20  # 300s = 5 min
+        self.DISCONNECT_DELAY = 600  # 300s = 5 min
 
         self.YDL_CFG = {
             'format': 'bestaudio/best',
