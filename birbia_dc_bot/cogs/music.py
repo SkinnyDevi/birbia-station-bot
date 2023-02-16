@@ -2,6 +2,7 @@ import discord
 import time
 import asyncio
 import os
+from datetime import datetime
 from discord.ext import commands
 from youtube_dl import YoutubeDL
 
@@ -173,12 +174,13 @@ class music_cog(commands.Cog):
                     os.getcwd() + "/birbia_dc_bot/audios/vc_disconnect.mp3")
                 self.vc.play(disconnect_audio, after=None)
                 while self.vc.is_playing():
-                    await asyncio.sleep(0.5)
+                    await asyncio.sleep(0.75)
             except Exception:
                 print("Could not play disconnect audio.")
 
         await self.vc.disconnect()
 
+        self.started_quit_timeout = False
         self.vc = None
         self.is_playing = False
         self.is_paused = False
@@ -196,7 +198,6 @@ class music_cog(commands.Cog):
             return
 
         time = 0
-        ax = 0
         self.started_quit_timeout = True
         while True:
             if not self.vc.is_connected():
@@ -212,9 +213,11 @@ class music_cog(commands.Cog):
                 await self.__disconnect()
                 break
 
-            ax += 1
-            print(
-                f"Disconnect Timer[{ax}]: {time}/{self.DISCONNECT_DELAY}") if time % 5 == 0 and time != 0 else None
+            if time % 5 == 0 and time > 0:
+                now = datetime.now()
+                current_time = now.strftime("%H:%M:%S")
+                print(
+                    f"[{current_time}] Disconnect Timer: {time}/{self.DISCONNECT_DELAY}")
 
     def queue_next(self):
         """
@@ -479,7 +482,6 @@ class music_cog(commands.Cog):
         if self.allow_cmd:
             await self.__disconnect()
             await ctx.send("Birbia's Radio Station will stop for today sadly.")
-            await self._command_timeout()
         else:
             await self._timeout_warn(ctx)
 
