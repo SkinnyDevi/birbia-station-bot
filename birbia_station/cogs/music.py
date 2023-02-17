@@ -4,9 +4,8 @@ import asyncio
 import os
 
 from discord.ext import commands
-from yt_dlp import YoutubeDL
 
-from ..utils.yt_urls import YtUrls
+from ..utils.yt_audio_search import YtAudioSearcher
 
 
 class AudioSourceTracked(discord.AudioSource):
@@ -48,21 +47,7 @@ class music_cog(commands.Cog):
 
         self.DISCONNECT_DELAY = 600  # 300s = 5 min
 
-        self.YDL_CFG = {
-            'format': 'bestaudio/best',
-            'extractaudio': True,
-            'audioformat': 'mp3',
-            'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-            'restrictfilenames': True,
-            'noplaylist': True,
-            'nocheckcertificate': True,
-            'ignoreerrors': False,
-            'logtostderr': False,
-            'quiet': True,
-            'no_warnings': True,
-            'default_search': 'auto',
-            'source_address': '0.0.0.0',
-        }
+        self.audioSearch: YtAudioSearcher = YtAudioSearcher()
 
         self.FFMPEG_CFG = {
             'before_options':
@@ -83,57 +68,6 @@ class music_cog(commands.Cog):
             return self.queue[0][2]
         return self.queue[0][0]['source']
 
-    def getDuration(self, seconds):
-        """
-        Formats the duration of the audio.
-        """
-
-        seconds = seconds % (24 * 3600)
-        hour = seconds // 3600
-        seconds %= 3600
-        minutes = seconds // 60
-        seconds %= 60
-
-        if hour > 0:
-            return "%d:%02d:%02d" % (hour, minutes, seconds)
-        if minutes > 0:
-            return "%02d:%02d" % (minutes, seconds)
-        if seconds > 0:
-            return "%ds" % (seconds)
-
-    def search_audio(self, query):
-        """
-        Searches for a query in YouTube using yt_dl.
-
-        The query can be inputted text like a search bar or a specific video URL.
-        """
-
-        query = YtUrls.urlCorrector(query) if query.find(
-            "http") > -1 else f"ytsearch:{query}"
-
-        print("\n-----------QUERY: " + query + "\n")
-
-        with YoutubeDL(self.YDL_CFG) as ydl:
-            try:
-                ydl.cache.remove()
-                info = ydl.extract_info(query, download=False)
-                if 'entries' in info.keys():
-                    info = info['entries'][0]
-            except Exception as error:
-                raise Exception(
-                    "There was an error trying to find the specified youtube video: " +
-                    str(error))
-        return {
-            'source':
-            info['url'],
-            'title':
-            info['title'],
-            'yt_url': (YtUrls.YT_BASE_URL + info['id'],
-                       YtUrls.YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1],
-            'length':
-            self.getDuration(info['duration']),
-        }
-
     async def __disconnect(self):
         """
         Disconnects the bot from the voice channel by playing an audio file.
@@ -142,7 +76,7 @@ class music_cog(commands.Cog):
         if len(self.vc.channel.members) > 0 and not self.vc.is_playing():
             try:
                 disconnect_audio = discord.FFmpegPCMAudio(
-                    os.getcwd() + "/birbia_dc_bot/audios/vc_disconnect.mp3")
+                    os.getcwd() + "/birbia_station/audios/vc_disconnect.mp3")
                 self.vc.play(disconnect_audio, after=None)
                 while self.vc.is_playing():
                     await asyncio.sleep(0.75)
@@ -230,7 +164,7 @@ class music_cog(commands.Cog):
 
         self.playing = self.queue.pop(0)
 
-    async def _command_timeout(self):
+    async def __command_timeout(self):
         """
         A timeout of 2 seconds to wait for each command.
         """
@@ -239,7 +173,7 @@ class music_cog(commands.Cog):
         await asyncio.sleep(2)
         self.allow_cmd = True
 
-    async def _timeout_warn(self, ctx):
+    async def __timeout_warn(self, ctx):
         """
         Warns the user if they are still in command timeout.
         """
@@ -270,15 +204,15 @@ class music_cog(commands.Cog):
         elif self.is_paused:
             if self.allow_cmd:
                 self.vc.resume()
-                await self._command_timeout()
+                await self.__command_timeout()
             else:
-                await self._timeout_warn(ctx)
+                await self.__timeout_warn(ctx)
         else:
             if self.allow_cmd:
                 vc = vc.channel
                 await ctx.send("Birbia is sending it's hawks to fetch your audio...")
                 try:
-                    audio = self.search_audio(params)
+                    audio = self.audioSearch.search_audio(params)
                     if isinstance(type(audio), type(True)):
                         await ctx.send(
                             "Birbia sent out it's fastest eagles, but could not get your audio back. Try again!"
@@ -297,7 +231,7 @@ class music_cog(commands.Cog):
                         if self.is_playing is False:
                             await self.play_audio(ctx)
 
-                        await self._command_timeout()
+                        await self.__command_timeout()
                         await self.__timeout_quit()
                 except Exception as error:
                     print("\nWHEW! FEW ERRORS: " + str(error))
@@ -305,7 +239,7 @@ class music_cog(commands.Cog):
                         "Birbia had a tough battle and could not send back your audio. Try ***stopping*** and ***playing*** again the Birbia Station."
                     )
             else:
-                await self._timeout_warn(ctx)
+                await self.__timeout_warn(ctx)
 
     @commands.command(name="pause", help="Pause Birbia's radio station.")
     async def pause(self, ctx):
@@ -320,11 +254,11 @@ class music_cog(commands.Cog):
                 self.is_playing = False
                 await ctx.send("Birbia paused the current audio in it's radio station."
                                )
-                await self._command_timeout()
+                await self.__command_timeout()
             else:
                 await ctx.send("Birbia's radio station has nothing to pause!")
         else:
-            await self._timeout_warn(ctx)
+            await self.__timeout_warn(ctx)
 
     @commands.command(name="resume",
                       help="Resume the audio frozen in Birbia's radio station.")
@@ -339,12 +273,12 @@ class music_cog(commands.Cog):
                 self.is_paused = False
                 self.is_playing = True
                 await ctx.send("Birbia has resumed playing on it's radio station!")
-                await self._command_timeout()
+                await self.__command_timeout()
             else:
                 await ctx.send(
                     "Birbia has got nothing to resume in it's radio station.")
         else:
-            await self._timeout_warn(ctx)
+            await self.__timeout_warn(ctx)
 
     @commands.command(
         name="skip",
@@ -360,9 +294,9 @@ class music_cog(commands.Cog):
                 time.sleep(1)
                 await self.play_audio(ctx)
                 await ctx.send("Birbia skipped a song. It seems you didn't like it.")
-                await self._command_timeout()
+                await self.__command_timeout()
         else:
-            await self._timeout_warn(ctx)
+            await self.__timeout_warn(ctx)
 
     @commands.command(
         name="queue",
@@ -386,13 +320,13 @@ class music_cog(commands.Cog):
                     embed=discord.Embed(title="Birbia Station's Pending Requests",
                                         color=0xff5900,
                                         description=q))
-                await self._command_timeout()
+                await self.__command_timeout()
             else:
                 await ctx.send(
                     "Birbia radio station is currently waiting for new requests. Send one!"
                 )
         else:
-            await self._timeout_warn(ctx)
+            await self.__timeout_warn(ctx)
 
     @commands.command(name="now",
                       help="Display the radio's currently playing song.")
@@ -409,14 +343,14 @@ class music_cog(commands.Cog):
                     embed=discord.Embed(title="Birbia Station's Currently Playing Song",
                                         color=0xff5900,
                                         description=song))
-                await self._command_timeout()
+                await self.__command_timeout()
             else:
                 await ctx.send(
                     "Birbia's radio isn't playing anything right now. Submit a request now with ***birbia play***!"
                 )
-                await self._command_timeout()
+                await self.__command_timeout()
         else:
-            await self._timeout_warn(ctx)
+            await self.__timeout_warn(ctx)
 
     @commands.command(
         name="clear",
@@ -430,12 +364,12 @@ class music_cog(commands.Cog):
             if self.vc is not None:
                 self.queue = []
                 await ctx.send("Cleared all requests from Birbia's Radio Station.")
-                await self._command_timeout()
+                await self.__command_timeout()
             else:
                 await ctx.send(
                     "To use Birbia Radio, please connect to a voice channel first.")
         else:
-            await self._timeout_warn(ctx)
+            await self.__timeout_warn(ctx)
 
     @commands.command(name="leave",
                       aliases=["stop"],
@@ -449,7 +383,7 @@ class music_cog(commands.Cog):
             await self.__disconnect()
             await ctx.send("Birbia's Radio Station will stop for today sadly.")
         else:
-            await self._timeout_warn(ctx)
+            await self.__timeout_warn(ctx)
 
     @commands.command(name="join", help="Allows Birbia to join your party!")
     async def join(self, ctx):
