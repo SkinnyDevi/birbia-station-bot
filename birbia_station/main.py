@@ -7,6 +7,7 @@ from discord.ext import commands
 from .cogs.music import MusicCog
 from .cogs.help import HelpCog
 from .cogs.utility import UtilityCog
+from .cogs.xcog import XCog
 
 isDev = True
 prefix = "birbia-beta " if isDev else "birbia "
@@ -24,6 +25,7 @@ async def main():
 
     await bot.add_cog(MusicCog(bot))
     await bot.add_cog(UtilityCog(bot))
+    await bot.add_cog(XCog(bot))
     await bot.add_cog(HelpCog(bot))
 
 
