@@ -4,10 +4,11 @@ import discord
 
 from discord.ext import commands
 
-from .cogs.music import music_cog
-from .cogs.help import help_cog
+from .cogs.music import MusicCog
+from .cogs.help import HelpCog
+from .cogs.utility import UtilityCog
 
-isDev = False
+isDev = True
 prefix = "birbia-beta " if isDev else "birbia "
 bot = commands.Bot(command_prefix=prefix,
                    intents=discord.Intents.all())
@@ -21,8 +22,9 @@ async def on_ready():
 async def main():
     bot.remove_command("help")
 
-    await bot.add_cog(music_cog(bot))
-    await bot.add_cog(help_cog(bot))
+    await bot.add_cog(MusicCog(bot))
+    await bot.add_cog(UtilityCog(bot))
+    await bot.add_cog(HelpCog(bot))
 
 
 def start_bot():

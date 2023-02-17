@@ -33,7 +33,7 @@ class AudioSourceTracked(discord.AudioSource):
         return (self.count_20ms * 0.02)  # count_20ms * 20ms
 
 
-class music_cog(commands.Cog):
+class MusicCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
