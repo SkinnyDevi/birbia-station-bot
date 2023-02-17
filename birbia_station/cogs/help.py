@@ -1,4 +1,5 @@
 import discord
+import pkg_resources
 from discord.ext import commands
 
 
@@ -31,5 +32,7 @@ class help_cog(commands.Cog):
 
         for cmd in self.CMDS:
             help.add_field(name=cmd[0], value=cmd[1])
+        help.add_field(name="Version", value=pkg_resources.get_distribution(
+            "birbia-station-bot").version)
 
         await ctx.send(embed=help)

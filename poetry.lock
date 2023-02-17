@@ -318,7 +318,7 @@ websockets = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c4449e163d17c4aa9dfa18521ecb525cbe60e6e600793577bab3b54de8c1ab54"
+content-hash = "f7ed4922e557e757c1930292899ea7edfdc5faf9413708faf8268097dc0b3f89"
 
 [metadata.files]
 aiohttp = [
