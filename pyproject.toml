@@ -1,10 +1,13 @@
 [tool.poetry]
 name = "birbia-station-bot"
 version = "1.1.5"
-description = ""
+description = "Birbia's Radio discord bot."
 authors = ["SkinnyDevi <xthesmartdartx@gmail.com>"]
+maintainers = ["SkinnyDevi <xthesmartdartx@gmail.com>"]
 readme = "README.md"
 packages = [{include = "birbia_dc_bot"}]
+license = "Propietary"
+repository = "https://github.com/SkinnyDevi/birbia-station-bot"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -17,6 +20,7 @@ aiohttp = ">=3.3.0,<3.9.0"
 ffmpeg = "^1.4"
 ffmpeg-python = "^0.2.0"
 MarkupSafe = "2.0.1"
+yt-dlp = "^2023.1.6"
 
 
 [build-system]
