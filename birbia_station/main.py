@@ -7,7 +7,7 @@ from discord.ext import commands
 from .cogs.music import music_cog
 from .cogs.help import help_cog
 
-isDev = True
+isDev = False
 prefix = "birbia-beta " if isDev else "birbia "
 bot = commands.Bot(command_prefix=prefix,
                    intents=discord.Intents.all())
