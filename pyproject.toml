@@ -20,6 +20,9 @@ ffmpeg = "^1.4"
 ffmpeg-python = "^0.2.0"
 MarkupSafe = "2.0.1"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.1"
+
 [tool.poetry.scripts]
 bot = "birbia_station.main:start_bot"
 

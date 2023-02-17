@@ -2,40 +2,11 @@ import discord
 import time
 import asyncio
 import os
+
 from discord.ext import commands
 from yt_dlp import YoutubeDL
 
-YT_BASE_URL = 'https://www.youtube.com/watch?v='
-YT_SHORTS_URL = "https://www.youtube.com/shorts/"
-URL_TESTS = [
-    "http://www.youtube.com/watch?v=-wtIMTCHWuI",
-    "http://www.youtube.com/v/-wtIMTCHWuI?version=3",
-    "http://youtu.be/-wtIMTCHWuI",
-    "https://youtube.com/shorts/I1I1i1i1I1I?feature=share",
-    "https://www.youtube.com/shorts/1ioBJ-3NXx"
-]
-
-
-def urlCorrector(url):
-    """
-    Corrects any URLs passed in to find the correct audio.
-    """
-
-    if len(url.split("?v=")) >= 2:
-        return YT_BASE_URL + url.split("?v=")[1][:11]
-    if len(url.split("/v/")) >= 2:
-        return YT_BASE_URL + url.split("/v/")[1][:11]
-    if len(url.split("/youtu.be/")) >= 2:
-        return YT_BASE_URL + url.split("/youtu.be/")[1][:11]
-    if len(url.split("/shorts/")) >= 2:
-        return YT_BASE_URL + url.split("/shorts/")[1][:11]
-
-
-def testUrls():
-    for t in URL_TESTS:
-        if urlCorrector(t) is None:
-            return -1
-    return 0
+from ..utils.yt_urls import YtUrls
 
 
 class AudioSourceTracked(discord.AudioSource):
@@ -137,7 +108,7 @@ class music_cog(commands.Cog):
         The query can be inputted text like a search bar or a specific video URL.
         """
 
-        query = urlCorrector(query) if query.find(
+        query = YtUrls.urlCorrector(query) if query.find(
             "http") > -1 else f"ytsearch:{query}"
 
         print("\n-----------QUERY: " + query + "\n")
@@ -157,8 +128,8 @@ class music_cog(commands.Cog):
             info['url'],
             'title':
             info['title'],
-            'yt_url': (YT_BASE_URL + info['id'],
-                       YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1],
+            'yt_url': (YtUrls.YT_BASE_URL + info['id'],
+                       YtUrls.YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1],
             'length':
             self.getDuration(info['duration']),
         }
