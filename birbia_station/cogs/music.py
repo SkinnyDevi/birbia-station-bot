@@ -3,7 +3,7 @@ import time
 import asyncio
 import os
 from discord.ext import commands
-from youtube_dl import YoutubeDL
+from yt_dlp import YoutubeDL
 
 YT_BASE_URL = 'https://www.youtube.com/watch?v='
 YT_SHORTS_URL = "https://www.youtube.com/shorts/"

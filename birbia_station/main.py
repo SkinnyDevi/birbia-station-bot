@@ -4,8 +4,8 @@ import discord
 
 from discord.ext import commands
 
-from cogs.music import music_cog
-from cogs.help import help_cog
+from .cogs.music import music_cog
+from .cogs.help import help_cog
 
 isDev = True
 prefix = "birbia-beta " if isDev else "birbia "
@@ -21,8 +21,8 @@ async def on_ready():
 async def main():
     bot.remove_command("help")
 
-    bot.add_cog(music_cog(bot))
-    bot.add_cog(help_cog(bot))
+    await bot.add_cog(music_cog(bot))
+    await bot.add_cog(help_cog(bot))
 
 
 def start_bot():
