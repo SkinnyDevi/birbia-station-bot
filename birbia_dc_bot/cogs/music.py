@@ -137,8 +137,9 @@ class music_cog(commands.Cog):
         The query can be inputted text like a search bar or a specific video URL.
         """
 
-        query = (f"ytsearch:{query}", urlCorrector(query))[
-            query.find("http") > -1]
+        query = urlCorrector(query) if query.find(
+            "http") > -1 else f"ytsearch:{query}"
+
         print("\n-----------QUERY: " + query + "\n")
 
         with YoutubeDL(self.YDL_CFG) as ydl:
