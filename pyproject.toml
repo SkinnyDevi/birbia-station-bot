@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "birbia-station-bot"
-version = "1.1.7"
+version = "1.2.0"
 description = "Birbia's Radio discord bot."
 authors = ["SkinnyDevi <xthesmartdartx@gmail.com>"]
 maintainers = ["SkinnyDevi <xthesmartdartx@gmail.com>"]
@@ -20,13 +20,16 @@ ffmpeg = "^1.4"
 ffmpeg-python = "^0.2.0"
 MarkupSafe = "2.0.1"
 beautifulsoup4 = "^4.11.2"
-requests = "^2.28.2"
+requests = "^2.27.1"
+undetected-chromedriver = "^3.4.6"
+hentai = "^3.2.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
 
 [tool.poetry.scripts]
 bot = "birbia_station.main:start_bot"
+test = "birbia_station.tests.poetry_test:start"
 
 [build-system]
 requires = ["poetry-core"]
