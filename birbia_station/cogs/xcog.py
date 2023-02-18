@@ -7,7 +7,6 @@ from ..utils.scraper_bypass import DelayedScraper
 
 
 class XCog(commands.Cog):
-    WebRoot = 'https://www.nhentai.net/g/'
     Logo = "https://i.imgur.com/uLAimaY.png"
     MaxSauce = 342185
 
@@ -32,7 +31,7 @@ class XCog(commands.Cog):
             return -1
 
     def doujinEmbedMaker(self, sauce: int):
-        doujinData = self.dscraper.webscrape_doujin(self.WebRoot + str(sauce))
+        doujinData = self.dscraper.webscrape_doujin(sauce)
 
         embed = discord.Embed(
             colour=discord.Colour.red(),

@@ -1,3 +1,4 @@
+import os
 import json
 from random import randint
 
@@ -7,14 +8,26 @@ import selenium.webdriver.support.expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webdriver import By
 
+import requests
+from bs4 import BeautifulSoup
+
 
 class DelayedScraper:
     DoujinDataRoot = "https://nhentai.net/api/gallery/"
+    WebRoot = 'https://www.nhentai.net/g/'
+    FetchRoot = WebRoot.replace(".net", ".to")
 
-    def __init__(self):
-        self.driver = uc.Chrome(headless=True)
+    def __init__(self, useDriver=False):
+        if (useDriver):
+            chromeOpts = uc.ChromeOptions()
+            chromeOpts.headless = True
 
-    def webscrape_dcover(self, url: str):
+            if os.environ.get("POETRY_IS_DOCKER") == "True":
+                chromeOpts.binary_location = "/usr/local/bin/chromedriver"
+
+            self.driver = uc.Chrome(options=chromeOpts)
+
+    def scrapedriver_dcover(self, url: str):
         self.driver.get(url)
 
         print("Getting cover...")
@@ -28,7 +41,7 @@ class DelayedScraper:
         cover_atag: uc.WebElement = results_container.children()[0]
         return cover_atag.children('img')[0].get_attribute('src')
 
-    def webscrape_ddata(self, sauce: int):
+    def scrapedriver_ddata(self, sauce: int):
         self.driver.get(self.DoujinDataRoot + str(sauce))
 
         print("Getting data...")
@@ -52,7 +65,7 @@ class DelayedScraper:
             'pages': int(ddata['num_pages'])
         }
 
-    def webscrape_doujin(self, url: str):
+    def scrapedriver_doujin(self, url: str):
         sauce = int(url.split("/")[-1])
         cover_url = self.webscrape_dcover(url)
         doujin_data = self.webscrape_ddata(sauce)
@@ -67,3 +80,7 @@ class DelayedScraper:
         doujin_data['tags'] = tags
 
         return doujin_data
+
+    def webscrape_doujin(self, sauce: int):
+
+        pass
