@@ -9,7 +9,7 @@ from .cogs.help import HelpCog
 from .cogs.utility import UtilityCog
 from .cogs.xcog import XCog
 
-isDev = True
+isDev = False
 prefix = "birbia-beta " if isDev else "birbia "
 bot = commands.Bot(command_prefix=prefix,
                    intents=discord.Intents.all())
