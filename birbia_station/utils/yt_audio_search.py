@@ -49,7 +49,7 @@ class YtAudioSearcher:
         query = YtUrls.urlCorrector(query) if query.find(
             "http") > -1 else f"ytsearch:{query}"
 
-        print("\n-----------QUERY: " + query + "\n")
+        print("\n---------QUERY: " + query)
 
         with YoutubeDL(self.YDL_CFG) as ydl:
             try:

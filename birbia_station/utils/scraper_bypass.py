@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 class DelayedScraper:
     DoujinDataRoot = "https://nhentai.net/api/gallery/"
     WebRoot = 'https://www.nhentai.net/g/'
-    FetchRoot = WebRoot.replace(".net", ".to")
+    FetchRoot = "https://nhentai.to/g/"
 
     def __init__(self, useDriver=False):
         if (useDriver):
@@ -81,6 +81,46 @@ class DelayedScraper:
 
         return doujin_data
 
-    def webscrape_doujin(self, sauce: int):
+    def __get_dcover(self, site: BeautifulSoup) -> str:
+        coverdiv = site.find(
+            'div', {'id': 'cover'}).children
+        atag = list(map(lambda v: v, coverdiv))[1].children
+        return list(map(lambda v: v, atag))[1]['src']
 
-        pass
+    def __get_titles(self, site: BeautifulSoup) -> list[str]:
+        infodiv = site.find('div', {'id': 'info'}).children
+        titles = list(map(lambda t: t, infodiv))
+
+        return [titles[1].getText(), titles[3].getText()]
+
+    def __get_tags(self, site: BeautifulSoup) -> list[str]:
+        alltags = site.findAll('a', {'class': 'tag'})
+
+        tags = []
+        for spantag in alltags:
+            if "/tag/" in spantag['href']:
+                tags.append(spantag['href'].replace(
+                    "/tag/", "").replace("/", ""))
+
+        return tags
+
+    def __get_pages(self, site: BeautifulSoup) -> int:
+        return int(site.find('a', {'href': '#'}).getText().strip())
+
+    def webscrape_doujin(self, sauce: int):
+        request = requests.get(self.FetchRoot + str(sauce)).text
+        doujinSite = BeautifulSoup(request, "html.parser")
+
+        titles = self.__get_titles(doujinSite)
+
+        return {
+            'sauce': sauce,
+            'cover': self.__get_dcover(doujinSite),
+            'titles': {
+                'english': titles[0],
+                'original': titles[1]
+            },
+            'tags': self.__get_tags(doujinSite),
+            'pages': self.__get_pages(doujinSite),
+            'url': self.WebRoot + str(sauce)
+        }

@@ -1,5 +1,4 @@
 import discord
-import requests
 from discord.ext import commands
 from random import randint
 
@@ -47,17 +46,16 @@ class XCog(commands.Cog):
             inline=False
         )
 
-        if doujinData['titles']['japanese'] != "":
+        if doujinData['titles']['original'] != "":
             embed.add_field(
                 name='Original Title',
                 value=doujinData['titles']['original'],
                 inline=False
             )
 
-        tags = ", ".join(doujinData['tags'])
         embed.add_field(
             name='Categories',
-            value=tags,
+            value=", ".join(doujinData['tags']),
             inline=False
         )
         embed.add_field(
