@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 class DelayedScraper:
     DoujinDataRoot = "https://nhentai.net/api/gallery/"
     WebRoot = 'https://www.nhentai.net/g/'
-    FetchRoot = "https://nhentai.to/g/"
+    FetchRoot = "https://nhentai.to"
 
     def __init__(self, useDriver=False):
         if (useDriver):
@@ -107,8 +107,8 @@ class DelayedScraper:
     def __get_pages(self, site: BeautifulSoup) -> int:
         return int(site.find('a', {'href': '#'}).getText().strip())
 
-    def webscrape_doujin(self, sauce: int):
-        request = requests.get(self.FetchRoot + str(sauce)).text
+    def webscrape_doujin(self, sauce: int) -> dict:
+        request = requests.get(self.FetchRoot + "/g/" + str(sauce)).text
         doujinSite = BeautifulSoup(request, "html.parser")
 
         titles = self.__get_titles(doujinSite)
@@ -124,3 +124,15 @@ class DelayedScraper:
             'pages': self.__get_pages(doujinSite),
             'url': self.WebRoot + str(sauce)
         }
+
+    def webscrape_doujin_maxcount(self) -> int:
+        request = requests.get(self.FetchRoot).text
+        homeSite = BeautifulSoup(request, "html.parser")
+
+        recents = homeSite.findAll(
+            'div', {'class': 'container index-container'})[1]
+        recents = BeautifulSoup(str(recents), "html.parser")
+
+        recentId = recents.find('a', {'class': 'cover'})['href']
+
+        return int(recentId.replace("g/", "").replace("/", ""))

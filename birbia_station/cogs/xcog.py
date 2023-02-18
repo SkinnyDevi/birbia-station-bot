@@ -7,34 +7,37 @@ from ..utils.scraper_bypass import DelayedScraper
 
 class XCog(commands.Cog):
     Logo = "https://i.imgur.com/uLAimaY.png"
-    MaxSauce = 342185
+    MinSauce = 2
 
     def __init__(self, bot):
         self.bot = bot
 
         self.dscraper = DelayedScraper()
+        self.MaxSauce = self.dscraper.webscrape_doujin_maxcount()
 
-    def __sauceCheck(self, sauceID):
+    def __sauceCheck(self, sauceID) -> int:
         if sauceID is None:
-            return -2
-        elif len(sauceID) == 6:
-            try:
-                sauceID = int(sauceID)
-                if sauceID <= self.MaxSauce:
-                    return sauceID
-                else:
-                    return -1
-            except ValueError:
-                return -1
-        else:
-            return -1
+            return None
 
-    def doujinEmbedMaker(self, sauce: int):
+        try:
+            sauceID = int(sauceID)
+
+            if sauceID < self.MinSauce:
+                return -2
+
+            if sauceID > self.MaxSauce:
+                return -1
+
+            return sauceID
+        except ValueError:
+            return -3
+
+    def doujinEmbedMaker(self, sauce: int) -> discord.Embed:
         doujinData = self.dscraper.webscrape_doujin(sauce)
 
         embed = discord.Embed(
             colour=discord.Colour.red(),
-            title="Doujin #{}".format(sauce),
+            title=f"Doujin #{sauce}",
         )
 
         embed.set_author(name='Doujinshi', icon_url=self.Logo)
@@ -53,16 +56,19 @@ class XCog(commands.Cog):
                 inline=False
             )
 
-        embed.add_field(
-            name='Categories',
-            value=", ".join(doujinData['tags']),
-            inline=False
-        )
+        if len(doujinData['tags']) != 0:
+            embed.add_field(
+                name='Categories',
+                value=", ".join(doujinData['tags']),
+                inline=False
+            )
+
         embed.add_field(
             name="Pages",
             value=doujinData['pages'],
             inline=False
         )
+
         embed.add_field(
             name="Doujin Online",
             value=doujinData['url'],
@@ -71,16 +77,41 @@ class XCog(commands.Cog):
 
         return embed
 
-    @commands.command(name="doujin", help="Grabs a doujin from the sauce.")
-    async def doujin(self, ctx, opt=None, *, sauce=None):
-        if opt is None:
-            sauce = randint(1, self.MaxSauce)
+    async def send_not_found(self, ctx: commands.Context, sauce: int):
+        embed = discord.Embed(
+            colour=discord.Colour.red(),
+            title=f"Doujin #{sauce}"
+        )
 
-        elif opt == '-s':
-            checker = self.__sauceCheck(sauce)
+        embed.add_field(
+            name="We couldn't find your doujin in our sources, but here's the official link:",
+            value=self.dscraper.WebRoot + str(sauce),
+            inline=False
+        )
 
-            if checker == -1:
-                return await ctx.send("Doujinshi sauce not found.")
-
-        embed = self.doujinEmbedMaker(sauce)
         await ctx.send(embed=embed)
+
+    @commands.command(name="doujin", help="Grabs a doujin from the sauce.")
+    async def doujin(self, ctx: commands.Context, opt=None, *, sauce=None):
+        self.MaxSauce = self.dscraper.webscrape_doujin_maxcount()
+
+        if opt is not None:
+            if opt == '-s':
+                if sauce is None:
+                    return await ctx.send("You didn't specify the sauce. Did you want ketchup?")
+
+                if self.__sauceCheck(sauce) == -3:
+                    return await ctx.send("Sauce is invalid.")
+
+                if self.__sauceCheck(sauce) == -1:
+                    return await self.send_not_found(ctx, sauce)
+
+                if self.__sauceCheck(sauce) == -2:
+                    return await ctx.send("There's nothing lower than 2.")
+            else:
+                return await ctx.send("Unknown option. Use ***-s*** for a specific doujin.")
+        else:
+            sauce = randint(self.MinSauce, self.MaxSauce)
+
+        doujin = self.doujinEmbedMaker(sauce)
+        await ctx.send(embed=doujin)
