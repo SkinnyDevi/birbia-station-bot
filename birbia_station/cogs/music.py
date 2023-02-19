@@ -57,7 +57,7 @@ class MusicCog(commands.Cog):
 
         self.vc: discord.VoiceClient = None
 
-    def __getSrcUrl(self, getOpusSrc=False):
+    def __get_src_url(self, getOpusSrc=False):
         """
         Gets the current audio's source for playback.
 
@@ -132,7 +132,7 @@ class MusicCog(commands.Cog):
 
         self.is_playing = True
 
-        self.vc.play(self.__getSrcUrl(getOpusSrc=True),
+        self.vc.play(self.__get_src_url(getOpusSrc=True),
                      after=lambda e: self.queue_next())
 
         self.playing = self.queue.pop(0)
@@ -159,12 +159,12 @@ class MusicCog(commands.Cog):
         else:
             await self.vc.move_to(self.queue[0][1])
 
-        self.vc.play(self.__getSrcUrl(getOpusSrc=True),
+        self.vc.play(self.__get_src_url(getOpusSrc=True),
                      after=lambda e: self.queue_next())
 
         self.playing = self.queue.pop(0)
 
-    async def __command_timeout(self):
+    async def _command_timeout(self):
         """
         A timeout of 2 seconds to wait for each command.
         """
@@ -173,7 +173,7 @@ class MusicCog(commands.Cog):
         await asyncio.sleep(2)
         self.allow_cmd = True
 
-    async def __timeout_warn(self, ctx):
+    async def _timeout_warn(self, ctx):
         """
         Warns the user if they are still in command timeout.
         """
@@ -204,9 +204,9 @@ class MusicCog(commands.Cog):
         elif self.is_paused:
             if self.allow_cmd:
                 self.vc.resume()
-                await self.__command_timeout()
+                await self._command_timeout()
             else:
-                await self.__timeout_warn(ctx)
+                await self._timeout_warn(ctx)
         else:
             if self.allow_cmd:
                 vc = vc.channel
@@ -231,7 +231,7 @@ class MusicCog(commands.Cog):
                         if self.is_playing is False:
                             await self.play_audio(ctx)
 
-                        await self.__command_timeout()
+                        await self._command_timeout()
                         await self.__timeout_quit()
                 except Exception as error:
                     print("\nWHEW! FEW ERRORS: " + str(error))
@@ -239,7 +239,7 @@ class MusicCog(commands.Cog):
                         "Birbia had a tough battle and could not send back your audio. Try ***stopping*** and ***playing*** again the Birbia Station."
                     )
             else:
-                await self.__timeout_warn(ctx)
+                await self._timeout_warn(ctx)
 
     @commands.command(name="pause", help="Pause Birbia's radio station.")
     async def pause(self, ctx):
@@ -254,11 +254,11 @@ class MusicCog(commands.Cog):
                 self.is_playing = False
                 await ctx.send("Birbia paused the current audio in it's radio station."
                                )
-                await self.__command_timeout()
+                await self._command_timeout()
             else:
                 await ctx.send("Birbia's radio station has nothing to pause!")
         else:
-            await self.__timeout_warn(ctx)
+            await self._timeout_warn(ctx)
 
     @commands.command(name="resume",
                       help="Resume the audio frozen in Birbia's radio station.")
@@ -273,12 +273,12 @@ class MusicCog(commands.Cog):
                 self.is_paused = False
                 self.is_playing = True
                 await ctx.send("Birbia has resumed playing on it's radio station!")
-                await self.__command_timeout()
+                await self._command_timeout()
             else:
                 await ctx.send(
                     "Birbia has got nothing to resume in it's radio station.")
         else:
-            await self.__timeout_warn(ctx)
+            await self._timeout_warn(ctx)
 
     @commands.command(
         name="skip",
@@ -294,9 +294,9 @@ class MusicCog(commands.Cog):
                 time.sleep(1)
                 await self.play_audio(ctx)
                 await ctx.send("Birbia skipped a song. It seems you didn't like it.")
-                await self.__command_timeout()
+                await self._command_timeout()
         else:
-            await self.__timeout_warn(ctx)
+            await self._timeout_warn(ctx)
 
     @commands.command(
         name="queue",
@@ -320,13 +320,13 @@ class MusicCog(commands.Cog):
                     embed=discord.Embed(title="Birbia Station's Pending Requests",
                                         color=0xff5900,
                                         description=q))
-                await self.__command_timeout()
+                await self._command_timeout()
             else:
                 await ctx.send(
                     "Birbia radio station is currently waiting for new requests. Send one!"
                 )
         else:
-            await self.__timeout_warn(ctx)
+            await self._timeout_warn(ctx)
 
     @commands.command(name="now",
                       help="Display the radio's currently playing song.")
@@ -343,14 +343,14 @@ class MusicCog(commands.Cog):
                     embed=discord.Embed(title="Birbia Station's Currently Playing Song",
                                         color=0xff5900,
                                         description=song))
-                await self.__command_timeout()
+                await self._command_timeout()
             else:
                 await ctx.send(
                     "Birbia's radio isn't playing anything right now. Submit a request now with ***birbia play***!"
                 )
-                await self.__command_timeout()
+                await self._command_timeout()
         else:
-            await self.__timeout_warn(ctx)
+            await self._timeout_warn(ctx)
 
     @commands.command(
         name="clear",
@@ -364,12 +364,12 @@ class MusicCog(commands.Cog):
             if self.vc is not None:
                 self.queue = []
                 await ctx.send("Cleared all requests from Birbia's Radio Station.")
-                await self.__command_timeout()
+                await self._command_timeout()
             else:
                 await ctx.send(
                     "To use Birbia Radio, please connect to a voice channel first.")
         else:
-            await self.__timeout_warn(ctx)
+            await self._timeout_warn(ctx)
 
     @commands.command(name="leave",
                       aliases=["stop"],
@@ -383,7 +383,7 @@ class MusicCog(commands.Cog):
             await self.__disconnect()
             await ctx.send("Birbia's Radio Station will stop for today sadly.")
         else:
-            await self.__timeout_warn(ctx)
+            await self._timeout_warn(ctx)
 
     @commands.command(name="join", help="Allows Birbia to join your party!")
     async def join(self, ctx):

@@ -25,7 +25,7 @@ class YtAudioSearcher:
             'source_address': '0.0.0.0',
         }
 
-    def getDuration(self, seconds: int) -> str:
+    def get_duration(self, seconds: int) -> str:
         """
         Formats the duration of the audio from seconds to Hours:Minutes:Seconds.
         """
@@ -50,7 +50,7 @@ class YtAudioSearcher:
         The query can be in inputted text like a search bar or a specific video URL.
         """
 
-        query = YtUrls.urlCorrector(query) if query.find(
+        query = YtUrls.url_corrector(query) if query.find(
             "http") > -1 else f"ytsearch:{query}"
 
         print("\n---------QUERY: " + query)
@@ -73,5 +73,5 @@ class YtAudioSearcher:
             'yt_url': (YtUrls.YT_BASE_URL + info['id'],
                        YtUrls.YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1],
             'length':
-            self.getDuration(info['duration']),
+            self.get_duration(info['duration']),
         }

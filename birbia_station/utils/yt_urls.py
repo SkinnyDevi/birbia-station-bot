@@ -6,7 +6,7 @@ class YtUrls:
     YT_BASE_URL = 'https://www.youtube.com/watch?v='
     YT_SHORTS_URL = "https://www.youtube.com/shorts/"
 
-    def urlCorrector(url: str):
+    def url_corrector(url: str):
         """
         Corrects any URLs passed in to find the correct audio.
         """

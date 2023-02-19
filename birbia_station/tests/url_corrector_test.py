@@ -11,4 +11,4 @@ def test_urls():
     ]
 
     for t in URL_TESTS:
-        assert YtUrls.urlCorrector(t) is not False
+        assert YtUrls.url_corrector(t) is not False

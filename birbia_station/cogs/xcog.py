@@ -43,7 +43,7 @@ class XCog(commands.Cog):
         except ValueError:
             return -3
 
-    def doujinEmbedMaker(self, sauce: int) -> discord.Embed:
+    def doujin_embed_maker(self, sauce: int) -> discord.Embed:
         """
         Creates a Discord embed with the doujin's information, thumbnail and link.
         """
@@ -140,5 +140,5 @@ class XCog(commands.Cog):
         else:
             sauce = randint(self.MinSauce, self.MaxSauce)
 
-        doujin = self.doujinEmbedMaker(sauce)
+        doujin = self.doujin_embed_maker(sauce)
         await ctx.send(embed=doujin)
