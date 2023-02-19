@@ -11,8 +11,7 @@ from .cogs.xcog import XCog
 
 is_dev = False
 prefix = "birbia-beta " if is_dev else "birbia "
-bot = commands.Bot(command_prefix=prefix,
-                   intents=discord.Intents.all())
+bot = commands.Bot(command_prefix=prefix, intents=discord.Intents.all())
 
 
 @bot.event
@@ -33,7 +32,6 @@ def start_bot():
     asyncio.run(main())
 
     try:
-        bot.run(os.environ.get(
-            "POETRY_DEV_TOKEN" if is_dev else "POETRY_TOKEN"))
+        bot.run(os.environ.get("POETRY_DEV_TOKEN" if is_dev else "POETRY_TOKEN"))
     except discord.errors.HTTPException:
         print("\n\n\nBLOCKED BY RATE LIMITS\n\n\n")
