@@ -4,6 +4,10 @@ from .yt_urls import YtUrls
 
 
 class YtAudioSearcher:
+    """
+    YouTube Audio Searcher that retrieves an audio url from a query or YouTube URL.
+    """
+
     def __init__(self):
         self.YDL_CFG = {
             'format': 'bestaudio/best',
@@ -21,7 +25,7 @@ class YtAudioSearcher:
             'source_address': '0.0.0.0',
         }
 
-    def getDuration(self, seconds):
+    def getDuration(self, seconds: int) -> str:
         """
         Formats the duration of the audio from seconds to Hours:Minutes:Seconds.
         """
@@ -43,7 +47,7 @@ class YtAudioSearcher:
         """
         Searches for a query in YouTube using yt_dl.
 
-        The query can be inputted text like a search bar or a specific video URL.
+        The query can be in inputted text like a search bar or a specific video URL.
         """
 
         query = YtUrls.urlCorrector(query) if query.find(

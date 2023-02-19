@@ -16,6 +16,17 @@ class XCog(commands.Cog):
         self.MaxSauce = self.dscraper.webscrape_doujin_maxcount()
 
     def __sauceCheck(self, sauceID) -> int:
+        """
+        Checks whether the sauce is valid.
+
+
+        returns -1 if it exceeds the MaxSauce. Will redirect to official site to try and find the original.
+
+        returns -2 if sauce is lower than MinSauce. Normally MinSauce = 2.
+
+        returns -3 if it cannot translate the argument to a valid int sauce.
+        """
+
         if sauceID is None:
             return None
 
@@ -33,6 +44,10 @@ class XCog(commands.Cog):
             return -3
 
     def doujinEmbedMaker(self, sauce: int) -> discord.Embed:
+        """
+        Creates a Discord embed with the doujin's information, thumbnail and link.
+        """
+
         doujinData = self.dscraper.webscrape_doujin(sauce)
 
         embed = discord.Embed(
@@ -78,6 +93,10 @@ class XCog(commands.Cog):
         return embed
 
     async def send_not_found(self, ctx: commands.Context, sauce: int):
+        """
+        Redirects the user with a Discord embed to an official link if sauce not found at source.
+        """
+
         embed = discord.Embed(
             colour=discord.Colour.red(),
             title=f"Doujin #{sauce}"
@@ -93,6 +112,14 @@ class XCog(commands.Cog):
 
     @commands.command(name="doujin", help="Grabs a doujin from the sauce.")
     async def doujin(self, ctx: commands.Context, opt=None, *, sauce=None):
+        """
+        Gets a random doujin from the source and retrieves it's information.
+
+        Arguments:
+        * -s: specify doujin to retrieve with a specific sauce.
+                * Example: 'doujin -s 177013'
+        """
+
         self.MaxSauce = self.dscraper.webscrape_doujin_maxcount()
 
         if opt is not None:

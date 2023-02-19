@@ -1,4 +1,8 @@
 class YtUrls:
+    """
+    Utility class for constants and formatting URLs.
+    """
+
     YT_BASE_URL = 'https://www.youtube.com/watch?v='
     YT_SHORTS_URL = "https://www.youtube.com/shorts/"
 

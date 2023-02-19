@@ -10,15 +10,15 @@ class UtilityCog(commands.Cog):
     @commands.command(name="ping", help="Returns sender's ping in ms.")
     async def ping(self, ctx):
         """
-        Returns sender's ping in ms
+        Returns sender's ping in ms.
         """
 
         await ctx.send(f'Pong - {round(self.bot.latency * 1000)}ms')
 
     @commands.command(name="invite", help="Generates invites, default = 1 use per invite.")
-    async def invite(self, ctx: commands.Context, uses: int):
+    async def invite(self, ctx: commands.Context, uses: int = 1):
         """
-        Generates invites, default = 1 use per invite
+        Generates invites, default = 1 use per invite.
         """
 
         uses = int(uses)
@@ -34,6 +34,10 @@ class UtilityCog(commands.Cog):
 
     @commands.command(name="purge", help="Removes X number of messages recursively,")
     async def purge(self, ctx: commands.Context, nmessages: int):
+        """
+        Deletes recursively n number of messages.
+        """
+
         channel: discord.TextChannel = ctx.channel
 
         def is_bot(m: discord.Message):
