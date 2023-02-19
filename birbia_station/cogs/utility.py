@@ -1,3 +1,5 @@
+import discord
+import time
 from discord.ext import commands
 
 
@@ -14,7 +16,7 @@ class UtilityCog(commands.Cog):
         await ctx.send(f'Pong - {round(self.bot.latency * 1000)}ms')
 
     @commands.command(name="invite", help="Generates invites, default = 1 use per invite.")
-    async def invite(self, ctx: commands.Context, uses):
+    async def invite(self, ctx: commands.Context, uses: int):
         """
         Generates invites, default = 1 use per invite
         """
@@ -29,3 +31,16 @@ class UtilityCog(commands.Cog):
         await ctx.send(inviteSend)
         print(
             f'Invite generated with {uses} uses for {ctx.message.author} max uses.')
+
+    @commands.command(name="purge", help="Removes X number of messages recursively,")
+    async def purge(self, ctx: commands.Context, nmessages: int):
+        channel: discord.TextChannel = ctx.channel
+
+        def is_bot(m: discord.Message):
+            return m.author == self.bot.user
+
+        await channel.purge(limit=nmessages)
+        await ctx.send(f'Purged {nmessages} messages.')
+
+        time.sleep(3)
+        await channel.purge(limit=1, check=is_bot)
