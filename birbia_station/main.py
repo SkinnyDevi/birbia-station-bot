@@ -37,6 +37,3 @@ def start_bot():
             "POETRY_DEV_TOKEN" if isDev else "POETRY_TOKEN"))
     except discord.errors.HTTPException:
         print("\n\n\nBLOCKED BY RATE LIMITS\n\n\n")
-
-
-start_bot()
