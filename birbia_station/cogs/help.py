@@ -2,37 +2,61 @@ import discord
 import pkg_resources
 from discord.ext import commands
 
+from ..constants import help_commands as cmds
+
 
 class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.CMDS = [
-            ["help", "Displayes all of Birbia's available actions."],
-            ["play", "Play audio through Birbia's most famous radio station."],
-            ["pause", "Pause Birbia's radio station."],
-            ["resume", "Resume the audio frozen in Birbia's radio station."],
-            [
-                "skip",
-                "Skip that one song you don't like from Birbia's radio station."
-            ],
-            ["queue [q]", "Display Birbia's radio station pending play requests."],
-            ["clear", "Removes every current request from Birbia's radio station."],
-            ["leave [stop]", "Make Birbia's Radio Station stop for the day."],
-            ["now", "Display the radio's currently playing song."]
-        ]
+    def __add_version_number(self, embed: discord.Embed) -> discord.Embed:
+        embed.add_field(
+            name="Version",
+            value=pkg_resources.get_distribution("birbia-station-bot").version
+        )
 
-    @commands.command(name="help",
-                      help="Displayes all of Birbia's available actions.")
-    async def help(self, ctx):
+        return embed
+
+    def __add_to_embed(self, embed: discord.Embed, commands: dict) -> discord.Embed:
+        for cmd in commands.keys():
+            embed.add_field(name=cmd, value=commands[cmd])
+
+        return embed
+
+    def general_help(self) -> discord.Embed:
         help = discord.Embed(
-            title="Commands [aliases]",
-            description="All available commands provided by Birbia.",
-            color=0xff5900)
+            title="Commands",
+            description="All available command categories provided by Birbia.\nUse 'birbia [category] to see all commands from that category.",
+            color=0xff5900
+        )
 
-        for cmd in self.CMDS:
-            help.add_field(name=cmd[0], value=cmd[1])
-        help.add_field(name="Version", value=pkg_resources.get_distribution(
-            "birbia-station-bot").version)
+        return self.__add_to_embed(help, cmds.GENERAL_CMDS)
 
-        await ctx.send(embed=help)
+    def music_help(self) -> discord.Embed:
+        music = discord.Embed(
+            title="Music Commands [aliases]",
+            description="Available commands to control Birbia's Radio Station.",
+            color=0x8cddff
+        )
+
+        return self.__add_to_embed(music, cmds.MUSIC_CMDS)
+
+    def doujin_help(self) -> discord.Embed:
+        doujin = discord.Embed(
+            title="Doujin Commands",
+            description="Search and discover new doujins.",
+            color=0xe495fc
+        )
+
+        return self.__add_to_embed(doujin, cmds.DOUJIN_CMDS)
+
+    @commands.command(name="help", help="Displayes all of Birbia's available actions.")
+    async def help(self, ctx: commands.Context, category: str = None):
+        if category == "music":
+            embed = self.music_help()
+        elif category == "doujin":
+            embed = self.doujin_help()
+        else:
+            embed = self.general_help()
+
+        await ctx.send(embed=self.__add_version_number(embed))

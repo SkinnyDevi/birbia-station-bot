@@ -51,7 +51,7 @@ class XCog(commands.Cog):
         doujin_data = self.dscraper.webscrape_doujin(sauce)
 
         embed = discord.Embed(
-            colour=discord.Colour.red(),
+            color=0xe495fc,
             title=f"Doujin #{sauce}",
         )
 
