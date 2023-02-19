@@ -33,17 +33,20 @@ class UtilityCog(commands.Cog):
             f'Invite generated with {uses} uses for {ctx.message.author} max uses.')
 
     @commands.command(name="purge", help="Removes X number of messages recursively,")
-    async def purge(self, ctx: commands.Context, nmessages: int):
+    async def purge(self, ctx: commands.Context, nmessages: int = None):
         """
         Deletes recursively n number of messages.
         """
+
+        if nmessages is None:
+            return await ctx.send("You must specify the number of messages to purge.")
 
         channel: discord.TextChannel = ctx.channel
 
         def is_bot(m: discord.Message):
             return m.author == self.bot.user
 
-        await channel.purge(limit=nmessages)
+        await channel.purge(limit=nmessages + 1)
         await ctx.send(f'Purged {nmessages} messages.')
 
         time.sleep(3)
