@@ -195,9 +195,11 @@ class MusicCog(commands.Cog):
         params = " ".join(args)
 
         if params == "" or params == " ":
-            await ctx.send(
+            if self.is_paused:
+                return await self.resume(ctx)
+
+            return await ctx.send(
                 "Don't play with Birbia. What is that you want to listen to?")
-            return
 
         vc = ctx.author.voice
 
