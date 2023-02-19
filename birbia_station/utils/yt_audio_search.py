@@ -59,6 +59,7 @@ class YtAudioSearcher:
             try:
                 ydl.cache.remove()
                 info = ydl.extract_info(query, download=False)
+
                 if 'entries' in info.keys():
                     info = info['entries'][0]
             except Exception as error:

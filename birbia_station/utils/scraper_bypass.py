@@ -17,19 +17,19 @@ class DelayedScraper:
     Scrapes a doujin hub and returns it's data.
     """
 
-    DoujinDataRoot = "https://nhentai.net/api/gallery/"
-    WebRoot = 'https://www.nhentai.net/g/'
-    FetchRoot = "https://nhentai.to"
+    DOUJIN_DATA_ROOT = "https://nhentai.net/api/gallery/"
+    WEB_ROOT = 'https://www.nhentai.net/g/'
+    FETCH_ROOT = "https://nhentai.to"
 
-    def __init__(self, useDriver=False):
-        if (useDriver):
-            chromeOpts = uc.ChromeOptions()
-            chromeOpts.headless = True
+    def __init__(self, use_driver=False):
+        if (use_driver):
+            chrome_opts = uc.ChromeOptions()
+            chrome_opts.headless = True
 
             if os.environ.get("POETRY_IS_DOCKER") == "True":
-                chromeOpts.binary_location = "/usr/local/bin/chromedriver"
+                chrome_opts.binary_location = "/usr/local/bin/chromedriver"
 
-            self.driver = uc.Chrome(options=chromeOpts)
+            self.driver = uc.Chrome(options=chrome_opts)
 
     def scrapedriver_dcover(self, url: str) -> str:
         """
@@ -46,6 +46,7 @@ class DelayedScraper:
 
         results_container = self.driver.find_element(By.ID, "cover")
         cover_atag: uc.WebElement = results_container.children()[0]
+
         return cover_atag.children('img')[0].get_attribute('src')
 
     def scrapedriver_ddata(self, sauce: int) -> dict:
@@ -53,7 +54,7 @@ class DelayedScraper:
         Uses UC driver to load the api segment and get the corresponding data.
         """
 
-        self.driver.get(self.DoujinDataRoot + str(sauce))
+        self.driver.get(self.DOUJIN_DATA_ROOT + str(sauce))
 
         results_container = WebDriverWait(self.driver, timeout=randint(5, 8)).until(
             EC.presence_of_element_located((By.TAG_NAME, 'pre'))
@@ -142,21 +143,21 @@ class DelayedScraper:
         Retrieves all doujin information from the sauce.
         """
 
-        request = requests.get(self.FetchRoot + "/g/" + str(sauce)).text
-        doujinSite = BeautifulSoup(request, "html.parser")
+        request = requests.get(self.FETCH_ROOT + "/g/" + str(sauce)).text
+        doujin_site = BeautifulSoup(request, "html.parser")
 
-        titles = self._get_titles(doujinSite)
+        titles = self._get_titles(doujin_site)
 
         return {
             'sauce': sauce,
-            'cover': self._get_dcover(doujinSite),
+            'cover': self._get_dcover(doujin_site),
             'titles': {
                 'english': titles[0],
                 'original': titles[1]
             },
-            'tags': self._get_tags(doujinSite),
-            'pages': self._get_pages(doujinSite),
-            'url': self.WebRoot + str(sauce)
+            'tags': self._get_tags(doujin_site),
+            'pages': self._get_pages(doujin_site),
+            'url': self.WEB_ROOT + str(sauce)
         }
 
     def webscrape_doujin_maxcount(self) -> int:
@@ -164,13 +165,13 @@ class DelayedScraper:
         Retrieves the latest doujin ID from the source.
         """
 
-        request = requests.get(self.FetchRoot).text
-        homeSite = BeautifulSoup(request, "html.parser")
+        request = requests.get(self.FETCH_ROOT).text
+        home_site = BeautifulSoup(request, "html.parser")
 
-        recents = homeSite.findAll(
+        recents = home_site.findAll(
             'div', {'class': 'container index-container'})[1]
         recents = BeautifulSoup(str(recents), "html.parser")
 
-        recentId = recents.find('a', {'class': 'cover'})['href']
+        recent_id = recents.find('a', {'class': 'cover'})['href']
 
-        return int(recentId.replace("g/", "").replace("/", ""))
+        return int(recent_id.replace("g/", "").replace("/", ""))

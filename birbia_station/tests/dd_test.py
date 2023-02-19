@@ -27,12 +27,12 @@ def test_latest_maxcount():
     assert type(output) is dict
 
 
-dscraper = DelayedScraper(useDriver=True)
+dscraper = DelayedScraper(use_driver=True)
 
 
 def notest_dd_driver_exists():
     sauce = 442465
-    output = dscraper.scrapedriver_doujin(DelayedScraper.WebRoot + str(sauce))
+    output = dscraper.scrapedriver_doujin(DelayedScraper.WEB_ROOT + str(sauce))
     print("Sauce: ", output)
     assert type(output) is dict
 
@@ -41,6 +41,6 @@ def notest_rng_dd_driver_exists():
     sleep(2)
 
     sauce = randint(1, dscraper.webscrape_doujin_maxcount())
-    output = dscraper.scrapedriver_doujin(DelayedScraper.WebRoot + str(sauce))
+    output = dscraper.scrapedriver_doujin(DelayedScraper.WEB_ROOT + str(sauce))
     print("RNG: ", output)
     assert type(output) is dict

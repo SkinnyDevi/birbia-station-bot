@@ -34,7 +34,7 @@ class AudioSourceTracked(discord.AudioSource):
 
 
 class MusicCog(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
         self.allow_cmd = True
@@ -46,8 +46,9 @@ class MusicCog(commands.Cog):
         self.started_quit_timeout = False
 
         self.DISCONNECT_DELAY = 600  # 300s = 5 min
+        self.CMD_TIMEOUT = 2  # seconds
 
-        self.audioSearch: YtAudioSearcher = YtAudioSearcher()
+        self.audio_search: YtAudioSearcher = YtAudioSearcher()
 
         self.FFMPEG_CFG = {
             'before_options':
@@ -57,14 +58,14 @@ class MusicCog(commands.Cog):
 
         self.vc: discord.VoiceClient = None
 
-    def __get_src_url(self, getOpusSrc=False):
+    def __get_src_url(self, get_opus_src=False):
         """
         Gets the current audio's source for playback.
 
         Can be obtained as an FFmpegOpusAudio type or a string url with the audio.
         """
 
-        if getOpusSrc:
+        if get_opus_src:
             return self.queue[0][2]
         return self.queue[0][0]['source']
 
@@ -77,7 +78,9 @@ class MusicCog(commands.Cog):
             try:
                 disconnect_audio = discord.FFmpegPCMAudio(
                     os.getcwd() + "/birbia_station/audios/vc_disconnect.mp3")
+
                 self.vc.play(disconnect_audio, after=None)
+
                 while self.vc.is_playing():
                     await asyncio.sleep(0.75)
             except Exception:
@@ -132,7 +135,7 @@ class MusicCog(commands.Cog):
 
         self.is_playing = True
 
-        self.vc.play(self.__get_src_url(getOpusSrc=True),
+        self.vc.play(self.__get_src_url(get_opus_src=True),
                      after=lambda e: self.queue_next())
 
         self.playing = self.queue.pop(0)
@@ -159,7 +162,7 @@ class MusicCog(commands.Cog):
         else:
             await self.vc.move_to(self.queue[0][1])
 
-        self.vc.play(self.__get_src_url(getOpusSrc=True),
+        self.vc.play(self.__get_src_url(get_opus_src=True),
                      after=lambda e: self.queue_next())
 
         self.playing = self.queue.pop(0)
@@ -170,7 +173,7 @@ class MusicCog(commands.Cog):
         """
 
         self.allow_cmd = False
-        await asyncio.sleep(2)
+        await asyncio.sleep(self.CMD_TIMEOUT)
         self.allow_cmd = True
 
     async def _timeout_warn(self, ctx):
@@ -211,8 +214,9 @@ class MusicCog(commands.Cog):
             if self.allow_cmd:
                 vc = vc.channel
                 await ctx.send("Birbia is sending it's hawks to fetch your audio...")
+
                 try:
-                    audio = self.audioSearch.search_audio(params)
+                    audio = self.audio_search.search_audio(params)
                     if isinstance(type(audio), type(True)):
                         await ctx.send(
                             "Birbia sent out it's fastest eagles, but could not get your audio back. Try again!"
@@ -222,11 +226,12 @@ class MusicCog(commands.Cog):
                             audio['source'], **self.FFMPEG_CFG)
                         self.queue.append([audio, vc, opus_src])
 
-                        newaudio = discord.Embed(title="Added to radio queue!",
-                                                 color=0xff5900)
-                        newaudio.add_field(name=f"{audio['title']}",
-                                           value=f"{audio['yt_url']} - {audio['length']}")
-                        await ctx.send(embed=newaudio)
+                        new_audio = discord.Embed(title="Added to radio queue!",
+                                                  color=0xff5900)
+                        new_audio.add_field(name=f"{audio['title']}",
+                                            value=f"{audio['yt_url']} - {audio['length']}")
+
+                        await ctx.send(embed=new_audio)
 
                         if self.is_playing is False:
                             await self.play_audio(ctx)
@@ -292,6 +297,7 @@ class MusicCog(commands.Cog):
             if self.vc is not None and self.vc:
                 self.vc.stop()
                 time.sleep(1)
+
                 await self.play_audio(ctx)
                 await ctx.send("Birbia skipped a song. It seems you didn't like it.")
                 await self._command_timeout()
@@ -343,6 +349,7 @@ class MusicCog(commands.Cog):
                     embed=discord.Embed(title="Birbia Station's Currently Playing Song",
                                         color=0xff5900,
                                         description=song))
+
                 await self._command_timeout()
             else:
                 await ctx.send(

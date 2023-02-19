@@ -27,8 +27,8 @@ class UtilityCog(commands.Cog):
             return await ctx.send("Invite uses cannot be 0.")
 
         invite = await ctx.channel.create_invite(max_uses=uses)
-        inviteSend = f"Invite generated. \nMax uses: {uses}\n{invite}"
-        await ctx.send(inviteSend)
+        invite_send = f"Invite generated. \nMax uses: {uses}\n{invite}"
+        await ctx.send(invite_send)
         print(
             f'Invite generated with {uses} uses for {ctx.message.author} max uses.')
 

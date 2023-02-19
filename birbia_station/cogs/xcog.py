@@ -6,40 +6,40 @@ from ..utils.scraper_bypass import DelayedScraper
 
 
 class XCog(commands.Cog):
-    Logo = "https://i.imgur.com/uLAimaY.png"
-    MinSauce = 2
+    LOGO = "https://i.imgur.com/uLAimaY.png"
+    MIN_SAUCE = 2
 
     def __init__(self, bot):
         self.bot = bot
 
         self.dscraper = DelayedScraper()
-        self.MaxSauce = self.dscraper.webscrape_doujin_maxcount()
+        self.MAX_SAUCE = self.dscraper.webscrape_doujin_maxcount()
 
-    def __sauceCheck(self, sauceID) -> int:
+    def __sauceCheck(self, sauce_id) -> int:
         """
         Checks whether the sauce is valid.
 
 
-        returns -1 if it exceeds the MaxSauce. Will redirect to official site to try and find the original.
+        returns -1 if it exceeds the MAX_SAUCE. Will redirect to official site to try and find the original.
 
-        returns -2 if sauce is lower than MinSauce. Normally MinSauce = 2.
+        returns -2 if sauce is lower than MIN_SAUCE. Normally MIN_SAUCE = 2.
 
         returns -3 if it cannot translate the argument to a valid int sauce.
         """
 
-        if sauceID is None:
+        if sauce_id is None:
             return None
 
         try:
-            sauceID = int(sauceID)
+            sauce_id = int(sauce_id)
 
-            if sauceID < self.MinSauce:
+            if sauce_id < self.MIN_SAUCE:
                 return -2
 
-            if sauceID > self.MaxSauce:
+            if sauce_id > self.MAX_SAUCE:
                 return -1
 
-            return sauceID
+            return sauce_id
         except ValueError:
             return -3
 
@@ -48,45 +48,45 @@ class XCog(commands.Cog):
         Creates a Discord embed with the doujin's information, thumbnail and link.
         """
 
-        doujinData = self.dscraper.webscrape_doujin(sauce)
+        doujin_data = self.dscraper.webscrape_doujin(sauce)
 
         embed = discord.Embed(
             colour=discord.Colour.red(),
             title=f"Doujin #{sauce}",
         )
 
-        embed.set_author(name='Doujinshi', icon_url=self.Logo)
-        embed.set_thumbnail(url=doujinData['cover'])
+        embed.set_author(name='Doujinshi', icon_url=self.LOGO)
+        embed.set_thumbnail(url=doujin_data['cover'])
 
         embed.add_field(
             name='Title',
-            value=doujinData['titles']['english'],
+            value=doujin_data['titles']['english'],
             inline=False
         )
 
-        if doujinData['titles']['original'] != "":
+        if doujin_data['titles']['original'] != "":
             embed.add_field(
                 name='Original Title',
-                value=doujinData['titles']['original'],
+                value=doujin_data['titles']['original'],
                 inline=False
             )
 
-        if len(doujinData['tags']) != 0:
+        if len(doujin_data['tags']) != 0:
             embed.add_field(
                 name='Categories',
-                value=", ".join(doujinData['tags']),
+                value=", ".join(doujin_data['tags']),
                 inline=False
             )
 
         embed.add_field(
             name="Pages",
-            value=doujinData['pages'],
+            value=doujin_data['pages'],
             inline=False
         )
 
         embed.add_field(
             name="Doujin Online",
-            value=doujinData['url'],
+            value=doujin_data['url'],
             inline=False
         )
 
@@ -120,7 +120,7 @@ class XCog(commands.Cog):
                 * Example: 'doujin -s 177013'
         """
 
-        self.MaxSauce = self.dscraper.webscrape_doujin_maxcount()
+        self.MAX_SAUCE = self.dscraper.webscrape_doujin_maxcount()
 
         if opt is not None:
             if opt == '-s':
@@ -138,7 +138,7 @@ class XCog(commands.Cog):
             else:
                 return await ctx.send("Unknown option. Use ***-s*** for a specific doujin.")
         else:
-            sauce = randint(self.MinSauce, self.MaxSauce)
+            sauce = randint(self.MIN_SAUCE, self.MAX_SAUCE)
 
         doujin = self.doujin_embed_maker(sauce)
         await ctx.send(embed=doujin)
