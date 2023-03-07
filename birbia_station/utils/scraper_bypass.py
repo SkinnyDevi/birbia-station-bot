@@ -106,7 +106,7 @@ class DelayedScraper:
         atag = list(map(lambda v: v, coverdiv))[1].children
         return list(map(lambda v: v, atag))[1]['src']
 
-    def _get_titles(self, site: BeautifulSoup) -> list[str]:
+    def _get_titles(self, site: BeautifulSoup) -> list:
         """
         Gets the doujin's titles. Can be either english and/or japanese/chinese (original) title.
         """
@@ -116,7 +116,7 @@ class DelayedScraper:
 
         return [titles[1].getText(), titles[3].getText()]
 
-    def _get_tags(self, site: BeautifulSoup) -> list[str]:
+    def _get_tags(self, site: BeautifulSoup) -> list:
         """
         Gets the tags attached to the doujin.
         """
