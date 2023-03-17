@@ -3,5 +3,5 @@ __pycache__
 .pytest_cache
 testing.py
 ffmpeg
-Dockerfile
+Dockerfile.build
 .DS_Store
