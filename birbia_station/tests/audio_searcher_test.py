@@ -12,4 +12,4 @@ queries = [
 
 def test_queries():
     for q in queries:
-        assert searcher.search_audio(q) is not None
+        assert searcher.search_audio(q)['source'] is not None
