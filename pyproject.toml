@@ -30,6 +30,7 @@ pytest = "^7.2.1"
 bot = "birbia_station.main:start_bot"
 test = "birbia_station.tests.poetry_test:start"
 testing = "birbia_station.testing:testing"
+docker = "birbia_station.utils.poetry_utils:docker_build"
 
 [build-system]
 requires = ["poetry-core"]
