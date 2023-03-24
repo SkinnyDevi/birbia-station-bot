@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "birbia-station-bot"
-version = "1.2.10"
+version = "1.2.11"
 description = "Birbia's Radio discord bot."
 authors = ["SkinnyDevi <xthesmartdartx@gmail.com>"]
 maintainers = ["SkinnyDevi <xthesmartdartx@gmail.com>"]
