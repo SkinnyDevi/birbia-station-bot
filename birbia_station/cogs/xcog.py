@@ -104,7 +104,7 @@ class XCog(commands.Cog):
 
         embed.add_field(
             name="We couldn't find your doujin in our sources, but here's the official link:",
-            value=self.dscraper.WebRoot + str(sauce),
+            value=self.dscraper.WEB_ROOT + str(sauce),
             inline=False
         )
 
