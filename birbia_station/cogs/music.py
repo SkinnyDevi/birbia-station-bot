@@ -4,8 +4,12 @@ import asyncio
 import os
 
 from discord.ext import commands
+from pathlib import Path
 
 from ..utils.yt_audio_search import YtAudioSearcher
+
+
+FFMPEG_PATH = Path("ffmpeg/bin/ffmpeg.exe")
 
 
 class AudioSourceTracked(discord.AudioSource):
@@ -229,9 +233,12 @@ class MusicCog(commands.Cog):
                             "Birbia sent out it's fastest eagles, but could not get your audio back. Try again!"
                         )
                     else:
-                        opus_src = await discord.FFmpegOpusAudio.from_probe(
-                            audio["source"], **self.FFMPEG_CFG
+                        opus_src = discord.FFmpegPCMAudio(
+                            audio["source"], executable=FFMPEG_PATH
                         )
+                        # opus_src = await discord.FFmpegOpusAudio.from_probe(
+                        #     audio["source"], **self.FFMPEG_CFG
+                        # )
                         self.queue.append([audio, vc, opus_src])
 
                         new_audio = discord.Embed(
