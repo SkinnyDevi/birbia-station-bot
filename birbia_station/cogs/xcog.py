@@ -51,44 +51,32 @@ class XCog(commands.Cog):
         doujin_data = self.dscraper.webscrape_doujin(sauce)
 
         embed = discord.Embed(
-            color=0xe495fc,
+            color=0xE495FC,
             title=f"Doujin #{sauce}",
         )
 
-        embed.set_author(name='Doujinshi', icon_url=self.LOGO)
-        embed.set_thumbnail(url=doujin_data['cover'])
+        embed.set_author(name="Doujinshi", icon_url=self.LOGO)
+        embed.set_thumbnail(url=doujin_data["cover"])
 
         embed.add_field(
-            name='Title',
-            value=doujin_data['titles']['english'],
-            inline=False
+            name="Title", value=doujin_data["titles"]["english"], inline=False
         )
 
-        if doujin_data['titles']['original'] != "":
+        if doujin_data["titles"]["original"] != "":
             embed.add_field(
-                name='Original Title',
-                value=doujin_data['titles']['original'],
-                inline=False
+                name="Original Title",
+                value=doujin_data["titles"]["original"],
+                inline=False,
             )
 
-        if len(doujin_data['tags']) != 0:
+        if len(doujin_data["tags"]) != 0:
             embed.add_field(
-                name='Categories',
-                value=", ".join(doujin_data['tags']),
-                inline=False
+                name="Categories", value=", ".join(doujin_data["tags"]), inline=False
             )
 
-        embed.add_field(
-            name="Pages",
-            value=doujin_data['pages'],
-            inline=False
-        )
+        embed.add_field(name="Pages", value=doujin_data["pages"], inline=False)
 
-        embed.add_field(
-            name="Doujin Online",
-            value=doujin_data['url'],
-            inline=False
-        )
+        embed.add_field(name="Doujin Online", value=doujin_data["url"], inline=False)
 
         return embed
 
@@ -97,15 +85,12 @@ class XCog(commands.Cog):
         Redirects the user with a Discord embed to an official link if sauce not found at source.
         """
 
-        embed = discord.Embed(
-            colour=discord.Colour.red(),
-            title=f"Doujin #{sauce}"
-        )
+        embed = discord.Embed(colour=discord.Colour.red(), title=f"Doujin #{sauce}")
 
         embed.add_field(
             name="We couldn't find your doujin in our sources, but here's the official link:",
             value=self.dscraper.WEB_ROOT + str(sauce),
-            inline=False
+            inline=False,
         )
 
         await ctx.send(embed=embed)
@@ -123,9 +108,11 @@ class XCog(commands.Cog):
         self.MAX_SAUCE = self.dscraper.webscrape_doujin_maxcount()
 
         if opt is not None:
-            if opt == '-s':
+            if opt == "-s":
                 if sauce is None:
-                    return await ctx.send("You didn't specify the sauce. Did you want ketchup?")
+                    return await ctx.send(
+                        "You didn't specify the sauce. Did you want ketchup?"
+                    )
 
                 if self.__sauceCheck(sauce) == -3:
                     return await ctx.send("Sauce is invalid.")
@@ -136,7 +123,9 @@ class XCog(commands.Cog):
                 if self.__sauceCheck(sauce) == -2:
                     return await ctx.send("There's nothing lower than 2.")
             else:
-                return await ctx.send("Unknown option. Use ***-s*** for a specific doujin.")
+                return await ctx.send(
+                    "Unknown option. Use ***-s*** for a specific doujin."
+                )
         else:
             sauce = randint(self.MIN_SAUCE, self.MAX_SAUCE)
 

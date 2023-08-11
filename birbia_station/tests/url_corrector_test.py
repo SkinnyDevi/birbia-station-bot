@@ -7,7 +7,7 @@ def test_urls():
         "http://www.youtube.com/v/-wtIMTCHWuI?version=3",
         "http://youtu.be/-wtIMTCHWuI",
         "https://youtube.com/shorts/I1I1i1i1I1I?feature=share",
-        "https://www.youtube.com/shorts/1ioBJ-3NXx"
+        "https://www.youtube.com/shorts/1ioBJ-3NXx",
     ]
 
     for t in URL_TESTS:

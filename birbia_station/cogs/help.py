@@ -12,7 +12,7 @@ class HelpCog(commands.Cog):
     def __add_version_number(self, embed: discord.Embed) -> discord.Embed:
         embed.add_field(
             name="Version",
-            value=pkg_resources.get_distribution("birbia-station-bot").version
+            value=pkg_resources.get_distribution("birbia-station-bot").version,
         )
 
         return embed
@@ -27,7 +27,7 @@ class HelpCog(commands.Cog):
         help = discord.Embed(
             title="Commands",
             description="All available command categories provided by Birbia.\nUse 'birbia [category] to see all commands from that category.",
-            color=0xff5900
+            color=0xFF5900,
         )
 
         return self.__add_to_embed(help, cmds.GENERAL_CMDS)
@@ -36,7 +36,7 @@ class HelpCog(commands.Cog):
         music = discord.Embed(
             title="Music Commands [aliases]",
             description="Available commands to control Birbia's Radio Station.",
-            color=0x8cddff
+            color=0x8CDDFF,
         )
 
         return self.__add_to_embed(music, cmds.MUSIC_CMDS)
@@ -45,7 +45,7 @@ class HelpCog(commands.Cog):
         doujin = discord.Embed(
             title="Doujin Commands",
             description="Search and discover new doujins.",
-            color=0xe495fc
+            color=0xE495FC,
         )
 
         return self.__add_to_embed(doujin, cmds.DOUJIN_CMDS)

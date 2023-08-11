@@ -10,19 +10,19 @@ class YtAudioSearcher:
 
     def __init__(self):
         self.YDL_CFG = {
-            'format': 'bestaudio/best',
-            'extractaudio': True,
-            'audioformat': 'mp3',
-            'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-            'restrictfilenames': True,
-            'noplaylist': True,
-            'nocheckcertificate': True,
-            'ignoreerrors': False,
-            'logtostderr': False,
-            'quiet': True,
-            'no_warnings': True,
-            'default_search': 'auto',
-            'source_address': '0.0.0.0',
+            "format": "bestaudio/best",
+            "extractaudio": True,
+            "audioformat": "mp3",
+            "outtmpl": "%(extractor)s-%(id)s-%(title)s.%(ext)s",
+            "restrictfilenames": True,
+            "noplaylist": True,
+            "nocheckcertificate": True,
+            "ignoreerrors": False,
+            "logtostderr": False,
+            "quiet": True,
+            "no_warnings": True,
+            "default_search": "auto",
+            "source_address": "0.0.0.0",
         }
 
     def get_duration(self, seconds: int) -> str:
@@ -50,8 +50,11 @@ class YtAudioSearcher:
         The query can be in inputted text like a search bar or a specific video URL.
         """
 
-        query = YtUrls.url_corrector(query) if query.find(
-            "http") > -1 else f"ytsearch:{query}"
+        query = (
+            YtUrls.url_corrector(query)
+            if query.find("http") > -1
+            else f"ytsearch:{query}"
+        )
 
         print("\n---------QUERY: " + query)
 
@@ -60,19 +63,19 @@ class YtAudioSearcher:
                 ydl.cache.remove()
                 info = ydl.extract_info(query, download=False)
 
-                if 'entries' in info.keys():
-                    info = info['entries'][0]
+                if "entries" in info.keys():
+                    info = info["entries"][0]
             except Exception as error:
                 raise Exception(
-                    "There was an error trying to find the specified youtube video: " +
-                    str(error))
+                    "There was an error trying to find the specified youtube video: "
+                    + str(error)
+                )
         return {
-            'source':
-            info['url'],
-            'title':
-            info['title'],
-            'yt_url': (YtUrls.YT_BASE_URL + info['id'],
-                       YtUrls.YT_SHORTS_URL + info["id"])[query.find("/shorts/") > -1],
-            'length':
-            self.get_duration(info['duration']),
+            "source": info["url"],
+            "title": info["title"],
+            "yt_url": (
+                YtUrls.YT_BASE_URL + info["id"],
+                YtUrls.YT_SHORTS_URL + info["id"],
+            )[query.find("/shorts/") > -1],
+            "length": self.get_duration(info["duration"]),
         }

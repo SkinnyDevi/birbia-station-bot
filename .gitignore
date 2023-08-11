@@ -5,3 +5,5 @@ testing.py
 ffmpeg
 Dockerfile.build
 .DS_Store
+local-bot.vbs
+local-bot-init.bat

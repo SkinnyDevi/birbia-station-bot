@@ -30,7 +30,7 @@ class AudioSourceTracked(discord.AudioSource):
         Reads at what point of the audio it is located.
         """
 
-        return (self.count_20ms * 0.02)  # count_20ms * 20ms
+        return self.count_20ms * 0.02  # count_20ms * 20ms
 
 
 class MusicCog(commands.Cog):
@@ -51,9 +51,8 @@ class MusicCog(commands.Cog):
         self.audio_search: YtAudioSearcher = YtAudioSearcher()
 
         self.FFMPEG_CFG = {
-            'before_options':
-            '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-            'options': '-vn',
+            "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
+            "options": "-vn",
         }
 
         self.vc: discord.VoiceClient = None
@@ -67,7 +66,7 @@ class MusicCog(commands.Cog):
 
         if get_opus_src:
             return self.queue[0][2]
-        return self.queue[0][0]['source']
+        return self.queue[0][0]["source"]
 
     async def __disconnect(self):
         """
@@ -77,7 +76,8 @@ class MusicCog(commands.Cog):
         if len(self.vc.channel.members) > 0 and not self.vc.is_playing():
             try:
                 disconnect_audio = discord.FFmpegPCMAudio(
-                    os.getcwd() + "/birbia_station/audios/vc_disconnect.mp3")
+                    os.getcwd() + "/birbia_station/audios/vc_disconnect.mp3"
+                )
 
                 self.vc.play(disconnect_audio, after=None)
 
@@ -135,8 +135,9 @@ class MusicCog(commands.Cog):
 
         self.is_playing = True
 
-        self.vc.play(self.__get_src_url(get_opus_src=True),
-                     after=lambda e: self.queue_next())
+        self.vc.play(
+            self.__get_src_url(get_opus_src=True), after=lambda e: self.queue_next()
+        )
 
         self.playing = self.queue.pop(0)
 
@@ -162,8 +163,9 @@ class MusicCog(commands.Cog):
         else:
             await self.vc.move_to(self.queue[0][1])
 
-        self.vc.play(self.__get_src_url(get_opus_src=True),
-                     after=lambda e: self.queue_next())
+        self.vc.play(
+            self.__get_src_url(get_opus_src=True), after=lambda e: self.queue_next()
+        )
 
         self.playing = self.queue.pop(0)
 
@@ -186,7 +188,8 @@ class MusicCog(commands.Cog):
         )
 
     @commands.command(
-        name="play", help="Play audio through Birbia's most famous radio station.")
+        name="play", help="Play audio through Birbia's most famous radio station."
+    )
     async def play(self, ctx, *args):
         """
         Bot command used to search and play a song/audio/video/short from YouTube.
@@ -199,13 +202,15 @@ class MusicCog(commands.Cog):
                 return await self.resume(ctx)
 
             return await ctx.send(
-                "Don't play with Birbia. What is that you want to listen to?")
+                "Don't play with Birbia. What is that you want to listen to?"
+            )
 
         vc = ctx.author.voice
 
         if vc is None:
             await ctx.send(
-                "To use Birbia Radio, please connect to a voice channel first.")
+                "To use Birbia Radio, please connect to a voice channel first."
+            )
         elif self.is_paused:
             if self.allow_cmd:
                 self.vc.resume()
@@ -225,13 +230,17 @@ class MusicCog(commands.Cog):
                         )
                     else:
                         opus_src = await discord.FFmpegOpusAudio.from_probe(
-                            audio['source'], **self.FFMPEG_CFG)
+                            audio["source"], **self.FFMPEG_CFG
+                        )
                         self.queue.append([audio, vc, opus_src])
 
-                        new_audio = discord.Embed(title="Added to radio queue!",
-                                                  color=0xff5900)
-                        new_audio.add_field(name=f"{audio['title']}",
-                                            value=f"{audio['yt_url']} - {audio['length']}")
+                        new_audio = discord.Embed(
+                            title="Added to radio queue!", color=0xFF5900
+                        )
+                        new_audio.add_field(
+                            name=f"{audio['title']}",
+                            value=f"{audio['yt_url']} - {audio['length']}",
+                        )
 
                         await ctx.send(embed=new_audio)
 
@@ -259,16 +268,16 @@ class MusicCog(commands.Cog):
                 self.vc.pause()
                 self.is_paused = True
                 self.is_playing = False
-                await ctx.send("Birbia paused the current audio in it's radio station."
-                               )
+                await ctx.send("Birbia paused the current audio in it's radio station.")
                 await self._command_timeout()
             else:
                 await ctx.send("Birbia's radio station has nothing to pause!")
         else:
             await self._timeout_warn(ctx)
 
-    @commands.command(name="resume",
-                      help="Resume the audio frozen in Birbia's radio station.")
+    @commands.command(
+        name="resume", help="Resume the audio frozen in Birbia's radio station."
+    )
     async def resume(self, ctx):
         """
         Resumes the paused audio.
@@ -283,13 +292,15 @@ class MusicCog(commands.Cog):
                 await self._command_timeout()
             else:
                 await ctx.send(
-                    "Birbia has got nothing to resume in it's radio station.")
+                    "Birbia has got nothing to resume in it's radio station."
+                )
         else:
             await self._timeout_warn(ctx)
 
     @commands.command(
         name="skip",
-        help="Skip that one song you don't like from Birbia's radio station.")
+        help="Skip that one song you don't like from Birbia's radio station.",
+    )
     async def skip(self, ctx):
         """
         Skips the current song onto the next in queue.
@@ -309,7 +320,8 @@ class MusicCog(commands.Cog):
     @commands.command(
         name="queue",
         aliases=["q"],
-        help="Display Birbia's radio station pending play requests.")
+        help="Display Birbia's radio station pending play requests.",
+    )
     async def queue(self, ctx):
         """
         Displays the queue with the pending songs left for playback.
@@ -325,9 +337,12 @@ class MusicCog(commands.Cog):
 
             if self.queue != []:
                 await ctx.send(
-                    embed=discord.Embed(title="Birbia Station's Pending Requests",
-                                        color=0xff5900,
-                                        description=q))
+                    embed=discord.Embed(
+                        title="Birbia Station's Pending Requests",
+                        color=0xFF5900,
+                        description=q,
+                    )
+                )
                 await self._command_timeout()
             else:
                 await ctx.send(
@@ -336,8 +351,7 @@ class MusicCog(commands.Cog):
         else:
             await self._timeout_warn(ctx)
 
-    @commands.command(name="now",
-                      help="Display the radio's currently playing song.")
+    @commands.command(name="now", help="Display the radio's currently playing song.")
     async def now(self, ctx):
         """
         Gets the name and duration of the audio currently playing.
@@ -348,9 +362,12 @@ class MusicCog(commands.Cog):
                 song = f"[{self.playing[0]['title']}]({self.playing[0]['yt_url']}) - {self.playing[0]['length']}"
 
                 await ctx.send(
-                    embed=discord.Embed(title="Birbia Station's Currently Playing Song",
-                                        color=0xff5900,
-                                        description=song))
+                    embed=discord.Embed(
+                        title="Birbia Station's Currently Playing Song",
+                        color=0xFF5900,
+                        description=song,
+                    )
+                )
 
                 await self._command_timeout()
             else:
@@ -362,8 +379,8 @@ class MusicCog(commands.Cog):
             await self._timeout_warn(ctx)
 
     @commands.command(
-        name="clear",
-        help="Removes every current request from Birbia's radio station")
+        name="clear", help="Removes every current request from Birbia's radio station"
+    )
     async def clear(self, ctx):
         """
         Clears the queue.
@@ -376,13 +393,16 @@ class MusicCog(commands.Cog):
                 await self._command_timeout()
             else:
                 await ctx.send(
-                    "To use Birbia Radio, please connect to a voice channel first.")
+                    "To use Birbia Radio, please connect to a voice channel first."
+                )
         else:
             await self._timeout_warn(ctx)
 
-    @commands.command(name="leave",
-                      aliases=["stop"],
-                      help="Make Birbia's Radio Station stop for the day.")
+    @commands.command(
+        name="leave",
+        aliases=["stop"],
+        help="Make Birbia's Radio Station stop for the day.",
+    )
     async def leave(self, ctx):
         """
         Stops audio playback and leaves the voicechat.
@@ -404,7 +424,8 @@ class MusicCog(commands.Cog):
 
         if vc is None:
             await ctx.send(
-                "To use Birbia Radio, please connect to a voice channel first.")
+                "To use Birbia Radio, please connect to a voice channel first."
+            )
         else:
             self.vc = await vc.channel.connect()
             await self.__timeout_quit()
