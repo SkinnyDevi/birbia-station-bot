@@ -1,6 +1,8 @@
 import time
 from discord.ext import commands
 
+from ..core.logger import BirbiaLogger
+
 
 class UtilityCog(commands.Cog):
     def __init__(self, bot):
@@ -30,7 +32,9 @@ class UtilityCog(commands.Cog):
         invite = await ctx.channel.create_invite(max_uses=uses)
         invite_send = f"Invite generated. \nMax uses: {uses}\n{invite}"
         await ctx.send(invite_send)
-        print(f"Invite generated with {uses} uses for {ctx.message.author} max uses.")
+        BirbiaLogger.info(
+            f"Invite generated with {uses} uses for {ctx.message.author}."
+        )
 
     @commands.command(name="purge", help="Removes X number of messages recursively,")
     async def purge(self, ctx: commands.Context, nmessages: int = None):

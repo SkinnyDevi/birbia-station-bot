@@ -4,6 +4,7 @@ import os
 
 from discord.ext import commands
 
+from ..core.logger import BirbiaLogger
 from ..core.music.audiosearchers.youtube import YtAudioSearcher
 from ..core.music.birbia_queue import BirbiaQueue, BirbiaAudio
 
@@ -27,6 +28,10 @@ class MusicCog(commands.Cog):
         )  # 300s = 5 min
         MusicCog.CMD_TIMEOUT = int(os.environ.get("CMD_TIMEOUT"))  # seconds
 
+        BirbiaLogger.info("Running Music Cog with following config:")
+        BirbiaLogger.info(f" - DISCONNECT DELAY: {MusicCog.DISCONNECT_DELAY}")
+        BirbiaLogger.info(f" - CMD TIMEOUT: {MusicCog.CMD_TIMEOUT}")
+
     async def __disconnect(self):
         """
         Disconnects the bot from the voice channel by playing an audio file.
@@ -43,8 +48,8 @@ class MusicCog(commands.Cog):
                 while self.vc.is_playing():
                     await asyncio.sleep(0.75)
 
-            except Exception:
-                print("Could not play disconnect audio.")
+            except Exception as error:
+                BirbiaLogger.error("Could not play disconnect audio.", error)
 
         await self.vc.disconnect()
 
@@ -168,21 +173,26 @@ class MusicCog(commands.Cog):
                 "Birbia sent out it's fastest eagles, but could not get your audio back. Try again!"
             )
 
-        audio_obj.set_requester_vc(requester_in_voice.channel)
-        self.music_queue.add_to_queue(audio_obj)
+        try:
+            audio_obj.set_requester_vc(requester_in_voice.channel)
+            self.music_queue.add_to_queue(audio_obj)
 
-        new_audio = discord.Embed(title="Added to radio queue!", color=0xFF5900)
-        new_audio.add_field(
-            name=f"{audio_obj.title}",
-            value=f"{audio_obj.url} - {audio_obj.get_duration()}",
-        )
-        await ctx.send(embed=new_audio)
+            new_audio = discord.Embed(title="Added to radio queue!", color=0xFF5900)
+            new_audio.add_field(
+                name=f"{audio_obj.title}",
+                value=f"{audio_obj.url} - {audio_obj.get_duration()}",
+            )
+            await ctx.send(embed=new_audio)
 
-        if self.vc is None or not self.vc.is_playing():
-            await self.__play_audio(ctx)
+            if self.vc is None or not self.vc.is_playing():
+                await self.__play_audio(ctx)
 
-        await self.__command_timeout()
-        await self.__timeout_quit()
+            await self.__command_timeout()
+            await self.__timeout_quit()
+        except Exception as error:
+            BirbiaLogger.error(
+                "An error ocurred while trying to play the requested audio", error
+            )
 
     @commands.command(name="pause", help="Pause Birbia's radio station.")
     async def pause(self, ctx: commands.Context):

@@ -1,8 +1,9 @@
 from yt_dlp import YoutubeDL
 
-from ...utils.yt_urls import YtUrls
 from .base import OnlineAudioSearcher
+from ...utils.yt_urls import YtUrls
 from ..birbia_queue import BirbiaAudio
+from ...logger import BirbiaLogger
 
 
 class YtAudioSearcher(OnlineAudioSearcher):
@@ -42,8 +43,7 @@ class YtAudioSearcher(OnlineAudioSearcher):
             else f"ytsearch:{query}"
         )
 
-        print("\n---------QUERY: " + query)
-
+        BirbiaLogger.info(f"Requesting query: {query}")
         with YoutubeDL(self.config) as ydl:
             try:
                 ydl.cache.remove()
@@ -52,13 +52,13 @@ class YtAudioSearcher(OnlineAudioSearcher):
                 if "entries" in info.keys():
                     info = info["entries"][0]
             except Exception as error:
-                # TODO: print to custom logger
-                print(
-                    "There was an error trying to find the specified youtube video: "
-                    + str(error)
+                BirbiaLogger.error(
+                    "There was an error trying to find the specified youtube video: ",
+                    error,
                 )
                 return None
 
+        BirbiaLogger.info("Successfully downloaded audio from query")
         return BirbiaAudio(
             info["url"],
             info["title"],

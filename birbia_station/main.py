@@ -10,6 +10,8 @@ from .cogs.help import HelpCog
 from .cogs.utility import UtilityCog
 from .cogs.xcog import XCog
 
+from .core.logger import BirbiaLogger
+
 load_dotenv()
 
 is_dev = True
@@ -19,16 +21,16 @@ bot = commands.Bot(command_prefix=prefix, intents=discord.Intents.all())
 
 @bot.event
 async def on_ready():
-    print("Birbia's Radio Station is Live!")
+    BirbiaLogger.info("Birbia's Radio Station is Live!")
+
+
+cogs = [MusicCog(bot), UtilityCog(bot), XCog(bot), HelpCog(bot)]
 
 
 async def main():
     bot.remove_command("help")
 
-    await bot.add_cog(MusicCog(bot))
-    await bot.add_cog(UtilityCog(bot))
-    await bot.add_cog(XCog(bot))
-    await bot.add_cog(HelpCog(bot))
+    await asyncio.gather(*[bot.add_cog(c) for c in cogs])
 
 
 def start_bot():
@@ -37,4 +39,4 @@ def start_bot():
     try:
         bot.run(os.environ.get("POETRY_DEV_TOKEN" if is_dev else "POETRY_TOKEN"))
     except discord.errors.HTTPException:
-        print("\n\n\nBLOCKED BY RATE LIMITS\n\n\n")
+        BirbiaLogger.error("BLOCKED BY RATE LIMITS")

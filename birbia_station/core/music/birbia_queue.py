@@ -1,5 +1,7 @@
 import discord
 
+from ..logger import BirbiaLogger
+
 
 class BirbiaAudio:
     FFMPEG_CFG = {
@@ -114,6 +116,7 @@ class BirbiaQueue:
             raise Exception(f"Cannot append {type(None)} to queue.")
 
         self.__queue.append(audio)
+        BirbiaLogger.info(f"Appended audio {audio.title} to queue")
 
     def now(self):
         return self.__now
@@ -124,9 +127,11 @@ class BirbiaQueue:
     def reset(self):
         self.empty_history()
         self.empty_queue()
+        BirbiaLogger.warn("Queue and History were reset")
 
     def empty_queue(self):
         self.__queue.clear()
+        BirbiaLogger.info("Queue was emptied")
 
     def empty_history(self):
         self.__history.clear()
