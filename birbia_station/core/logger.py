@@ -15,6 +15,10 @@ class bcolors:
 
 
 class BirbiaLogger:
+    """
+    Birbia's own custom logger.
+    """
+
     __PREFIX = bcolors.ENDC + bcolors.OKCYAN + " [BIRBIA] "
     __INFO = bcolors.OKBLUE + "INFO" + __PREFIX
     __WARN = bcolors.WARNING + "WARN" + __PREFIX
@@ -25,6 +29,10 @@ class BirbiaLogger:
 
     @staticmethod
     def info(msg: str):
+        """
+        General logging of actions.
+        """
+
         msg = bcolors.ENDC + msg
         log = f"{BirbiaLogger.__now()} {BirbiaLogger.__INFO}{msg}"
         BirbiaLogger.__log.append(log)
@@ -32,6 +40,10 @@ class BirbiaLogger:
 
     @staticmethod
     def warn(msg: str, *args):
+        """
+        Logging for any warning presented.
+        """
+
         if args != ():
             msg += f" {str(*args)}"
 
@@ -42,6 +54,10 @@ class BirbiaLogger:
 
     @staticmethod
     def error(msg: str, *args):
+        """
+        Used to called on try/except statements.
+        """
+
         if args != ():
             msg += f" {str(*args)}"
 
@@ -52,6 +68,10 @@ class BirbiaLogger:
 
     @staticmethod
     def debug(msg: str):
+        """
+        General debug. Not recorded in the internal log history.
+        """
+
         msg = bcolors.ENDC + msg
         print(f"{BirbiaLogger.__now()} {BirbiaLogger.__DEBUG}{msg}")
 

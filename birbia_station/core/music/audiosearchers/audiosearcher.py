@@ -6,6 +6,10 @@ from ...exceptions import UnknownUrlAudioSearcherError
 
 
 class AudioSearcher(OnlineAudioSearcher):
+    """
+    This is the main class used to find any audio on the supported platforms.
+    """
+
     def __init__(self):
         super().__init__({})
 
@@ -19,6 +23,10 @@ class AudioSearcher(OnlineAudioSearcher):
         return searcher.search(query)
 
     def __url_matcher(self, url: str) -> OnlineAudioSearcher:
+        """
+        Match and return the correct `OnlineAudioSearcher`.
+        """
+
         parsed_uri = urlparse(url)
 
         match parsed_uri.netloc:

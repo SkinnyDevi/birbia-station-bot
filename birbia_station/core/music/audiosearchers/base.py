@@ -13,6 +13,9 @@ class OnlineAudioSearcher(ABC):
 
     @property
     def config(self):
+        """
+        The searcher's custom config.
+        """
         return self._config
 
     @abstractmethod

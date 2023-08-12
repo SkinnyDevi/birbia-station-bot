@@ -113,14 +113,13 @@ class XCog(commands.Cog):
                         "You didn't specify the sauce. Did you want ketchup?"
                     )
 
-                if self.__sauceCheck(sauce) == -3:
-                    return await ctx.send("Sauce is invalid.")
-
-                if self.__sauceCheck(sauce) == -1:
-                    return await self.send_not_found(ctx, sauce)
-
-                if self.__sauceCheck(sauce) == -2:
-                    return await ctx.send("There's nothing lower than 2.")
+                match self.__sauceCheck(sauce):
+                    case -3:
+                        return await ctx.send("Sauce is invalid.")
+                    case -2:
+                        return await ctx.send("There's nothing lower than 2.")
+                    case -1:
+                        return await self.send_not_found(ctx, sauce)
             else:
                 return await ctx.send(
                     "Unknown option. Use ***-s*** for a specific doujin."

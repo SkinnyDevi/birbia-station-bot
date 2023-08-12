@@ -1,4 +1,8 @@
 class DoujinManga:
+    """
+    A doujin class used to store and access easily it's information.
+    """
+
     def __init__(
         self,
         sauce: int,
@@ -18,10 +22,18 @@ class DoujinManga:
 
     @property
     def sauce(self):
+        """
+        The doujin's sauce.
+        """
+
         return self._sauce
 
     @property
     def cover(self):
+        """
+        The doujin's cover image URL.
+        """
+
         return self._cover
 
     @property
@@ -33,18 +45,29 @@ class DoujinManga:
 
     @property
     def tags(self):
+        """
+        A list of tags from the doujin.
+        """
         return self._tags
 
     @property
     def pages(self):
-        """The number of pages."""
+        """
+        The number of pages.
+        """
         return self._pages
 
     @property
     def url(self):
+        """
+        A link to the doujin's online website.
+        """
         return self._url
 
     def to_dict(self):
+        """
+        Returns a `dict` with this doujin's information.
+        """
         return {
             "sauce": self._sauce,
             "cover": self._cover,
