@@ -1,4 +1,4 @@
-from ..core.utils.yt_urls import YtUrls
+from ..core.music.audiosearchers.youtube import YtUrls
 
 
 def test_yt_urls():

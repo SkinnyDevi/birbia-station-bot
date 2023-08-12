@@ -5,8 +5,9 @@ import os
 from discord.ext import commands
 
 from ..core.logger import BirbiaLogger
-from ..core.music.audiosearchers.youtube import YtAudioSearcher
+from ..core.music.audiosearchers.audiosearcher import AudioSearcher
 from ..core.music.birbia_queue import BirbiaQueue, BirbiaAudio
+from ..core.exceptions import UnknownUrlAudioSearcherError
 
 
 class MusicCog(commands.Cog):
@@ -19,7 +20,7 @@ class MusicCog(commands.Cog):
         self.vc: discord.VoiceClient = None
         self.allow_cmd = True
         self.music_queue = BirbiaQueue()
-        self.audio_search: YtAudioSearcher = YtAudioSearcher()
+        self.audio_search = AudioSearcher()
 
         self.started_quit_timeout = False
 
@@ -109,6 +110,7 @@ class MusicCog(commands.Cog):
         """
 
         if self.music_queue.queue_length() == 0:
+            self.music_queue.now_to_history()
             return
 
         next_song = self.music_queue.next()
@@ -161,12 +163,13 @@ class MusicCog(commands.Cog):
 
         await ctx.send("Birbia is sending it's hawks to fetch your audio...")
 
-        # As of now, only search on YT
-        # Later, a URl detecter will be implemented
-        # to allow the handling and delegation of correct links
-        # to it's respective OnlineAudioSearcher class
-
-        audio_obj = self.audio_search.search(song_query)
+        try:
+            audio_obj = self.audio_search.search(song_query)
+        except UnknownUrlAudioSearcherError as error:
+            BirbiaLogger.error(str(error))
+            return await ctx.send(
+                "It seems Birbia is not ready to process those URLs as of now. Try a different one!"
+            )
 
         if audio_obj is None:
             return await ctx.send(
@@ -242,9 +245,10 @@ class MusicCog(commands.Cog):
 
         if self.vc is not None and self.vc.is_connected():
             if self.music_queue.queue_length() == 0:
-                return await ctx.send(
-                    "Birbia has nothing to skip! The queue is currently empty."
-                )
+                if self.music_queue.now() is None:
+                    return await ctx.send(
+                        "Birbia has nothing to skip! The queue is currently empty."
+                    )
 
             self.vc.stop()
             await ctx.send("Birbia skipped a song. It seems you didn't like it.")

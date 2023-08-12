@@ -1,6 +1,7 @@
 import discord
 
 from ..logger import BirbiaLogger
+from ..exceptions import *
 
 
 class BirbiaAudio:
@@ -96,7 +97,7 @@ class BirbiaQueue:
 
     def next(self):
         if len(self.__queue) == 0:
-            raise Exception("There are no more audios left in the queue.")
+            raise QueueAudioValueError("There are no more audios left in the queue.")
 
         if self.__now is not None:
             self.__history.insert(0, self.__now)
@@ -113,10 +114,14 @@ class BirbiaQueue:
 
     def add_to_queue(self, audio: BirbiaAudio):
         if audio is None:
-            raise Exception(f"Cannot append {type(None)} to queue.")
+            raise EmptyQueueError(f"Cannot append {type(None)} to queue.")
 
         self.__queue.append(audio)
-        BirbiaLogger.info(f"Appended audio {audio.title} to queue")
+        BirbiaLogger.info(f"Appended audio '{audio.title}' to queue")
+
+    def now_to_history(self):
+        self.__history.insert(0, self.__now)
+        self.__now = None
 
     def now(self):
         return self.__now

@@ -45,7 +45,7 @@ class BirbiaLogger:
         if args != ():
             msg += f" {str(*args)}"
 
-        msg = bcolors.ENDC + msg
+        msg = bcolors.ENDC + bcolors.FAIL + msg
         log = f"{BirbiaLogger.__now()} {BirbiaLogger.__ERROR}{msg}"
         BirbiaLogger.__log.append(log)
         print(log)
