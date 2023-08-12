@@ -193,6 +193,9 @@ class MusicCog(commands.Cog):
             await self.__command_timeout()
             await self.__timeout_quit()
         except Exception as error:
+            await ctx.send(
+                "WOAH! Birbia had a tough time trying to play your audio. Try again!"
+            )
             BirbiaLogger.error(
                 "An error ocurred while trying to play the requested audio", error
             )
