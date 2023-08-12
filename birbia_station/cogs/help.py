@@ -52,11 +52,12 @@ class HelpCog(commands.Cog):
 
     @commands.command(name="help", help="Displayes all of Birbia's available actions.")
     async def help(self, ctx: commands.Context, category: str = None):
-        if category == "music":
-            embed = self.music_help()
-        elif category == "doujin":
-            embed = self.doujin_help()
-        else:
-            embed = self.general_help()
+        match category:
+            case "music":
+                embed = self.music_help()
+            case "doujin":
+                embed = self.doujin_help()
+            case _:
+                embed = self.general_help()
 
         await ctx.send(embed=self.__add_version_number(embed))

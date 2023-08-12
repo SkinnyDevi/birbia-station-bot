@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from random import randint
 
-from ..core.utils.scraper_bypass import DelayedScraper
+from ..core.doujin.scraper import DoujinWebScraper
 
 
 class XCog(commands.Cog):
@@ -12,8 +12,8 @@ class XCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.dscraper = DelayedScraper()
-        self.MAX_SAUCE = self.dscraper.webscrape_doujin_maxcount()
+        self.dscraper = DoujinWebScraper()
+        self.MAX_SAUCE = self.dscraper.doujin_maxcount()
 
     def __sauceCheck(self, sauce_id) -> int:
         """
@@ -48,7 +48,7 @@ class XCog(commands.Cog):
         Creates a Discord embed with the doujin's information, thumbnail and link.
         """
 
-        doujin_data = self.dscraper.webscrape_doujin(sauce)
+        doujin_data = self.dscraper.doujin(sauce)
 
         embed = discord.Embed(
             color=0xE495FC,
@@ -56,27 +56,26 @@ class XCog(commands.Cog):
         )
 
         embed.set_author(name="Doujinshi", icon_url=self.LOGO)
-        embed.set_thumbnail(url=doujin_data["cover"])
+        # TODO: assert that covers display correctly
+        embed.set_thumbnail(url=doujin_data.cover)
 
-        embed.add_field(
-            name="Title", value=doujin_data["titles"]["english"], inline=False
-        )
+        embed.add_field(name="Title", value=doujin_data.titles["english"], inline=False)
 
-        if doujin_data["titles"]["original"] != "":
+        if doujin_data.titles["original"] != "":
             embed.add_field(
                 name="Original Title",
-                value=doujin_data["titles"]["original"],
+                value=doujin_data.titles["original"],
                 inline=False,
             )
 
-        if len(doujin_data["tags"]) != 0:
+        if len(doujin_data.tags) != 0:
             embed.add_field(
-                name="Categories", value=", ".join(doujin_data["tags"]), inline=False
+                name="Categories", value=", ".join(doujin_data.tags), inline=False
             )
 
-        embed.add_field(name="Pages", value=doujin_data["pages"], inline=False)
+        embed.add_field(name="Pages", value=doujin_data.pages, inline=False)
 
-        embed.add_field(name="Doujin Online", value=doujin_data["url"], inline=False)
+        embed.add_field(name="Doujin Online", value=doujin_data.url, inline=False)
 
         return embed
 
@@ -105,7 +104,7 @@ class XCog(commands.Cog):
                 * Example: 'doujin -s 177013'
         """
 
-        self.MAX_SAUCE = self.dscraper.webscrape_doujin_maxcount()
+        self.MAX_SAUCE = self.dscraper.doujin_maxcount()
 
         if opt is not None:
             if opt == "-s":
