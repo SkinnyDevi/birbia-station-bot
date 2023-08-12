@@ -1,4 +1,4 @@
-from ..utils.yt_audio_search import YtAudioSearcher
+from ..core.music.audiosearchers.youtube import YtAudioSearcher
 
 searcher = YtAudioSearcher()
 
@@ -12,4 +12,4 @@ queries = [
 
 def test_queries():
     for q in queries:
-        assert searcher.search_audio(q)["source"] is not None
+        assert searcher.search(q).source is not None

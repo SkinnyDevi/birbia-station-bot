@@ -1,7 +1,7 @@
 from time import sleep
 from random import randint
 
-from ..utils.scraper_bypass import DelayedScraper
+from ..core.utils.scraper_bypass import DelayedScraper
 
 dscraper = DelayedScraper()
 

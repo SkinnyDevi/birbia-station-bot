@@ -1,7 +1,7 @@
-from ..utils.yt_urls import YtUrls
+from ..core.utils.yt_urls import YtUrls
 
 
-def test_urls():
+def test_yt_urls():
     URL_TESTS = [
         "http://www.youtube.com/watch?v=-wtIMTCHWuI",
         "http://www.youtube.com/v/-wtIMTCHWuI?version=3",

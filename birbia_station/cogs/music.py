@@ -1,120 +1,75 @@
 import discord
-import time
 import asyncio
 import os
 
 from discord.ext import commands
-from pathlib import Path
 
-from ..utils.yt_audio_search import YtAudioSearcher
-
-
-FFMPEG_PATH = Path("ffmpeg/bin/ffmpeg.exe")
-
-
-class AudioSourceTracked(discord.AudioSource):
-    """
-    (Unused Untested)
-    Used to track the audio's time for the 'now' command.
-    """
-
-    def __init__(self, source):
-        self._source = source
-        self.count_20ms = 0
-
-    def read(self) -> bytes:
-        data = self._source.read()
-        if data:
-            self.count_20ms += 1
-        return data
-
-    @property
-    def progress(self) -> float:
-        """
-        Reads at what point of the audio it is located.
-        """
-
-        return self.count_20ms * 0.02  # count_20ms * 20ms
+from ..core.music.audiosearchers.youtube import YtAudioSearcher
+from ..core.music.birbia_queue import BirbiaQueue, BirbiaAudio
 
 
 class MusicCog(commands.Cog):
+    # fallback
+    DISCONNECT_DELAY = 600  # 300s = 5 min
+    CMD_TIMEOUT = 2  # seconds
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
+        self.vc: discord.VoiceClient = None
         self.allow_cmd = True
-
-        self.is_playing = False
-        self.is_paused = False
-        self.queue = []
-        self.playing = None
-        self.started_quit_timeout = False
-
-        self.DISCONNECT_DELAY = 600  # 300s = 5 min
-        self.CMD_TIMEOUT = 2  # seconds
-
+        self.music_queue = BirbiaQueue()
         self.audio_search: YtAudioSearcher = YtAudioSearcher()
 
-        self.FFMPEG_CFG = {
-            "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
-            "options": "-vn",
-        }
+        self.started_quit_timeout = False
 
-        self.vc: discord.VoiceClient = None
-
-    def __get_src_url(self, get_opus_src=False):
-        """
-        Gets the current audio's source for playback.
-
-        Can be obtained as an FFmpegOpusAudio type or a string url with the audio.
-        """
-
-        if get_opus_src:
-            return self.queue[0][2]
-        return self.queue[0][0]["source"]
+        MusicCog.DISCONNECT_DELAY = int(
+            os.environ.get("DISCONNECT_DELAY")
+        )  # 300s = 5 min
+        MusicCog.CMD_TIMEOUT = int(os.environ.get("CMD_TIMEOUT"))  # seconds
 
     async def __disconnect(self):
         """
         Disconnects the bot from the voice channel by playing an audio file.
         """
-
         if len(self.vc.channel.members) > 0 and not self.vc.is_playing():
             try:
-                disconnect_audio = discord.FFmpegPCMAudio(
-                    os.getcwd() + "/birbia_station/audios/vc_disconnect.mp3"
+                disconnect_audio = discord.FFmpegOpusAudio(
+                    os.getcwd() + "birbia_station/audios/vc_disconnect.mp3",
+                    **BirbiaAudio.FFMPEG_CFG,
                 )
 
-                self.vc.play(disconnect_audio, after=None)
+                self.vc.play(disconnect_audio)
 
                 while self.vc.is_playing():
                     await asyncio.sleep(0.75)
+
             except Exception:
                 print("Could not play disconnect audio.")
 
         await self.vc.disconnect()
 
-        self.started_quit_timeout = False
+        self.music_queue.reset()
         self.vc = None
-        self.is_playing = False
-        self.is_paused = False
-        self.queue = []
+        self.started_quit_timeout = False
 
     async def __timeout_quit(self):
         """
         Creates a timer when connected to voicechat
 
-        If it doesn't play anything within the {self.DISCONNECT_DELAY}, it will automatically
+        If it doesn't play anything within the {DISCONNECT_DELAY}, it will automatically
         leave the voicechat.
         """
-
         if self.started_quit_timeout:
             return
 
         time = 0
         self.started_quit_timeout = True
-        while True:
-            if self.vc is not None:
-                if not self.vc.is_connected():
-                    break
+
+        is_vc_connected = True
+        while is_vc_connected:
+            if self.vc is None or not self.vc.is_connected():
+                is_vc_connected = False
+                continue
 
             await asyncio.sleep(1)
 
@@ -122,67 +77,19 @@ class MusicCog(commands.Cog):
 
             if self.vc is not None and self.vc.is_playing() and not self.vc.is_paused():
                 time = 0
-            if time == self.DISCONNECT_DELAY:
+            if time >= MusicCog.DISCONNECT_DELAY:
                 await self.__disconnect()
-                break
+                is_vc_connected = False
 
-    def queue_next(self):
-        """
-        Queues another audio for playback.
-        """
-
-        if len(self.queue) == 0:
-            self.is_playing = False
-            self.playing = None
-            self.audiotracker = None
-            return
-
-        self.is_playing = True
-
-        self.vc.play(
-            self.__get_src_url(get_opus_src=True), after=lambda e: self.queue_next()
-        )
-
-        self.playing = self.queue.pop(0)
-
-    async def play_audio(self, ctx):
-        """
-        Plays the next audio from the queue to the voicechat.
-        """
-
-        if len(self.queue) == 0:
-            self.is_playing = False
-            return
-
-        self.is_playing = True
-
-        if self.vc is None or not self.vc.is_connected():
-            self.vc = await self.queue[0][1].connect()
-
-            if self.vc is None:
-                await ctx.send(
-                    "Birbia could not enter your voice chat. This is illegal. We will take action."
-                )
-                return
-        else:
-            await self.vc.move_to(self.queue[0][1])
-
-        self.vc.play(
-            self.__get_src_url(get_opus_src=True), after=lambda e: self.queue_next()
-        )
-
-        self.playing = self.queue.pop(0)
-
-    async def _command_timeout(self):
+    async def __command_timeout(self):
         """
         A timeout of 2 seconds to wait for each command.
         """
-
         self.allow_cmd = False
-        await asyncio.sleep(self.CMD_TIMEOUT)
+        await asyncio.sleep(MusicCog.CMD_TIMEOUT)
         self.allow_cmd = True
 
-    async def _timeout_warn(self, ctx):
+    async def __timeout_warn(self, ctx: commands.Context):
         """
         Warns the user if they are still in command timeout.
         """
@@ -191,238 +98,249 @@ class MusicCog(commands.Cog):
             "Birbia warns you to wait at least 2 seconds before running the next command."
         )
 
+    def __queue_next(self):
+        """
+        Queues another audio for playback.
+        """
+
+        if self.music_queue.queue_length() == 0:
+            return
+
+        next_song = self.music_queue.next()
+        self.vc.play(next_song.pcm_audio, after=lambda e=None: self.__queue_next())
+
+    async def __play_audio(self, ctx: commands.Context):
+        """
+        Plays the next audio from the queue to the voicechat.
+        """
+
+        up_next = self.music_queue.up_next()
+        if self.vc is None or not self.vc.is_connected():
+            self.vc = await up_next.get_requester_vc().connect()
+
+            if self.vc is None:
+                return await ctx.send(
+                    "Birbia could not enter your voice chat. This is illegal. We will take action."
+                )
+        else:
+            await self.vc.move_to(up_next.get_requester_vc())
+
+        next_song = self.music_queue.next()
+        self.vc.play(next_song.pcm_audio, after=lambda e=None: self.__queue_next())
+
     @commands.command(
         name="play", help="Play audio through Birbia's most famous radio station."
     )
-    async def play(self, ctx, *args):
+    async def play(self, ctx: commands.Context, *args):
         """
-        Bot command used to search and play a song/audio/video/short from YouTube.
+        Bot command used to search and play a song/audio/video/short from a supported platform.
         """
 
-        params = " ".join(args)
+        song_query = " ".join(args)
 
-        if params == "" or params == " ":
-            if self.is_paused:
-                return await self.resume(ctx)
-
+        if song_query == "" or song_query == " ":
             return await ctx.send(
                 "Don't play with Birbia. What is that you want to listen to?"
             )
 
-        vc = ctx.author.voice
+        requester_in_voice = ctx.author.voice
 
-        if vc is None:
-            await ctx.send(
+        if requester_in_voice is None:
+            self.__command_timeout(ctx)
+            return await ctx.send(
                 "To use Birbia Radio, please connect to a voice channel first."
             )
-        elif self.is_paused:
-            if self.allow_cmd:
-                self.vc.resume()
-                await self._command_timeout()
-            else:
-                await self._timeout_warn(ctx)
-        else:
-            if self.allow_cmd:
-                vc = vc.channel
-                await ctx.send("Birbia is sending it's hawks to fetch your audio...")
 
-                try:
-                    audio = self.audio_search.search_audio(params)
-                    if isinstance(type(audio), type(True)):
-                        await ctx.send(
-                            "Birbia sent out it's fastest eagles, but could not get your audio back. Try again!"
-                        )
-                    else:
-                        opus_src = discord.FFmpegPCMAudio(
-                            audio["source"], executable=FFMPEG_PATH
-                        )
-                        # opus_src = await discord.FFmpegOpusAudio.from_probe(
-                        #     audio["source"], **self.FFMPEG_CFG
-                        # )
-                        self.queue.append([audio, vc, opus_src])
+        if not self.allow_cmd:
+            return await self.__timeout_warn(ctx)
 
-                        new_audio = discord.Embed(
-                            title="Added to radio queue!", color=0xFF5900
-                        )
-                        new_audio.add_field(
-                            name=f"{audio['title']}",
-                            value=f"{audio['yt_url']} - {audio['length']}",
-                        )
+        await ctx.send("Birbia is sending it's hawks to fetch your audio...")
 
-                        await ctx.send(embed=new_audio)
+        # As of now, only search on YT
+        # Later, a URl detecter will be implemented
+        # to allow the handling and delegation of correct links
+        # to it's respective OnlineAudioSearcher class
 
-                        if self.is_playing is False:
-                            await self.play_audio(ctx)
+        audio_obj = self.audio_search.search(song_query)
 
-                        await self._command_timeout()
-                        await self.__timeout_quit()
-                except Exception as error:
-                    print("\nWHEW! FEW ERRORS: " + str(error))
-                    await ctx.send(
-                        "Birbia had a tough battle and could not send back your audio. Try ***stopping*** and ***playing*** again the Birbia Station."
-                    )
-            else:
-                await self._timeout_warn(ctx)
+        if audio_obj is None:
+            return await ctx.send(
+                "Birbia sent out it's fastest eagles, but could not get your audio back. Try again!"
+            )
+
+        audio_obj.set_requester_vc(requester_in_voice.channel)
+        self.music_queue.add_to_queue(audio_obj)
+
+        new_audio = discord.Embed(title="Added to radio queue!", color=0xFF5900)
+        new_audio.add_field(
+            name=f"{audio_obj.title}",
+            value=f"{audio_obj.url} - {audio_obj.get_duration()}",
+        )
+        await ctx.send(embed=new_audio)
+
+        if self.vc is None or not self.vc.is_playing():
+            await self.__play_audio(ctx)
+
+        await self.__command_timeout()
+        await self.__timeout_quit()
 
     @commands.command(name="pause", help="Pause Birbia's radio station.")
-    async def pause(self, ctx):
+    async def pause(self, ctx: commands.Context):
         """
         Pauses the current audio playing.
         """
 
-        if self.allow_cmd:
-            if self.is_playing:
-                self.vc.pause()
-                self.is_paused = True
-                self.is_playing = False
-                await ctx.send("Birbia paused the current audio in it's radio station.")
-                await self._command_timeout()
-            else:
-                await ctx.send("Birbia's radio station has nothing to pause!")
+        if not self.allow_cmd:
+            await self.__timeout_warn(ctx)
+
+        if self.vc.is_playing() and not self.vc.is_paused():
+            self.vc.pause()
+            await ctx.send("Birbia paused the current audio in it's radio station.")
+            await self.__command_timeout()
         else:
-            await self._timeout_warn(ctx)
+            await ctx.send("Birbia's radio station has nothing to pause!")
 
     @commands.command(
         name="resume", help="Resume the audio frozen in Birbia's radio station."
     )
-    async def resume(self, ctx):
+    async def resume(self, ctx: commands.Context):
         """
         Resumes the paused audio.
         """
 
-        if self.allow_cmd:
-            if self.is_paused:
-                self.vc.resume()
-                self.is_paused = False
-                self.is_playing = True
-                await ctx.send("Birbia has resumed playing on it's radio station!")
-                await self._command_timeout()
-            else:
-                await ctx.send(
-                    "Birbia has got nothing to resume in it's radio station."
-                )
+        if not self.allow_cmd:
+            return await self.__timeout_warn(ctx)
+
+        if self.vc.is_paused():
+            self.vc.resume()
+            await ctx.send("Birbia has resumed playing on it's radio station!")
+            await self.__command_timeout()
         else:
-            await self._timeout_warn(ctx)
+            await ctx.send("Birbia has got nothing to resume in it's radio station.")
 
     @commands.command(
         name="skip",
         help="Skip that one song you don't like from Birbia's radio station.",
     )
-    async def skip(self, ctx):
+    async def skip(self, ctx: commands.Context):
         """
         Skips the current song onto the next in queue.
         """
 
-        if self.allow_cmd:
-            if self.vc is not None and self.vc:
-                self.vc.stop()
-                time.sleep(1)
+        if not self.allow_cmd:
+            return await self.__timeout_warn(ctx)
 
-                await self.play_audio(ctx)
-                await ctx.send("Birbia skipped a song. It seems you didn't like it.")
-                await self._command_timeout()
-        else:
-            await self._timeout_warn(ctx)
+        if self.vc is not None and self.vc.is_connected():
+            if self.music_queue.queue_length() == 0:
+                return await ctx.send(
+                    "Birbia has nothing to skip! The queue is currently empty."
+                )
+
+            self.vc.stop()
+            await ctx.send("Birbia skipped a song. It seems you didn't like it.")
+            await self.__command_timeout()
 
     @commands.command(
         name="queue",
         aliases=["q"],
         help="Display Birbia's radio station pending play requests.",
     )
-    async def queue(self, ctx):
+    async def queue(self, ctx: commands.Context):
         """
         Displays the queue with the pending songs left for playback.
         """
 
-        if self.allow_cmd:
-            q = ""
+        if not self.allow_cmd:
+            return await self.__timeout_warn(ctx)
 
-            for i in range(0, len(self.queue)):
-                if i > 15:
-                    break
-                q += f"{i+1}. [{self.queue[i][0]['title']}]({self.queue[i][0]['yt_url']}) - {self.queue[i][0]['length']}\n"
+        q = ""
+        counter = 0
+        for audio in self.music_queue.get_queue():
+            if counter > 15:
+                break
 
-            if self.queue != []:
-                await ctx.send(
-                    embed=discord.Embed(
-                        title="Birbia Station's Pending Requests",
-                        color=0xFF5900,
-                        description=q,
-                    )
-                )
-                await self._command_timeout()
-            else:
-                await ctx.send(
-                    "Birbia radio station is currently waiting for new requests. Send one!"
-                )
-        else:
-            await self._timeout_warn(ctx)
+            q += f"{counter+1}. [{audio.title}]({audio.url}) - {audio.get_duration()}\n"
+            counter += 1
+
+        if self.music_queue.is_queue_empty():
+            return await ctx.send(
+                "Birbia radio station is currently waiting for new requests. Send one!"
+            )
+
+        await ctx.send(
+            embed=discord.Embed(
+                title="Birbia Station's Pending Requests",
+                color=0xFF5900,
+                description=q,
+            )
+        )
+        await self.__command_timeout()
 
     @commands.command(name="now", help="Display the radio's currently playing song.")
-    async def now(self, ctx):
+    async def now(self, ctx: commands.Context):
         """
         Gets the name and duration of the audio currently playing.
         """
 
-        if self.allow_cmd:
-            if self.playing is not None:
-                song = f"[{self.playing[0]['title']}]({self.playing[0]['yt_url']}) - {self.playing[0]['length']}"
+        if not self.allow_cmd:
+            return await self.__timeout_warn(ctx)
 
-                await ctx.send(
-                    embed=discord.Embed(
-                        title="Birbia Station's Currently Playing Song",
-                        color=0xFF5900,
-                        description=song,
-                    )
-                )
+        now = self.music_queue.now()
+        if now is None:
+            await self.__command_timeout()
+            return await ctx.send(
+                "Birbia's radio isn't playing anything right now. Submit a request now with ***birbia play***!"
+            )
 
-                await self._command_timeout()
-            else:
-                await ctx.send(
-                    "Birbia's radio isn't playing anything right now. Submit a request now with ***birbia play***!"
-                )
-                await self._command_timeout()
-        else:
-            await self._timeout_warn(ctx)
+        song = f"[{now.title}]({now.url}) - {now.get_duration()}"
+        await ctx.send(
+            embed=discord.Embed(
+                title="Birbia Station's Currently Playing Song",
+                color=0xFF5900,
+                description=song,
+            )
+        )
+        await self.__command_timeout()
 
     @commands.command(
         name="clear", help="Removes every current request from Birbia's radio station"
     )
-    async def clear(self, ctx):
+    async def clear(self, ctx: commands.Context):
         """
         Clears the queue.
         """
 
-        if self.allow_cmd:
-            if self.vc is not None:
-                self.queue = []
-                await ctx.send("Cleared all requests from Birbia's Radio Station.")
-                await self._command_timeout()
-            else:
-                await ctx.send(
-                    "To use Birbia Radio, please connect to a voice channel first."
-                )
-        else:
-            await self._timeout_warn(ctx)
+        if not self.allow_cmd:
+            await self.__timeout_warn(ctx)
+
+        if self.vc is None:
+            return await ctx.send(
+                "To use Birbia Radio, please connect to a voice channel first."
+            )
+
+        self.music_queue.empty_queue()
+        await ctx.send("Cleared all requests from Birbia's Radio Station.")
+        await self.__command_timeout()
 
     @commands.command(
         name="leave",
         aliases=["stop"],
         help="Make Birbia's Radio Station stop for the day.",
     )
-    async def leave(self, ctx):
+    async def leave(self, ctx: commands.Context):
         """
         Stops audio playback and leaves the voicechat.
         """
 
-        if self.allow_cmd:
-            await self.__disconnect()
-            await ctx.send("Birbia's Radio Station will stop for today sadly.")
-        else:
-            await self._timeout_warn(ctx)
+        if not self.allow_cmd:
+            await self.__timeout_warn(ctx)
+
+        await self.__disconnect()
+        await ctx.send("Birbia's Radio Station will stop for today sadly.")
+        await self.__command_timeout()
 
     @commands.command(name="join", help="Allows Birbia to join your party!")
-    async def join(self, ctx):
+    async def join(self, ctx: commands.Context):
         """
         Join the bot to the requesting user's voice channel.
         """
@@ -430,9 +348,9 @@ class MusicCog(commands.Cog):
         vc = ctx.author.voice
 
         if vc is None:
-            await ctx.send(
+            return await ctx.send(
                 "To use Birbia Radio, please connect to a voice channel first."
             )
-        else:
-            self.vc = await vc.channel.connect()
-            await self.__timeout_quit()
+
+        self.vc: discord.VoiceClient = await vc.channel.connect()
+        await self.__timeout_quit()

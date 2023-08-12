@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from random import randint
 
-from ..utils.scraper_bypass import DelayedScraper
+from ..core.utils.scraper_bypass import DelayedScraper
 
 
 class XCog(commands.Cog):

@@ -1,4 +1,3 @@
-import discord
 import time
 from discord.ext import commands
 
@@ -42,13 +41,10 @@ class UtilityCog(commands.Cog):
         if nmessages is None:
             return await ctx.send("You must specify the number of messages to purge.")
 
-        channel: discord.TextChannel = ctx.channel
-
-        def is_bot(m: discord.Message):
-            return m.author == self.bot.user
+        channel = ctx.channel
 
         await channel.purge(limit=nmessages + 1)
         await ctx.send(f"Purged {nmessages} messages.")
 
-        time.sleep(3)
-        await channel.purge(limit=1, check=is_bot)
+        time.sleep(2)
+        await channel.purge(limit=1, check=lambda m: m.author == self.bot.user)
