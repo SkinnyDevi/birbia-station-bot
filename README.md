@@ -1,4 +1,4 @@
-# Birbia's Radio Station [1.2.11]
+# Birbia's Radio Station [2.0.0]
 
 ![Birbia worker](https://thumbs.gfycat.com/RapidGlamorousGoldenretriever-size_restricted.gif)
 
@@ -34,8 +34,16 @@ The term itself derives from the funny way of saying 'bird' as 'birb', therefore
 ### Music
 - Expand queue commands
 	* Jump to number in queue
-	* Queue paging
-	* Remove certain queue position
+	* Queue pagination
+	* Remove certain audio in X position of the queue
+
+- Ability to load and play playlists
+
+- [Now possible with v2.0.0]
+  * Implement Instagram downloaders
+  * Implement TikTok downloaders
+  * Implement Soundcloud downloaders
+  * Implement Spotify downloaders
 
 
 ## For Developers
@@ -60,6 +68,11 @@ WORKDIR /birbia-station
 ENV POETRY_TOKEN="Production_Token_Here"
 ENV POETRY_DEV_TOKEN="Development_Token_Here"
 
+# An AFK disconnection delay
+ENV DISCONNECT_DELAY=600
+# A timeout to prevent command spamming
+ENV CMD_TIMEOUT=2
+
 COPY . .
 
 # Install dependencies required through Poetry
@@ -78,11 +91,11 @@ CMD [ "poetry", "run", "bot" ]
 Since bots work using Cogs, every module from this bot has been divided into it's separate cogs. This means that if you wish to disable any section (mangas, music player, etc...), you can simply comment out the respective cog.
 
 Cogs can be found inside *main.py*:
-```js
-MusicCog(bot) // Music player Cog
-UtilityCog(bot) // Utility Cog (purge messages, etc...)
-XCog(bot) // Manga Cog
-HelpCog(bot) // Hints help commands
+```py
+MusicCog(bot) # Music player Cog
+UtilityCog(bot) # Utility Cog (purge messages, etc...)
+XCog(bot) # Manga Cog
+HelpCog(bot) # Hints help commands
 ```
 
 ## Support and Contribution
