@@ -5,12 +5,12 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from birbia_station.cogs.music import MusicCog
-from birbia_station.cogs.help import HelpCog
-from birbia_station.cogs.utility import UtilityCog
-from birbia_station.cogs.xcog import XCog
+from src.cogs.music import MusicCog
+from src.cogs.help import HelpCog
+from src.cogs.utility import UtilityCog
+from src.cogs.xcog import XCog
 
-from birbia_station.core.logger import BirbiaLogger
+from src.core.logger import BirbiaLogger
 
 load_dotenv()
 

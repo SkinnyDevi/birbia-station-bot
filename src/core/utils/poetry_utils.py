@@ -3,7 +3,7 @@ import os
 
 def start_dev():
     os.system("cd " + os.getcwd())
-    os.system("poetry run python -u birbia_station/main.py")
+    os.system("poetry run python -u src/main.py")
 
 
 def start_tests():

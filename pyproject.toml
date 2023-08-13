@@ -5,7 +5,7 @@ description = "Birbia's Radio discord bot."
 authors = ["SkinnyDevi <skinnydevi.dev@gmail.com>"]
 maintainers = ["SkinnyDevi <skinnydevi.dev@gmail.com>"]
 readme = "README.md"
-packages = [{ include = "birbia_station" }]
+packages = [{ include = "src" }]
 repository = "https://github.com/SkinnyDevi/birbia-station-bot"
 
 [tool.poetry.dependencies]
@@ -30,10 +30,10 @@ pytest = "^7.2.1"
 pycodestyle = "^2.11.0"
 
 [tool.poetry.scripts]
-bot = "birbia_station.core.utils.poetry_utils:start_dev"
-test = "birbia_station.core.utils.poetry_utils:start_tests"
-build = "birbia_station.core.utils.poetry_utils:docker_build"
-mount = "birbia_station.core.utils.poetry_utils:docker_make_container"
+bot = "src.core.utils.poetry_utils:start_dev"
+test = "src.core.utils.poetry_utils:start_tests"
+build = "src.core.utils.poetry_utils:docker_build"
+mount = "src.core.utils.poetry_utils:docker_make_container"
 
 [build-system]
 requires = ["poetry-core"]

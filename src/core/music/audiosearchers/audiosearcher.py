@@ -1,8 +1,8 @@
 from urllib.parse import urlparse
 
-from birbia_station.core.music.audiosearchers.base import OnlineAudioSearcher
-from birbia_station.core.music.audiosearchers.youtube import YoutubeSearcher
-from birbia_station.core.exceptions import UnknownUrlAudioSearcherError
+from src.core.music.audiosearchers.base import OnlineAudioSearcher
+from src.core.music.audiosearchers.youtube import YoutubeSearcher
+from src.core.exceptions import UnknownUrlAudioSearcherError
 
 
 class AudioSearcher(OnlineAudioSearcher):

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from birbia_station.core.music.birbia_queue import BirbiaAudio
+from src.core.music.birbia_queue import BirbiaAudio
 
 
 class OnlineAudioSearcher(ABC):

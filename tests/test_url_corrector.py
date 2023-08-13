@@ -1,4 +1,4 @@
-from birbia_station.core.music.audiosearchers.youtube import YtUrls
+from src.core.music.audiosearchers.youtube import YtUrls
 
 
 def test_yt_urls():

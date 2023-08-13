@@ -2,7 +2,7 @@ import discord
 import pkg_resources
 from discord.ext import commands
 
-from birbia_station.constants import help_commands as cmds
+from src.constants import help_commands as cmds
 
 
 class HelpCog(commands.Cog):
