@@ -40,7 +40,7 @@ class MusicCog(commands.Cog):
         if len(self.vc.channel.members) > 0 and not self.vc.is_playing():
             try:
                 disconnect_audio = discord.FFmpegPCMAudio(
-                    os.getcwd() + "/birbia_station/audios/vc_disconnect.mp3",
+                    os.getcwd() + "/src/audios/vc_disconnect.mp3",
                 )
 
                 self.vc.play(disconnect_audio)
