@@ -363,10 +363,18 @@ class MusicCog(commands.Cog):
 
         vc = ctx.author.voice
 
+        if self.vc is not None and self.vc.channel != vc.channel:
+            await self.vc.move_to(vc.channel)
+            await self.__timeout_quit()
+            return
+
         if vc is None:
             return await ctx.send(
                 "To use Birbia Radio, please connect to a voice channel first."
             )
+
+        if self.vc is not None:
+            return await ctx.send("Birbia Radio is already in your voice channel.")
 
         self.vc: discord.VoiceClient = await vc.channel.connect()
         await self.__timeout_quit()
