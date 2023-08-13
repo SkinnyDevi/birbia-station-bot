@@ -39,7 +39,7 @@ The term itself derives from the funny way of saying 'bird' as 'birb', therefore
 
 - Ability to load and play playlists
 
-- [Now possible with v2.0.0]
+- Multiple query platforms (now easier to implement with v2.0.0)
   * Implement Instagram downloaders
   * Implement TikTok downloaders
   * Implement Soundcloud downloaders
@@ -48,7 +48,7 @@ The term itself derives from the funny way of saying 'bird' as 'birb', therefore
 
 ## For Developers
 If you want to set up the bot yourself, this project uses Poetry as it's package manager. With that in mind, here are some of the commands you can run:
-```python
+```py
 poetry run bot # Starts the bot and goes online
 poetry run test # Run any test it can find
 ```
@@ -56,7 +56,19 @@ To start the bot. By default, the bot can run with two tokens:
 - A production token
 - A beta/testing token
 
-Use the variable ***is_dev*** in *main.py* to switch between these modes.
+Use a `.env` file to set custom parameters for your bot:
+```py
+# Declare if the bot will run with the development token.
+ENV_IS_DEV=False
+BOT_TOKEN="Production_Token_Here"
+BOT_DEV_TOKEN="Development_Token_Here"
+
+# An AFK disconnection delay
+DISCONNECT_DELAY=600 # 300s = 5 min
+
+# A timeout to prevent command spamming
+CMD_TIMEOUT=2 # seconds
+```
 
 A docker file exists as a template to host your bot as a docker container locally or in the cloud.
 
@@ -65,12 +77,10 @@ FROM python:3.8.15
 
 WORKDIR /birbia-station
 
-ENV POETRY_TOKEN="Production_Token_Here"
-ENV POETRY_DEV_TOKEN="Development_Token_Here"
-
-# An AFK disconnection delay
+ENV ENV_IS_DEV=False
+ENV BOT_TOKEN="Production_Token_Here"
+ENV BOT_DEV_TOKEN="Development_Token_Here"
 ENV DISCONNECT_DELAY=600
-# A timeout to prevent command spamming
 ENV CMD_TIMEOUT=2
 
 COPY . .

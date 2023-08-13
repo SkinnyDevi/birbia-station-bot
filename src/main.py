@@ -1,4 +1,4 @@
-import os
+from os import environ
 import asyncio
 import discord
 
@@ -14,7 +14,7 @@ from src.core.logger import BirbiaLogger
 
 load_dotenv()
 
-is_dev = False
+is_dev = environ.get("ENV_IS_DEV") == "True"
 prefix = "birbia-beta " if is_dev else "birbia "
 bot = commands.Bot(command_prefix=prefix, intents=discord.Intents.all())
 
@@ -40,7 +40,7 @@ def start_bot():
     asyncio.run(main())
 
     try:
-        bot.run(os.environ.get("POETRY_DEV_TOKEN" if is_dev else "POETRY_TOKEN"))
+        bot.run(environ.get("BOT_DEV_TOKEN" if is_dev else "BOT_TOKEN"))
     except discord.errors.HTTPException:
         BirbiaLogger.error("BLOCKED BY RATE LIMITS")
 
