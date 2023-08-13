@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from random import randint
 
-from ..core.doujin.scraper import DoujinWebScraper
+from birbia_station.core.doujin.scraper import DoujinWebScraper
 
 
 class XCog(commands.Cog):

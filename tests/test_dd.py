@@ -1,7 +1,7 @@
 from random import randint
 
-from ..core.doujin.scraper import DoujinWebScraper
-from ..core.doujin.doujin import DoujinManga
+from birbia_station.core.doujin.scraper import DoujinWebScraper
+from birbia_station.core.doujin.doujin import DoujinManga
 
 dscraper = DoujinWebScraper()
 

@@ -1,4 +1,4 @@
-from ..core.music.audiosearchers.youtube import YoutubeSearcher
+from birbia_station.core.music.audiosearchers.youtube import YoutubeSearcher
 
 
 def test_youtube_queries():

@@ -1,8 +1,8 @@
 from yt_dlp import YoutubeDL
 
-from .base import OnlineAudioSearcher
-from ..birbia_queue import BirbiaAudio
-from ...logger import BirbiaLogger
+from birbia_station.core.music.audiosearchers.base import OnlineAudioSearcher
+from birbia_station.core.music.birbia_queue import BirbiaAudio
+from birbia_station.core.logger import BirbiaLogger
 
 
 class YtUrls:

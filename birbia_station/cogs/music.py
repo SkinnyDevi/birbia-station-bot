@@ -4,10 +4,10 @@ import os
 
 from discord.ext import commands
 
-from ..core.logger import BirbiaLogger
-from ..core.music.audiosearchers.audiosearcher import AudioSearcher
-from ..core.music.birbia_queue import BirbiaQueue, BirbiaAudio
-from ..core.exceptions import UnknownUrlAudioSearcherError
+from birbia_station.core.logger import BirbiaLogger
+from birbia_station.core.music.audiosearchers.audiosearcher import AudioSearcher
+from birbia_station.core.music.birbia_queue import BirbiaQueue
+from birbia_station.core.exceptions import UnknownUrlAudioSearcherError
 
 
 class MusicCog(commands.Cog):
@@ -39,9 +39,8 @@ class MusicCog(commands.Cog):
         """
         if len(self.vc.channel.members) > 0 and not self.vc.is_playing():
             try:
-                disconnect_audio = discord.FFmpegOpusAudio(
-                    os.getcwd() + "birbia_station/audios/vc_disconnect.mp3",
-                    **BirbiaAudio.FFMPEG_CFG,
+                disconnect_audio = discord.FFmpegPCMAudio(
+                    os.getcwd() + "/birbia_station/audios/vc_disconnect.mp3",
                 )
 
                 self.vc.play(disconnect_audio)

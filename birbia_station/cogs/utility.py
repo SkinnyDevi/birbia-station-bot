@@ -1,7 +1,7 @@
 import time
 from discord.ext import commands
 
-from ..core.logger import BirbiaLogger
+from birbia_station.core.logger import BirbiaLogger
 
 
 class UtilityCog(commands.Cog):

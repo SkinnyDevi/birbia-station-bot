@@ -1,7 +1,7 @@
 import discord
 
-from ..logger import BirbiaLogger
-from ..exceptions import *
+from birbia_station.core.logger import BirbiaLogger
+from birbia_station.core.exceptions import *
 
 
 class BirbiaAudio:

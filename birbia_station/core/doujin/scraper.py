@@ -2,7 +2,7 @@ import requests
 
 from bs4 import BeautifulSoup
 
-from .doujin import DoujinManga
+from birbia_station.core.doujin.doujin import DoujinManga
 
 
 class DoujinWebScraper:

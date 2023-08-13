@@ -30,10 +30,10 @@ pytest = "^7.2.1"
 pycodestyle = "^2.11.0"
 
 [tool.poetry.scripts]
-bot = "birbia_station.main:start_bot"
-test = "birbia_station.tests.poetry_test:start"
-testing = "birbia_station.testing:testing"
-docker = "birbia_station.utils.poetry_utils:docker_build"
+bot = "birbia_station.core.utils.poetry_utils:start_dev"
+test = "birbia_station.core.utils.poetry_utils:start_tests"
+build = "birbia_station.core.utils.poetry_utils:docker_build"
+mount = "birbia_station.core.utils.poetry_utils:docker_make_container"
 
 [build-system]
 requires = ["poetry-core"]

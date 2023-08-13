@@ -5,22 +5,25 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from .cogs.music import MusicCog
-from .cogs.help import HelpCog
-from .cogs.utility import UtilityCog
-from .cogs.xcog import XCog
+from birbia_station.cogs.music import MusicCog
+from birbia_station.cogs.help import HelpCog
+from birbia_station.cogs.utility import UtilityCog
+from birbia_station.cogs.xcog import XCog
 
-from .core.logger import BirbiaLogger
+from birbia_station.core.logger import BirbiaLogger
 
 load_dotenv()
 
-is_dev = True
+is_dev = False
 prefix = "birbia-beta " if is_dev else "birbia "
 bot = commands.Bot(command_prefix=prefix, intents=discord.Intents.all())
 
 
 @bot.event
 async def on_ready():
+    if is_dev:
+        BirbiaLogger.warn("Running bot in development mode")
+
     BirbiaLogger.info("Birbia's Radio Station is Live!")
 
 
@@ -40,3 +43,7 @@ def start_bot():
         bot.run(os.environ.get("POETRY_DEV_TOKEN" if is_dev else "POETRY_TOKEN"))
     except discord.errors.HTTPException:
         BirbiaLogger.error("BLOCKED BY RATE LIMITS")
+
+
+if __name__ == "__main__":
+    start_bot()
