@@ -21,6 +21,9 @@ bot = commands.Bot(command_prefix=prefix, intents=discord.Intents.all())
 
 @bot.event
 async def on_ready():
+    BirbiaLogger.info("Running Cache module with the following config:")
+    BirbiaLogger.info(f" - MAX CACHE ENTRIES: {environ.get('MAX_CACHE_ENTRIES')}")
+
     if is_dev:
         BirbiaLogger.warn("Running bot in development mode")
 

@@ -1,3 +1,4 @@
+import os
 import shutil
 import json
 import discord
@@ -11,6 +12,11 @@ from src.core.music.birbia_queue import BirbiaAudio
 
 class BirbiaCache(object):
     CACHE_DIR = Path("birbiaplayer_cache")
+    # fallback
+    MAX_CACHE_ENTRIES = 20
+
+    def __init__(self):
+        self.MAX_CACHE_ENTRIES = int(os.environ.get("MAX_CACHE_ENTRIES"))
 
     def __new__(cls):
         if not hasattr(cls, "instance"):
@@ -25,6 +31,8 @@ class BirbiaCache(object):
         """
         Caches a `BirbiaAudio` object and returns the cached file's `Path`.
         """
+
+        self.__cache_limit_reached()
 
         cache_dir = self.CACHE_DIR.joinpath(audio_id)
         if not cache_dir.exists():
@@ -46,6 +54,8 @@ class BirbiaCache(object):
         """
         Caches a `BirbiaAudio` object and returns the cached file's `Path`.
         """
+
+        self.__cache_limit_reached()
 
         cache_dir = self.CACHE_DIR.joinpath(audio.audio_id)
         if not cache_dir.exists():
@@ -142,3 +152,16 @@ class BirbiaCache(object):
                     output.write(data)
                 else:
                     break
+
+    def __cache_limit_reached(self):
+        """
+        Determines if cache limit has been reached.
+
+        If reached, deletes the oldest created cache.
+        """
+        if len(os.listdir(self.CACHE_DIR)) > self.MAX_CACHE_ENTRIES:
+            all_caches = sorted(
+                Path("birbiaplayer_cache").iterdir(), key=os.path.getctime, reverse=True
+            )
+
+            self.invalidate(all_caches[-1].stem)
