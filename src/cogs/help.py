@@ -26,7 +26,7 @@ class HelpCog(commands.Cog):
     def general_help(self) -> discord.Embed:
         help = discord.Embed(
             title="Commands",
-            description="All available command categories provided by Birbia.\nUse 'birbia [category] to see all commands from that category.",
+            description="All available command categories provided by Birbia.\nUse 'birbia [category]' to see all commands from that category.",
             color=0xFF5900,
         )
 
