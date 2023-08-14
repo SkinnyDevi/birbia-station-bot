@@ -1,4 +1,4 @@
-from src.core.music.audiosearchers.youtube import YtUrls
+from src.core.music.audiosearchers.youtube import YoutubeSearcher
 
 
 def test_yt_urls():
@@ -11,4 +11,4 @@ def test_yt_urls():
     ]
 
     for t in URL_TESTS:
-        assert YtUrls.url_corrector(t) is not False
+        assert YoutubeSearcher.url_corrector(t) is not False

@@ -1,9 +1,8 @@
 import requests
-
+import discord
 from bs4 import BeautifulSoup
 from mutagen.mp3 import MP3
 from urllib import parse, request
-import discord
 
 from src.core.music.audiosearchers.base import OnlineAudioSearcher
 from src.core.music.birbia_queue import BirbiaAudio
@@ -91,7 +90,7 @@ class TikTokSearcher(OnlineAudioSearcher):
             downloadMp3BtnLink = parentElement.find_all("a")[2]["href"]
             mp3File = request.urlopen(downloadMp3BtnLink)
 
-            audio_cache = birbia_cache.cache_audio(video_id, mp3File, tiktok=True)
+            audio_cache = birbia_cache.cache_audio(video_id, mp3File)
             localFile = MP3(str(audio_cache.absolute()))
 
             audio = BirbiaAudio(

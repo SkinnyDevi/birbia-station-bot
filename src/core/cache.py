@@ -27,7 +27,7 @@ class BirbiaCache(object):
 
         return cls.instance
 
-    def cache_audio(self, audio_id: str, audio_file, **kwargs):
+    def cache_audio(self, audio_id: str, audio_file):
         """
         Caches a `BirbiaAudio` object and returns the cached file's `Path`.
         """
@@ -40,11 +40,7 @@ class BirbiaCache(object):
 
         audio_file_path = cache_dir.joinpath("audio.mp3")
 
-        if "tiktok" in kwargs:
-            self.__cache_tiktok_audio(audio_file_path, audio_file)
-        else:
-            with open(audio_file_path, "rb") as audio_out:
-                audio_out.write(audio_file)
+        self.__cache_online_audio(audio_file_path, audio_file)
 
         BirbiaLogger.info(f"Cached audio file for audio id '{audio_id}'")
 
@@ -140,7 +136,7 @@ class BirbiaCache(object):
             pcm_audio=discord.FFmpegPCMAudio(str(audio_file_path.absolute())),
         )
 
-    def __cache_tiktok_audio(self, cache_dir: Path, file):
+    def __cache_online_audio(self, cache_dir: Path, file):
         """
         Specific caching method for open requests receiving constant mp3 file information.
         """
