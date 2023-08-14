@@ -1,9 +1,10 @@
+# Developer routes
 .env
+testing.py
+Dockerfile.build
+
+# Caches
 __pycache__
 .pytest_cache
-testing.py
-ffmpeg
-Dockerfile.build
 .DS_Store
-local-bot.vbs
-local-bot-init.bat
+birbiaplayer_cache

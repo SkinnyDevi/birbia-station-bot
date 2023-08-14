@@ -20,3 +20,19 @@ class QueueAudioValueError(ValueError):
     """
 
     pass
+
+
+class BirbiaCacheNotFoundError(FileNotFoundError):
+    """
+    Occurs when `BirbiaCache` can't find the specified file name.
+    """
+
+    pass
+
+
+class InvalidBirbiaCacheError(FileNotFoundError):
+    """
+    Occurs when one of the need files in the cache is not present.
+    """
+
+    pass

@@ -14,12 +14,25 @@ class BirbiaAudio:
         "options": "-vn",
     }
 
-    def __init__(self, source_url: str, title: str, url: str, length: int):
+    def __init__(
+        self,
+        source_url: str,
+        title: str,
+        url: str,
+        length: int,
+        audio_id: str,
+        pcm_audio: discord.FFmpegPCMAudio = None,
+    ):
         self._source_url = source_url
         self._title = title
+        self._audio_id = audio_id
         self._url = url
         self._length = length
-        self._pcm_audio = discord.FFmpegPCMAudio(source_url, **BirbiaAudio.FFMPEG_CFG)
+        self._pcm_audio = (
+            pcm_audio
+            if pcm_audio is not None
+            else discord.FFmpegPCMAudio(source_url, **BirbiaAudio.FFMPEG_CFG)
+        )
         self.__requester_vc: discord.VoiceChannel | None = None
 
     @property
@@ -51,11 +64,24 @@ class BirbiaAudio:
         return self._length
 
     @property
+    def audio_id(self):
+        """
+        The audio's specific platform ID.
+
+        Used for cache identification mostly.
+        """
+        return self._audio_id
+
+    @property
     def pcm_audio(self):
         """
         The audio's FFmpegPCMAudio instance for VoiceClient playing.
         """
         return self._pcm_audio
+
+    @pcm_audio.setter
+    def pcm_audio(self, val: discord.FFmpegPCMAudio):
+        self._pcm_audio = val
 
     def set_requester_vc(self, vc: discord.VoiceChannel):
         """
@@ -90,6 +116,17 @@ class BirbiaAudio:
             return "%02d:%02d" % (minutes, seconds)
 
         return "%ds" % (seconds)
+
+    def to_dict(self):
+        """
+        Returns the essential information as a `dict`.
+        """
+        return {
+            "title": self._title,
+            "length": self._length,
+            "id": self._audio_id,
+            "url": self._url,
+        }
 
 
 class BirbiaQueue:

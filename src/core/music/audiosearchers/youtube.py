@@ -67,7 +67,7 @@ class YoutubeSearcher(OnlineAudioSearcher):
             else f"ytsearch:{query}"
         )
 
-        BirbiaLogger.info(f"Requesting query: {query}")
+        BirbiaLogger.info(f"Requesting YouTube query: {query}")
         with YoutubeDL(self.config) as ydl:
             try:
                 ydl.cache.remove()
@@ -78,7 +78,7 @@ class YoutubeSearcher(OnlineAudioSearcher):
             except Exception as error:
                 BirbiaLogger.error(
                     "There was an error trying to find the specified youtube video: ",
-                    error,
+                    error.with_traceback(),
                 )
                 return None
 

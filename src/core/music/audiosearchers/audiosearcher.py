@@ -1,7 +1,9 @@
+import re
 from urllib.parse import urlparse
 
 from src.core.music.audiosearchers.base import OnlineAudioSearcher
 from src.core.music.audiosearchers.youtube import YoutubeSearcher
+from src.core.music.audiosearchers.tiktok import TikTokSearcher
 from src.core.exceptions import UnknownUrlAudioSearcherError
 
 
@@ -14,7 +16,8 @@ class AudioSearcher(OnlineAudioSearcher):
         super().__init__({})
 
     def search(self, query: str):
-        if "http" not in query:
+        is_url = re.search(r"^(http|https):\/\/.*$", query)
+        if is_url is None:
             yt = YoutubeSearcher()
             return yt.search(query)
 
@@ -32,8 +35,8 @@ class AudioSearcher(OnlineAudioSearcher):
         match parsed_uri.netloc:
             # case "instagram.com":
             #     pass
-            # case "tiktok.com" | "vm.tiktok.com":
-            #     pass
+            case "www.tiktok.com" | "vm.tiktok.com":
+                return TikTokSearcher()
             # case "soundcloud.com":
             #     pass
             case "youtube.com" | "www.youtube.com" | "youtu.be":

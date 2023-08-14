@@ -24,6 +24,7 @@ requests = "^2.31.0"
 python-dotenv = "^1.0.0"
 certifi = "^2023.07.22"
 future = "^0.18.3"
+mutagen = "^1.46.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
