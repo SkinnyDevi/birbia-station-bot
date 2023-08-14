@@ -1,0 +1,8 @@
+version: '3.1'
+
+services:
+  bot:
+    restart: unless-stopped
+    env_file:
+      - .env
+    image: felixmv/birbia-station:latest

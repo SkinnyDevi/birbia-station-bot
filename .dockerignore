@@ -1,2 +1,9 @@
-.pytest_cache
+# Developer routes
+.env
+testing.py
+
+# Caches
 __pycache__
+.pytest_cache
+.DS_Store
+birbiaplayer_cache

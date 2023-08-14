@@ -1,7 +1,6 @@
 # Developer routes
 .env
 testing.py
-Dockerfile.build
 
 # Caches
 __pycache__

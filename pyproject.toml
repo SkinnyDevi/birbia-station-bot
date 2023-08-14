@@ -34,6 +34,7 @@ pycodestyle = "^2.11.0"
 bot = "src.core.utils.poetry_utils:start_dev"
 test = "src.core.utils.poetry_utils:start_tests"
 build = "src.core.utils.poetry_utils:docker_build"
+push_build = "src.core.utils.poetry_utils:docker_push_build"
 mount = "src.core.utils.poetry_utils:docker_make_container"
 
 [build-system]

@@ -12,10 +12,12 @@ def start_tests():
 
 
 def docker_build():
-    os.system("docker build -t felixmv/birbia-station -f Dockerfile.build .")
+    os.system("docker build -t felixmv/birbia-station .")
+
+
+def docker_push_build():
+    os.system("docker push felixmv/birbia-station:latest")
 
 
 def docker_make_container():
-    os.system(
-        "docker run -d --restart unless-stopped --name birbia_station felixmv/birbia-station"
-    )
+    os.system("docker compose up -d")
