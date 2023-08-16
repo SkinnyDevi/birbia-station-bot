@@ -134,6 +134,7 @@ HelpCog(bot) // Hints help commands
 ### [2.1.1]
 * Reworked testing for consistency
 * General code refactorization
+* Fixed a bug for `YoutubeSearcher` that which erroed when searching in plain text or URLs
 
 ### [2.1.0]
 - Added a caching system for reusing local audios instead of requesting every time.
