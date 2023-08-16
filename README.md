@@ -55,11 +55,12 @@ This means that if you frequently use URLs for audio requests, using the same UR
 
 
 ## For Developers
-If you want to set up the bot yourself, this project uses Poetry as it's package manager. With that in mind, here are some of the commands you can run:
-```py
-poetry run bot # Starts the bot and goes online
-poetry run test # Run any test it can find
-poetry run mount # Mounts the image using docker-compose
+If you want to set up the bot yourself, this project as of v2.1.1 now uses venv (previously used poetry).
+To setup the environment:
+```zsh
+py -m venv .venv # create an env
+pip install --upgrade pip # update pip
+pip install -r requirements.txt # install dependencies
 ```
 To start the bot. By default, the bot can run with two tokens:
 - A production token
