@@ -1,6 +1,5 @@
 import os
 from pathlib import Path, PosixPath
-from yt_dlp import YoutubeDL
 from urllib.request import urlopen
 
 from src.core.cache import BirbiaCache
@@ -13,49 +12,27 @@ def init_cache():
     return cache
 
 
-def youtube_example():
-    url = "https://www.youtube.com/watch?v=a_cOaRNqjvQ"
+def cache_example():
+    url = "https://github.com/SkinnyDevi/birbia-station-bot/raw/master/src/audios/vc_disconnect.mp3"
 
-    config = {
-        "format": "bestaudio/best",
-        "extractaudio": True,
-        "audioformat": "mp3",
-        "outtmpl": "%(extractor)s-%(id)s-%(title)s.%(ext)s",
-        "restrictfilenames": True,
-        "noplaylist": True,
-        "nocheckcertificate": True,
-        "ignoreerrors": False,
-        "logtostderr": False,
-        "quiet": True,
-        "no_warnings": True,
-        "default_search": "auto",
-        "source_address": "0.0.0.0",
-    }
-
-    with YoutubeDL(config) as ydl:
-        ydl.cache.remove()
-        info = ydl.extract_info(url, download=False)
-
-        if "entries" in info.keys():
-            info = info["entries"][0]
-
-    return BirbiaAudio(
-        source_url=info["url"],
-        title=info["title"],
-        url=url,
-        length=info["duration"],
-        audio_id=info["id"],
+    audio = BirbiaAudio(
+        "None",
+        "Test Cache Example",
+        url,
+        99999,
+        "ZGJpans2c",
     )
+
+    return (audio, urlopen(url))
 
 
 def test_audio_cache(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
     cache = init_cache()
-    example = youtube_example()
+    example = cache_example()
 
-    audio_file = urlopen(example.source)
-    save_path = cache.cache_audio(example.audio_id, audio_file)
+    save_path = cache.cache_audio(example[0].audio_id, example[1])
 
     assert type(save_path) is Path or PosixPath
     assert save_path.exists()
@@ -65,9 +42,9 @@ def test_info_cache(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
     cache = init_cache()
-    example = youtube_example()
+    example = cache_example()
 
-    save_path = cache.cache_audio_info(example)
+    save_path = cache.cache_audio_info(example[0])
 
     assert type(save_path) is Path or PosixPath
     assert save_path.exists()
@@ -77,13 +54,12 @@ def test_cache_retrieval(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
     cache = init_cache()
-    example = youtube_example()
+    example = cache_example()
 
-    audio_file = urlopen(example.source)
-    cache.cache_audio(example.audio_id, audio_file)
-    cache.cache_audio_info(example)
+    cache.cache_audio(example[0].audio_id, example[1])
+    cache.cache_audio_info(example[0])
 
-    retrieved = cache.retrieve_audio(example.audio_id)
+    retrieved = cache.retrieve_audio(example[0].audio_id)
 
     assert type(retrieved) is BirbiaAudio
 
