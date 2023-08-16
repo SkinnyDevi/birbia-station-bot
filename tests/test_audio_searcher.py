@@ -1,4 +1,5 @@
 import discord
+import time
 
 from src.core.music.audiosearchers.youtube import YoutubeSearcher
 from src.core.music.audiosearchers.tiktok import TikTokSearcher
@@ -71,6 +72,7 @@ def test_tiktok_cache_retrieval(monkeypatch):
     searcher = TikTokSearcher()
     cache = BirbiaCache()
     cache.empty()
+    time.sleep(10)
 
     url = "https://vm.tiktok.com/ZGJpAqKQs/"
     url_id = "ZGJpAqKQs"

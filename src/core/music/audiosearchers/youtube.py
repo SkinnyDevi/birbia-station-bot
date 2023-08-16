@@ -72,7 +72,7 @@ class YoutubeSearcher(OnlineAudioSearcher):
             YoutubeSearcher.url_corrector(query)
             if query_is_url
             else f"ytsearch:{query}"
-        )
+        ), query_is_url
 
     def search(self, query: str):
         """
@@ -82,11 +82,11 @@ class YoutubeSearcher(OnlineAudioSearcher):
         """
 
         birbia_cache = BirbiaCache()
-        query_is_url = self.__format_query(query)
+        query, query_is_url = self.__format_query(query)
 
         BirbiaLogger.info(f"Requesting YouTube query: {query}")
         if not query_is_url:
-            # always search first if plain text search
+            # always search first if plain text in query
             return self.__online_search(query, birbia_cache, query_is_url)
 
         # query is a URL, fetch for cache or fetch video
