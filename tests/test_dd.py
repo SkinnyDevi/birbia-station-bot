@@ -6,22 +6,28 @@ from src.core.doujin.doujin import DoujinManga
 dscraper = DoujinWebScraper()
 
 
+def asserter(dd: DoujinManga):
+    assert type(dd.sauce) is int
+    assert type(dd.cover) is str
+    assert type(dd.titles) is dict
+    assert type(dd.tags) is list
+    assert type(dd.pages) is int
+    assert type(dd.url) is str
+
+
 def test_dd_exists():
     sauce = 177013
     output = dscraper.doujin(sauce)
-    print("\nSauce: ", output.to_dict())
-    assert type(output) is DoujinManga
+    asserter(output)
 
 
 def test_rng_dd_exists():
     sauce = randint(1, dscraper.doujin_maxcount())
     output = dscraper.doujin(sauce)
-    print("\nRNG: ", output.to_dict())
-    assert type(output) is DoujinManga
+    asserter(output)
 
 
 def test_latest_maxcount():
     maxcount = dscraper.doujin_maxcount()
     output = dscraper.doujin(maxcount)
-    print("\nMaxCount: ", output.to_dict())
-    assert type(output) is DoujinManga
+    asserter(output)

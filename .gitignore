@@ -1,6 +1,7 @@
 # Developer routes
 .env
 testing.py
+.vscode
 
 # Caches
 __pycache__
