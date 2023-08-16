@@ -19,7 +19,7 @@ class UtilityCog(commands.Cog):
     @commands.command(
         name="invite", help="Generates invites, default = 1 use per invite."
     )
-    async def invite(self, ctx: commands.Context, uses: int = 1):
+    async def invite(self, ctx: commands.Context, uses: str = "1"):
         """
         Generates invites, default = 1 use per invite.
         """

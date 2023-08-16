@@ -62,6 +62,18 @@ class YoutubeSearcher(OnlineAudioSearcher):
 
         return url.split("?v=")[1][:11]
 
+    def __format_query(self, query: str):
+        """
+        Returns the correct format for the query.
+        """
+        url_matcher = re.search(r"^(http|https):\/\/.*$", query)
+        query_is_url = url_matcher is not None
+        return (
+            YoutubeSearcher.url_corrector(query)
+            if query_is_url
+            else f"ytsearch:{query}"
+        )
+
     def search(self, query: str):
         """
         Searches for a query in YouTube using yt_dl.
@@ -70,14 +82,7 @@ class YoutubeSearcher(OnlineAudioSearcher):
         """
 
         birbia_cache = BirbiaCache()
-
-        url_matcher = re.search(r"^(http|https):\/\/.*$", query)
-        query_is_url = url_matcher is not None
-        query = (
-            YoutubeSearcher.url_corrector(query)
-            if query_is_url
-            else f"ytsearch:{query}"
-        )
+        query_is_url = self.__format_query(query)
 
         BirbiaLogger.info(f"Requesting YouTube query: {query}")
         if not query_is_url:
@@ -98,9 +103,9 @@ class YoutubeSearcher(OnlineAudioSearcher):
 
             return self.__online_search(query, birbia_cache, query_is_url)
 
-    def __online_search(self, query: str, cache_instance: BirbiaCache, is_url: bool):
+    def __ytdl_search(self, query: str):
         """
-        Searches online in YouTube for a specific URL or query.
+        Performs a youtube search using `YoutubeDL`.
         """
 
         with YoutubeDL(self.config) as ydl:
@@ -117,12 +122,21 @@ class YoutubeSearcher(OnlineAudioSearcher):
                 )
                 return None
 
+        return info
+
+    def __online_search(self, query: str, cache_instance: BirbiaCache, is_url: bool):
+        """
+        Searches online in YouTube for a specific URL or query.
+        """
+
+        info = self.__ytdl_search(query)
+
         BirbiaLogger.info("Successfully downloaded audio from query")
         audio = BirbiaAudio(
             source_url=info["url"],
             title=info["title"],
             url=YoutubeSearcher.YT_SHORTS_URL + info["id"]
-            if query.find("/shorts/") > -1
+            if "/shorts/" in query
             else YoutubeSearcher.YT_BASE_URL + info["id"],
             length=info["duration"],
             audio_id=info["id"],

@@ -36,7 +36,7 @@ class XCog(commands.Cog):
             if sauce_id < self.MIN_SAUCE:
                 return -2
 
-            if sauce_id > self.MAX_SAUCE:
+            elif sauce_id > self.MAX_SAUCE:
                 return -1
 
             return sauce_id
@@ -106,26 +106,23 @@ class XCog(commands.Cog):
 
         self.MAX_SAUCE = self.dscraper.doujin_maxcount()
 
-        if opt is not None:
-            if opt == "-s":
-                if sauce is None:
-                    return await ctx.send(
-                        "You didn't specify the sauce. Did you want ketchup?"
-                    )
-
-                match self.__sauceCheck(sauce):
-                    case -3:
-                        return await ctx.send("Sauce is invalid.")
-                    case -2:
-                        return await ctx.send("There's nothing lower than 2.")
-                    case -1:
-                        return await self.send_not_found(ctx, sauce)
-            else:
-                return await ctx.send(
-                    "Unknown option. Use ***-s*** for a specific doujin."
-                )
-        else:
+        if opt is None:
             sauce = randint(self.MIN_SAUCE, self.MAX_SAUCE)
+        elif opt == "-s":
+            if sauce is None:
+                return await ctx.send(
+                    "You didn't specify the sauce. Did you want ketchup?"
+                )
+
+            match self.__sauceCheck(sauce):
+                case -3:
+                    return await ctx.send("Sauce is invalid.")
+                case -2:
+                    return await ctx.send("There's nothing lower than 2.")
+                case -1:
+                    return await self.send_not_found(ctx, sauce)
+        else:
+            return await ctx.send("Unknown option. Use ***-s*** for a specific doujin.")
 
         doujin = self.doujin_embed_maker(sauce)
         await ctx.send(embed=doujin)

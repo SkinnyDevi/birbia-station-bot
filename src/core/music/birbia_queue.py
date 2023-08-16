@@ -112,7 +112,7 @@ class BirbiaAudio:
 
         if hour > 0:
             return "%d:%02d:%02d" % (hour, minutes, seconds)
-        if minutes > 0:
+        elif minutes > 0:
             return "%02d:%02d" % (minutes, seconds)
 
         return "%ds" % (seconds)
@@ -180,10 +180,7 @@ class BirbiaQueue:
         Returns the next (if any) song/audio to play in queue.
         """
 
-        if len(self.__queue) > 0:
-            return self.__queue[0]
-
-        return None
+        return self.__queue[0] if len(self.__queue) > 0 else None
 
     def add_to_queue(self, audio: BirbiaAudio):
         """

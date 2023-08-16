@@ -2,12 +2,12 @@ import os
 
 
 def start_dev():
-    os.system("cd " + os.getcwd())
+    os.system(f"cd {os.getcwd()}")
     os.system("poetry run python -u src/main.py")
 
 
 def start_tests():
-    os.system("cd " + os.getcwd())
+    os.system(f"cd {os.getcwd()}")
     os.system("poetry run pytest -s")
 
 

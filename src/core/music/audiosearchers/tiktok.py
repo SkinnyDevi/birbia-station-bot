@@ -69,39 +69,66 @@ class TikTokSearcher(OnlineAudioSearcher):
                 BirbiaLogger.warn("Invalidating incomplete cache")
                 birbia_cache.invalidate(video_id)
 
-            video_id = self.__extract_video_id(query)
-            data = {
-                "id": query,
-                "locale": "en",
-                "tt": "dEQ4dnY3",
-            }
+            return self.__online_search(birbia_cache, video_id, query)
 
-            response = requests.post(
-                "https://ssstik.io/abc",
-                params=self.config["params"],
-                headers=self.config["headers"],
-                data=data,
-            )
-            responseSoup = BeautifulSoup(response.text, "html.parser")
+    def __query_requester(self, query: str):
+        """
+        Sends a query request to the designated service.
+        """
 
-            videoTitle = responseSoup.find("p", {"class": "maintext"}).decode_contents()
+        data = {
+            "id": query,
+            "locale": "en",
+            "tt": "dEQ4dnY3",
+        }
 
-            parentElement = responseSoup.find("a", {"id": "direct_dl_link"}).parent
-            downloadMp3BtnLink = parentElement.find_all("a")[2]["href"]
-            mp3File = request.urlopen(downloadMp3BtnLink)
+        return requests.post(
+            "https://ssstik.io/abc",
+            params=self.config["params"],
+            headers=self.config["headers"],
+            data=data,
+        )
 
-            audio_cache = birbia_cache.cache_audio(video_id, mp3File)
-            localFile = MP3(str(audio_cache.absolute()))
+    def __extract_from_html(self, query: str):
+        """
+        Extracts data from the received HTML.
+        """
 
-            audio = BirbiaAudio(
-                str(audio_cache.absolute()),
-                videoTitle,
-                query,
-                localFile.info.length,
-                video_id,
-                pcm_audio=discord.FFmpegPCMAudio(str(audio_cache.absolute())),
-            )
+        response = self.__query_requester(query)
+        responseSoup = BeautifulSoup(response.text, "html.parser")
 
-            birbia_cache.cache_audio_info(audio)
+        parentElement = responseSoup.find("a", {"id": "direct_dl_link"}).parent
+        downloadMp3BtnLink = parentElement.find_all("a")[2]["href"]
 
-            return audio
+        return responseSoup.find(
+            "p", {"class": "maintext"}
+        ).decode_contents(), request.urlopen(downloadMp3BtnLink)
+
+    def __online_search(
+        self,
+        birbia_cache: BirbiaCache,
+        video_id: str,
+        query: str,
+    ):
+        """
+        Downloads and plays the requested TikTok URL from internet or cache.
+        """
+
+        video_id = self.__extract_video_id(query)
+
+        extraction = self.__extract_from_html(query)
+        audio_cache = birbia_cache.cache_audio(video_id, extraction[1])
+        localFile = MP3(str(audio_cache.absolute()))
+
+        audio = BirbiaAudio(
+            str(audio_cache.absolute()),
+            extraction[0],
+            query,
+            localFile.info.length,
+            video_id,
+            pcm_audio=discord.FFmpegPCMAudio(str(audio_cache.absolute())),
+        )
+
+        birbia_cache.cache_audio_info(audio)
+
+        return audio

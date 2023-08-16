@@ -121,7 +121,7 @@ class BirbiaCache(object):
         info_file_path = cache_dir.joinpath("info.json")
 
         if not audio_file_path.exists() or not info_file_path.exists():
-            audio_or_info = "Info" if not info_file_path.exists() else "Audio"
+            audio_or_info = "Audio" if audio_file_path.exists() else "Info"
             return (None, audio_or_info)
 
         with open(info_file_path, "r") as info:
@@ -143,8 +143,7 @@ class BirbiaCache(object):
 
         with open(cache_dir, "wb") as output:
             while True:
-                data = file.read(4096)
-                if data:
+                if data := file.read(4096):
                     output.write(data)
                 else:
                     break

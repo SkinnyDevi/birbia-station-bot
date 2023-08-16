@@ -38,7 +38,7 @@ class MusicCog(commands.Cog):
         if len(self.vc.channel.members) > 0 and not self.vc.is_playing():
             try:
                 disconnect_audio = discord.FFmpegPCMAudio(
-                    os.getcwd() + "/src/audios/vc_disconnect.mp3",
+                    f"{os.getcwd()}/src/audios/vc_disconnect.mp3"
                 )
 
                 self.vc.play(disconnect_audio)
@@ -142,7 +142,7 @@ class MusicCog(commands.Cog):
 
         song_query = " ".join(args)
 
-        if song_query == "" or song_query == " ":
+        if song_query in {"", " "}:
             return await ctx.send(
                 "Don't play with Birbia. What is that you want to listen to?"
             )
@@ -244,11 +244,10 @@ class MusicCog(commands.Cog):
             return await self.__timeout_warn(ctx)
 
         if self.vc is not None and self.vc.is_connected():
-            if self.music_queue.queue_length() == 0:
-                if self.music_queue.now() is None:
-                    return await ctx.send(
-                        "Birbia has nothing to skip! The queue is currently empty."
-                    )
+            if self.music_queue.queue_length() == 0 and self.music_queue.now() is None:
+                return await ctx.send(
+                    "Birbia has nothing to skip! The queue is currently empty."
+                )
 
             self.vc.stop()
             await ctx.send("Birbia skipped a song. It seems you didn't like it.")

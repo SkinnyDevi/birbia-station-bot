@@ -18,7 +18,7 @@ class HelpCog(commands.Cog):
         return embed
 
     def __add_to_embed(self, embed: discord.Embed, commands: dict) -> discord.Embed:
-        for cmd in commands.keys():
+        for cmd in commands:
             embed.add_field(name=cmd, value=commands[cmd])
 
         return embed

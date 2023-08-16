@@ -1,7 +1,6 @@
-from os import environ
 import asyncio
 import discord
-
+from os import environ
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -9,8 +8,8 @@ from src.cogs.music import MusicCog
 from src.cogs.help import HelpCog
 from src.cogs.utility import UtilityCog
 from src.cogs.xcog import XCog
-
 from src.core.logger import BirbiaLogger
+
 
 load_dotenv()
 

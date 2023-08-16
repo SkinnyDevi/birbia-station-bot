@@ -19,7 +19,7 @@ class DoujinWebScraper:
         Retrieves all doujin information from the sauce.
         """
 
-        request = requests.get(DoujinWebScraper.FETCH_ROOT + "/g/" + str(sauce)).text
+        request = requests.get(f"{DoujinWebScraper.FETCH_ROOT}/g/{sauce}").text
         doujin_site = BeautifulSoup(request, "html.parser")
 
         titles = self.__get_titles(doujin_site)
@@ -74,12 +74,11 @@ class DoujinWebScraper:
 
         alltags = site.findAll("a", {"class": "tag"})
 
-        tags = []
-        for spantag in alltags:
-            if "/tag/" in spantag["href"]:
-                tags.append(spantag["href"].replace("/tag/", "").replace("/", ""))
-
-        return tags
+        return [
+            spantag["href"].replace("/tag/", "").replace("/", "")
+            for spantag in alltags
+            if "/tag/" in spantag["href"]
+        ]
 
     def __get_pages(self, site: BeautifulSoup) -> int:
         """
