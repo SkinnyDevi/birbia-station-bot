@@ -1,4 +1,4 @@
-# Birbia's Radio Station [2.0.0]
+# Birbia's Radio Station [2.1.1]
 
 ![Birbia worker](https://thumbs.gfycat.com/RapidGlamorousGoldenretriever-size_restricted.gif)
 
@@ -21,13 +21,12 @@ The term itself derives from the funny way of saying 'bird' as 'birb', therefore
 - Have control of what you listen to: ***play, pause, resume and skip*** audios and videos.
 - Custom queue manager to list all future videos to play.
 
-#### [2.1.0]
-- Now with more supported platforms!
+- Supported audio request platforms:
 	- YouTube (URL and plain text search)
 	- TikTok videos (URL search only)
 
-All of the above now support caching! 
-This means that if you frequently used URLs for audio requests, using the same URLs after the first use will provide you with your request exponentially quicker!
+All of the above support caching! 
+This means that if you frequently use URLs for audio requests, using the same URLs after the first use will provide you with your request exponentially quicker!
 
 ### Manga [+18]
 - Search for the sauces you've always been curious about.
@@ -107,6 +106,7 @@ ENV BOT_TOKEN="Production_token_here"
 ENV BOT_DEV_TOKEN="Developer_token_here"
 ENV DISCONNECT_DELAY=600
 ENV CMD_TIMEOUT=2
+ENV MAX_CACHE_ENTRIES=20
 
 COPY . .
 
@@ -128,6 +128,29 @@ UtilityCog(bot) // Utility Cog (purge messages, etc...)
 XCog(bot) // Manga Cog
 HelpCog(bot) // Hints help commands
 ```
+
+## Changelog
+
+### [2.1.1]
+* Reworked testing for consistency
+* General code refactorization
+
+### [2.1.0]
+- Added a caching system for reusing local audios instead of requesting every time.
+- Added **TikTok audio/url searcher** implementation
+- Added `MAX_CACHE_ENTRIES` configuration to `.env`
+- Implemented caching for TikTok and YouTube URLs
+- Reworked the docker building process:
+	- Added custom environment variables to the image (previously hardcoded)
+	- Added a docker compose file for ease of use
+
+### [2.0.0]
+- Reworked the entire music cog for better maintanance and readability
+- Added a general `AudioSearcher` class for a commonplace for platform audio searchers
+- Added a logger
+- Added custom exceptions
+- Added new configurations to `.env`
+* Fixes the error from 1.2.11 where FFmpeg instance didn't work
 
 ## Support and Contribution
 If you like what I do and find it easy to set up this bot youself, I would love if you'd give the repo a star. Very much appreciated! 
