@@ -2,6 +2,8 @@
 .env
 testing.py
 .vscode
+.venv
+target
 
 # Caches
 __pycache__
