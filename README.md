@@ -136,7 +136,7 @@ HelpCog(bot) // Hints help commands
 * General code refactorization
 * Fixed a bug for `YoutubeSearcher` that which erroed when searching in plain text or URLs
 
-### [2.1.0]
+### [2.1.0]
 - Added a caching system for reusing local audios instead of requesting every time.
 - Added **TikTok audio/url searcher** implementation
 - Added `MAX_CACHE_ENTRIES` configuration to `.env`
