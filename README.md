@@ -131,6 +131,10 @@ HelpCog(bot) // Hints help commands
 
 ## Changelog
 
+### [2.1.2]
+* Added a new method of caching YouTube urls:
+	- Before, caching was made with the given URl, and downloading using `urllib.request.urlopen`. Now, caching is made by directly downloading using the `YouTubeDL` class
+
 ### [2.1.1]
 * Reworked testing for consistency
 * General code refactorization

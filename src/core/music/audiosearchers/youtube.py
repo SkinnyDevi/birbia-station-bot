@@ -1,6 +1,5 @@
 import re
 from yt_dlp import YoutubeDL
-from urllib.request import urlopen
 
 from src.core.music.audiosearchers.base import OnlineAudioSearcher
 from src.core.music.birbia_queue import BirbiaAudio
@@ -17,22 +16,45 @@ class YoutubeSearcher(OnlineAudioSearcher):
     YT_BASE_URL = "https://www.youtube.com/watch?v="
     YT_SHORTS_URL = "https://www.youtube.com/shorts/"
 
+    def __get_downloadable_config(self, base: dict):
+        """
+        A custom config for `YouTubeDL` for downloading directly to cache.
+        """
+
+        downloadable_config = base.copy()
+        del downloadable_config["audioformat"]
+        downloadable_config["outtmpl"] = "birbiaplayer_cache/%(id)s/audio.%(ext)s"
+        downloadable_config["postprocessors"] = [
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "320",
+            }
+        ]
+
+        return downloadable_config
+
     def __init__(self):
+        base_config = {
+            "format": "bestaudio/best",
+            "extractaudio": True,
+            "audioformat": "mp3",
+            "outtmpl": "%(extractor)s-%(id)s-%(title)s.%(ext)s",
+            "restrictfilenames": True,
+            "noplaylist": True,
+            "nocheckcertificate": True,
+            "ignoreerrors": False,
+            "logtostderr": False,
+            "quiet": True,
+            "no_warnings": True,
+            "default_search": "auto",
+            "source_address": "0.0.0.0",
+        }
+
         super().__init__(
             {
-                "format": "bestaudio/best",
-                "extractaudio": True,
-                "audioformat": "mp3",
-                "outtmpl": "%(extractor)s-%(id)s-%(title)s.%(ext)s",
-                "restrictfilenames": True,
-                "noplaylist": True,
-                "nocheckcertificate": True,
-                "ignoreerrors": False,
-                "logtostderr": False,
-                "quiet": True,
-                "no_warnings": True,
-                "default_search": "auto",
-                "source_address": "0.0.0.0",
+                "online": base_config,
+                "downloadable": self.__get_downloadable_config(base_config),
             }
         )
 
@@ -103,15 +125,15 @@ class YoutubeSearcher(OnlineAudioSearcher):
 
             return self.__online_search(query, birbia_cache, query_is_url)
 
-    def __ytdl_search(self, query: str):
+    def __ytdl_search(self, query: str, is_url: bool):
         """
         Performs a youtube search using `YoutubeDL`.
         """
 
-        with YoutubeDL(self.config) as ydl:
+        with YoutubeDL(self.config.get("downloadable" if is_url else "online")) as ydl:
             try:
                 ydl.cache.remove()
-                info = ydl.extract_info(query, download=False)
+                info = ydl.extract_info(query, download=is_url)
 
                 if "entries" in info.keys():
                     info = info["entries"][0]
@@ -129,22 +151,25 @@ class YoutubeSearcher(OnlineAudioSearcher):
         Searches online in YouTube for a specific URL or query.
         """
 
-        info = self.__ytdl_search(query)
+        info = self.__ytdl_search(query, is_url)
 
         BirbiaLogger.info("Successfully downloaded audio from query")
+        audio_url = (
+            YoutubeSearcher.YT_SHORTS_URL + info["id"]
+            if "/shorts/" in query
+            else YoutubeSearcher.YT_BASE_URL + info["id"]
+        )
+
         audio = BirbiaAudio(
             source_url=info["url"],
             title=info["title"],
-            url=YoutubeSearcher.YT_SHORTS_URL + info["id"]
-            if "/shorts/" in query
-            else YoutubeSearcher.YT_BASE_URL + info["id"],
+            url=audio_url,
             length=info["duration"],
             audio_id=info["id"],
         )
 
         if is_url:
-            audio_file = urlopen(info["url"])
-            cache_instance.cache_audio(info["id"], audio_file)
             cache_instance.cache_audio_info(audio)
+            audio = cache_instance.retrieve_audio(info["id"])
 
         return audio
