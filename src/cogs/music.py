@@ -5,6 +5,7 @@ import os
 from discord.ext import commands
 
 from src.core.logger import BirbiaLogger
+from src.core.language import BirbiaLanguage
 from src.core.music.audiosearchers.audiosearcher import AudioSearcher
 from src.core.music.birbia_queue import BirbiaQueue
 from src.core.exceptions import UnknownUrlAudioSearcherError
@@ -21,6 +22,7 @@ class MusicCog(commands.Cog):
         self.allow_cmd = True
         self.music_queue = BirbiaQueue()
         self.audio_search = AudioSearcher()
+        self.__language = BirbiaLanguage.instance()
 
         self.started_quit_timeout = False
 
@@ -97,9 +99,7 @@ class MusicCog(commands.Cog):
         Warns the user if they are still in command timeout.
         """
 
-        await ctx.send(
-            "Birbia warns you to wait at least 2 seconds before running the next command."
-        )
+        await ctx.send(self.__language.timeout_warn)
 
     def __queue_next(self):
         """
@@ -123,9 +123,7 @@ class MusicCog(commands.Cog):
             self.vc = await up_next.get_requester_vc().connect()
 
             if self.vc is None:
-                return await ctx.send(
-                    "Birbia could not enter your voice chat. This is illegal. We will take action."
-                )
+                return await ctx.send(self.__language.cant_enter_vc)
         else:
             await self.vc.move_to(up_next.get_requester_vc())
 
@@ -143,35 +141,27 @@ class MusicCog(commands.Cog):
         song_query = " ".join(args)
 
         if song_query in {"", " "}:
-            return await ctx.send(
-                "Don't play with Birbia. What is that you want to listen to?"
-            )
+            return await ctx.send(self.__language.play_empty_query)
 
         requester_in_voice = ctx.author.voice
 
         if requester_in_voice is None:
             self.__command_timeout(ctx)
-            return await ctx.send(
-                "To use Birbia Radio, please connect to a voice channel first."
-            )
+            return await ctx.send(self.__language.no_vc)
 
         if not self.allow_cmd:
             return await self.__timeout_warn(ctx)
 
-        await ctx.send("Birbia is sending it's hawks to fetch your audio...")
+        await ctx.send(self.__language.play_fetching_query)
 
         try:
             audio_obj = self.audio_search.search(song_query)
         except UnknownUrlAudioSearcherError as error:
             BirbiaLogger.error(str(error))
-            return await ctx.send(
-                "It seems Birbia is not ready to process those URLs as of now. Try a different one!"
-            )
+            return await ctx.send(self.__language.play_platform_not_supported)
 
         if audio_obj is None:
-            return await ctx.send(
-                "Birbia sent out it's fastest eagles, but could not get your audio back. Try again!"
-            )
+            return await ctx.send(self.__language.play_failed_query)
 
         try:
             audio_obj.set_requester_vc(requester_in_voice.channel)
@@ -190,9 +180,7 @@ class MusicCog(commands.Cog):
             await self.__command_timeout()
             await self.__timeout_quit()
         except Exception as error:
-            await ctx.send(
-                "WOAH! Birbia had a tough time trying to play your audio. Try again!"
-            )
+            await ctx.send(self.__language.play_failed_error)
             BirbiaLogger.error(
                 "An error ocurred while trying to play the requested audio", error
             )
@@ -208,10 +196,10 @@ class MusicCog(commands.Cog):
 
         if self.vc.is_playing() and not self.vc.is_paused():
             self.vc.pause()
-            await ctx.send("Birbia paused the current audio in it's radio station.")
+            await ctx.send(self.__language.action_pause)
             await self.__command_timeout()
         else:
-            await ctx.send("Birbia's radio station has nothing to pause!")
+            await ctx.send(self.__language.action_pause_empty)
 
     @commands.command(
         name="resume", help="Resume the audio frozen in Birbia's radio station."
@@ -226,10 +214,10 @@ class MusicCog(commands.Cog):
 
         if self.vc.is_paused():
             self.vc.resume()
-            await ctx.send("Birbia has resumed playing on it's radio station!")
+            await ctx.send(self.__language.action_resume)
             await self.__command_timeout()
         else:
-            await ctx.send("Birbia has got nothing to resume in it's radio station.")
+            await ctx.send(self.__language.action_resume_empty)
 
     @commands.command(
         name="skip",
@@ -245,12 +233,10 @@ class MusicCog(commands.Cog):
 
         if self.vc is not None and self.vc.is_connected():
             if self.music_queue.queue_length() == 0 and self.music_queue.now() is None:
-                return await ctx.send(
-                    "Birbia has nothing to skip! The queue is currently empty."
-                )
+                return await ctx.send(self.__language.action_skip_empty)
 
             self.vc.stop()
-            await ctx.send("Birbia skipped a song. It seems you didn't like it.")
+            await ctx.send(self.__language.action_skip)
             await self.__command_timeout()
 
     @commands.command(
@@ -276,13 +262,11 @@ class MusicCog(commands.Cog):
             counter += 1
 
         if self.music_queue.is_queue_empty():
-            return await ctx.send(
-                "Birbia radio station is currently waiting for new requests. Send one!"
-            )
+            return await ctx.send(self.__language.queue_empty)
 
         await ctx.send(
             embed=discord.Embed(
-                title="Birbia Station's Pending Requests",
+                title=self.__language.queue_title,
                 color=0xFF5900,
                 description=q,
             )
@@ -301,14 +285,12 @@ class MusicCog(commands.Cog):
         now = self.music_queue.now()
         if now is None:
             await self.__command_timeout()
-            return await ctx.send(
-                "Birbia's radio isn't playing anything right now. Submit a request now with ***birbia play***!"
-            )
+            return await ctx.send(self.__language.now_empty)
 
         song = f"[{now.title}]({now.url}) - {now.get_duration()}"
         await ctx.send(
             embed=discord.Embed(
-                title="Birbia Station's Currently Playing Song",
+                title=self.__language.now_title,
                 color=0xFF5900,
                 description=song,
             )
@@ -327,12 +309,10 @@ class MusicCog(commands.Cog):
             await self.__timeout_warn(ctx)
 
         if self.vc is None:
-            return await ctx.send(
-                "To use Birbia Radio, please connect to a voice channel first."
-            )
+            return await ctx.send(self.__language.no_vc)
 
         self.music_queue.empty_queue()
-        await ctx.send("Cleared all requests from Birbia's Radio Station.")
+        await ctx.send(self.__language.action_clear)
         await self.__command_timeout()
 
     @commands.command(
@@ -349,7 +329,7 @@ class MusicCog(commands.Cog):
             await self.__timeout_warn(ctx)
 
         await self.__disconnect()
-        await ctx.send("Birbia's Radio Station will stop for today sadly.")
+        await ctx.send(self.__language.action_stop)
         await self.__command_timeout()
 
     @commands.command(name="join", help="Allows Birbia to join your party!")
@@ -366,12 +346,10 @@ class MusicCog(commands.Cog):
             return
 
         if vc is None:
-            return await ctx.send(
-                "To use Birbia Radio, please connect to a voice channel first."
-            )
+            return await ctx.send(self.__language.no_vc)
 
         if self.vc is not None:
-            return await ctx.send("Birbia Radio is already in your voice channel.")
+            return await ctx.send(self.__language.already_in_vc)
 
         self.vc: discord.VoiceClient = await vc.channel.connect()
         await self.__timeout_quit()

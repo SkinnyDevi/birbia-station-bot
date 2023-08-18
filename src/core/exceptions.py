@@ -36,3 +36,9 @@ class InvalidBirbiaCacheError(FileNotFoundError):
     """
 
     pass
+
+
+class LanguageFileNotFoundError(FileNotFoundError):
+    "Occurs when trying to load a non-existent language file"
+
+    pass

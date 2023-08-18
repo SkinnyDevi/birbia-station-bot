@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from random import randint
 
+from src.core.language import BirbiaLanguage
 from src.core.doujin.scraper import DoujinWebScraper
 
 
@@ -14,6 +15,7 @@ class XCog(commands.Cog):
 
         self.dscraper = DoujinWebScraper()
         self.MAX_SAUCE = self.dscraper.doujin_maxcount()
+        self.__language = BirbiaLanguage.instance()
 
     def __sauceCheck(self, sauce_id) -> int:
         """
@@ -59,21 +61,29 @@ class XCog(commands.Cog):
         # TODO: assert that covers display correctly
         embed.set_thumbnail(url=doujin_data.cover)
 
-        embed.add_field(name="Title", value=doujin_data.titles["english"], inline=False)
+        embed.add_field(
+            name=self.__language.title,
+            value=doujin_data.titles["english"],
+            inline=False,
+        )
 
         if doujin_data.titles["original"] != "":
             embed.add_field(
-                name="Original Title",
+                name=self.__language.original_title,
                 value=doujin_data.titles["original"],
                 inline=False,
             )
 
         if len(doujin_data.tags) != 0:
             embed.add_field(
-                name="Categories", value=", ".join(doujin_data.tags), inline=False
+                name=self.__language.categories,
+                value=", ".join(doujin_data.tags),
+                inline=False,
             )
 
-        embed.add_field(name="Pages", value=doujin_data.pages, inline=False)
+        embed.add_field(
+            name=self.__language.pages, value=doujin_data.pages, inline=False
+        )
 
         embed.add_field(name="Doujin Online", value=doujin_data.url, inline=False)
 
@@ -87,7 +97,7 @@ class XCog(commands.Cog):
         embed = discord.Embed(colour=discord.Colour.red(), title=f"Doujin #{sauce}")
 
         embed.add_field(
-            name="We couldn't find your doujin in our sources, but here's the official link:",
+            name=self.__language.doujin_not_in_source,
             value=self.dscraper.WEB_ROOT + str(sauce),
             inline=False,
         )
@@ -110,19 +120,17 @@ class XCog(commands.Cog):
             sauce = randint(self.MIN_SAUCE, self.MAX_SAUCE)
         elif opt == "-s":
             if sauce is None:
-                return await ctx.send(
-                    "You didn't specify the sauce. Did you want ketchup?"
-                )
+                return await ctx.send(self.__language.doujin_no_sauce)
 
             match self.__sauceCheck(sauce):
                 case -3:
-                    return await ctx.send("Sauce is invalid.")
+                    return await ctx.send(self.__language.doujin_invalid_sauce)
                 case -2:
-                    return await ctx.send("There's nothing lower than 2.")
+                    return await ctx.send(self.__language.doujin_minimum)
                 case -1:
                     return await self.send_not_found(ctx, sauce)
         else:
-            return await ctx.send("Unknown option. Use ***-s*** for a specific doujin.")
+            return await ctx.send(self.__language.doujin_unknown_opt)
 
         doujin = self.doujin_embed_maker(sauce)
         await ctx.send(embed=doujin)

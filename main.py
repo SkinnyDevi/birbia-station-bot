@@ -9,6 +9,7 @@ from src.cogs.help import HelpCog
 from src.cogs.utility import UtilityCog
 from src.cogs.xcog import XCog
 from src.core.logger import BirbiaLogger
+from src.constants.version import __version__
 
 
 load_dotenv()
@@ -26,7 +27,7 @@ async def on_ready():
     if is_dev:
         BirbiaLogger.warn("Running bot in development mode")
 
-    BirbiaLogger.info("Birbia's Radio Station is Live!")
+    BirbiaLogger.info(f"Birbia's Radio Station ({__version__}) is Live!")
 
 
 cogs = [MusicCog(bot), UtilityCog(bot), XCog(bot), HelpCog(bot)]

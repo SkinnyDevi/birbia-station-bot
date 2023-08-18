@@ -2,11 +2,13 @@ import time
 from discord.ext import commands
 
 from src.core.logger import BirbiaLogger
+from src.core.language import BirbiaLanguage
 
 
 class UtilityCog(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
+        self.__language = BirbiaLanguage.instance()
 
     @commands.command(name="ping", help="Returns sender's ping in ms.")
     async def ping(self, ctx):
@@ -27,11 +29,10 @@ class UtilityCog(commands.Cog):
         uses = int(uses)
 
         if uses < 1:
-            return await ctx.send("Invite uses cannot be 0.")
+            return await ctx.send(self.__language.invite_zero)
 
         invite = await ctx.channel.create_invite(max_uses=uses)
-        invite_send = f"Invite generated. \nMax uses: {uses}\n{invite}"
-        await ctx.send(invite_send)
+        await ctx.send(self.__language.invite_gen.format(uses=uses, invite=invite))
         BirbiaLogger.info(
             f"Invite generated with {uses} uses for {ctx.message.author}."
         )
@@ -43,12 +44,12 @@ class UtilityCog(commands.Cog):
         """
 
         if nmessages is None:
-            return await ctx.send("You must specify the number of messages to purge.")
+            return await ctx.send(self.__language.purge_amount)
 
         channel = ctx.channel
 
         await channel.purge(limit=nmessages + 1)
-        await ctx.send(f"Purged {nmessages} messages.")
+        await ctx.send(self.__language.purge_success.format(nmsgs=nmessages))
 
         time.sleep(2)
         await channel.purge(limit=1, check=lambda m: m.author == self.bot.user)

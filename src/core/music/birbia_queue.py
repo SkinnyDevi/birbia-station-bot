@@ -166,7 +166,7 @@ class BirbiaQueue:
         """
 
         if len(self.__queue) == 0:
-            raise QueueAudioValueError("There are no more audios left in the queue.")
+            raise EmptyQueueError("There are no more audios left in the queue.")
 
         if self.__now is not None:
             self.__history.insert(0, self.__now)
@@ -188,7 +188,7 @@ class BirbiaQueue:
         """
 
         if audio is None:
-            raise EmptyQueueError(f"Cannot append {type(None)} to queue.")
+            raise QueueAudioValueError(f"Cannot append {type(None)} to queue.")
 
         self.__queue.append(audio)
         BirbiaLogger.info(f"Appended audio '{audio.title}' to queue")

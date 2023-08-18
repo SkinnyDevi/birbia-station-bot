@@ -1,54 +1,65 @@
 import discord
-import pkg_resources
 from discord.ext import commands
 
-from src.constants import help_commands as cmds
+from src.constants import version
+from src.core.language import BirbiaLanguage
 
 
 class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.__language = BirbiaLanguage.instance()
 
     def __add_version_number(self, embed: discord.Embed) -> discord.Embed:
         embed.add_field(
-            name="Version",
-            value=pkg_resources.get_distribution("birbia-station-bot").version,
+            name=self.__language.version,
+            value=version.__version__,
         )
 
         return embed
 
     def __add_to_embed(self, embed: discord.Embed, commands: dict) -> discord.Embed:
-        for cmd in commands:
-            embed.add_field(name=cmd, value=commands[cmd])
+        try:
+            del commands["description"]
+            del commands["title"]
+        except KeyError:
+            pass
+        finally:
+            for cmd, v in commands.items():
+                embed.add_field(name=cmd, value=v)
 
         return embed
 
     def general_help(self) -> discord.Embed:
         help = discord.Embed(
-            title="Commands",
-            description="All available command categories provided by Birbia.\nUse 'birbia [category]' to see all commands from that category.",
+            title=self.__language.commands,
+            description=self.__language.get_cmd_help("general", "description"),
             color=0xFF5900,
         )
 
-        return self.__add_to_embed(help, cmds.GENERAL_CMDS)
+        return self.__add_to_embed(
+            help, self.__language.help_commands["general"].copy()
+        )
 
     def music_help(self) -> discord.Embed:
         music = discord.Embed(
-            title="Music Commands [aliases]",
-            description="Available commands to control Birbia's Radio Station.",
+            title=self.__language.get_cmd_help("music", "title"),
+            description=self.__language.get_cmd_help("music", "description"),
             color=0x8CDDFF,
         )
 
-        return self.__add_to_embed(music, cmds.MUSIC_CMDS)
+        return self.__add_to_embed(music, self.__language.help_commands["music"].copy())
 
     def doujin_help(self) -> discord.Embed:
         doujin = discord.Embed(
-            title="Doujin Commands",
-            description="Search and discover new doujins.",
+            title=self.__language.get_cmd_help("doujin", "title"),
+            description=self.__language.get_cmd_help("doujin", "description"),
             color=0xE495FC,
         )
 
-        return self.__add_to_embed(doujin, cmds.DOUJIN_CMDS)
+        return self.__add_to_embed(
+            doujin, self.__language.help_commands["doujin"].copy()
+        )
 
     @commands.command(name="help", help="Displayes all of Birbia's available actions.")
     async def help(self, ctx: commands.Context, category: str = None):

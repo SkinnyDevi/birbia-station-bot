@@ -1,4 +1,4 @@
-# Birbia's Radio Station [2.1.1]
+# Birbia's Radio Station [2.2.0]
 
 ![Birbia worker](https://thumbs.gfycat.com/RapidGlamorousGoldenretriever-size_restricted.gif)
 
@@ -32,11 +32,16 @@ This means that if you frequently use URLs for audio requests, using the same UR
 - Search for the sauces you've always been curious about.
 - Use it to get a random manga or find a specific sauce.
 
+### Languages
+Currently supported languages:
+- English (en)
+- Spanish (es)
+
 
 ## Future Updates and Objectives
 
 ### General features
-- Language expansion
+- ~~Language expansion~~ (2.2.0)
 
 ### Music
 - Expand queue commands
@@ -45,11 +50,11 @@ This means that if you frequently use URLs for audio requests, using the same UR
 	* Remove certain audio in X position of the queue
 
 - Ability to load and play playlists
-- ~~Caching system~~
+- ~~Caching system~~ (2.1.0)
 
 - Multiple query platforms (now easier to implement with v2.0.0)
   * Implement Instagram downloaders
-  * ~~Implement TikTok downloaders~~
+  * ~~Implement TikTok downloaders~~ (2.1.0)
   * Implement Soundcloud downloaders
   * Implement Spotify downloaders
 
@@ -76,7 +81,9 @@ DISCONNECT_DELAY=600
 # Timeout in seconds
 CMD_TIMEOUT=2
 # default max entriers are 20
-MAX_CACHE_ENTRIES=20 
+MAX_CACHE_ENTRIES=20
+# If none, defaults to english
+LANGUAGE=en
 ```
 
 As of v2.1.0, a `docker-compose` has been provided to make the setup process of a docker container much more simpler.
@@ -108,6 +115,7 @@ ENV BOT_DEV_TOKEN="Developer_token_here"
 ENV DISCONNECT_DELAY=600
 ENV CMD_TIMEOUT=2
 ENV MAX_CACHE_ENTRIES=20
+ENV LANGUAGE=en
 
 COPY . .
 
@@ -132,14 +140,24 @@ HelpCog(bot) // Hints help commands
 
 ## Changelog
 
-### [2.1.2]
+### [2.2.0]
+- Added language support!
+- Supported languages:
+	- English (en)
+	- Spanish (es)
+
+To contribute to language translations, please reference the existing language files
+and submit a pull request with your new language file. Pull requests run through a language key test
+to test if the language file has all the needed translations and are up-to-date.
+
+### [2.1.2]
 * Added a new method of caching YouTube urls:
-	- Before, caching was made with the given URl, and downloading using `urllib.request.urlopen`. Now, caching is made by directly downloading using the `YouTubeDL` class
+	- Before, caching was made with the given URL, and downloading using `urllib.request.urlopen`. Now, caching is made by directly downloading using the `YouTubeDL` class
 
 ### [2.1.1]
 * Reworked testing for consistency
 * General code refactorization
-* Fixed a bug for `YoutubeSearcher` that which erroed when searching in plain text or URLs
+* Fixed a bug for `YoutubeSearcher` which errored when searching in plain text or URLs
 
 ### [2.1.0]
 - Added a caching system for reusing local audios instead of requesting every time.
@@ -152,11 +170,11 @@ HelpCog(bot) // Hints help commands
 
 ### [2.0.0]
 - Reworked the entire music cog for better maintanance and readability
-- Added a general `AudioSearcher` class for a commonplace for platform audio searchers
+- Added a general `AudioSearcher` class for a common class of platform audio searchers
 - Added a logger
 - Added custom exceptions
 - Added new configurations to `.env`
-* Fixes the error from 1.2.11 where FFmpeg instance didn't work
+* Fixes the error from 1.2.11 where the FFmpeg instance didn't work
 
 ## Support and Contribution
 If you like what I do and find it easy to set up this bot youself, I would love if you'd give the repo a star. Very much appreciated! 
