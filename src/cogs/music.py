@@ -138,6 +138,9 @@ class MusicCog(commands.Cog):
         Bot command used to search and play a song/audio/video/short from a supported platform.
         """
 
+        if not self.allow_cmd:
+            return await self.__timeout_warn(ctx)
+
         song_query = " ".join(args)
 
         if song_query in {"", " "}:
@@ -148,9 +151,6 @@ class MusicCog(commands.Cog):
         if requester_in_voice is None:
             self.__command_timeout(ctx)
             return await ctx.send(self.__language.no_vc)
-
-        if not self.allow_cmd:
-            return await self.__timeout_warn(ctx)
 
         await ctx.send(self.__language.play_fetching_query)
 
@@ -194,6 +194,9 @@ class MusicCog(commands.Cog):
         if not self.allow_cmd:
             await self.__timeout_warn(ctx)
 
+        if self.vc is None:
+            return await ctx.send(self.__language.no_vc)
+
         if self.vc.is_playing() and not self.vc.is_paused():
             self.vc.pause()
             await ctx.send(self.__language.action_pause)
@@ -211,6 +214,9 @@ class MusicCog(commands.Cog):
 
         if not self.allow_cmd:
             return await self.__timeout_warn(ctx)
+
+        if self.vc is None:
+            return await ctx.send(self.__language.no_vc)
 
         if self.vc.is_paused():
             self.vc.resume()
@@ -230,6 +236,9 @@ class MusicCog(commands.Cog):
 
         if not self.allow_cmd:
             return await self.__timeout_warn(ctx)
+
+        if self.vc is None:
+            return await ctx.send(self.__language.no_vc)
 
         if self.vc is not None and self.vc.is_connected():
             if self.music_queue.queue_length() == 0 and self.music_queue.now() is None:
@@ -251,6 +260,9 @@ class MusicCog(commands.Cog):
 
         if not self.allow_cmd:
             return await self.__timeout_warn(ctx)
+
+        if self.vc is None:
+            return await ctx.send(self.__language.no_vc)
 
         q = ""
         counter = 0
@@ -281,6 +293,9 @@ class MusicCog(commands.Cog):
 
         if not self.allow_cmd:
             return await self.__timeout_warn(ctx)
+
+        if self.vc is None:
+            return await ctx.end(self.__language.no_vc)
 
         now = self.music_queue.now()
         if now is None:
@@ -327,6 +342,9 @@ class MusicCog(commands.Cog):
 
         if not self.allow_cmd:
             await self.__timeout_warn(ctx)
+
+        if self.vc is None:
+            return await ctx.send(self.__language.no_vc)
 
         await self.__disconnect()
         await ctx.send(self.__language.action_stop)

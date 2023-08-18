@@ -17,8 +17,8 @@ def check_lang_entries(lang_code: str):
     assert lang.timeout_warn
     assert lang.help_commands
     assert lang.cant_enter_vc
-    assert lang.no_vc
     assert lang.already_in_vc
+    assert lang.no_vc
     assert lang.play_empty_query
     assert lang.play_fetching_query
     assert lang.play_platform_not_supported
