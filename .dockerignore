@@ -1,6 +1,7 @@
 # Developer routes
 .env
 testing.py
+.venv
 
 # Caches
 __pycache__

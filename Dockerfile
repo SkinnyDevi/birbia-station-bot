@@ -12,11 +12,11 @@ ENV LANGUAGE=en
 
 COPY . .
 
-RUN pip install poetry
-RUN poetry install
+RUN python -m pip install --upgrade pip
+RUN pip install -r requirements.txt
 
 RUN apt-get -y update
 RUN apt-get -y upgrade
 RUN apt-get install -y ffmpeg
 
-CMD [ "poetry", "run", "bot" ]
+CMD [ "python", "-u", "main.py" ]
