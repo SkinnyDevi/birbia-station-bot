@@ -9,7 +9,7 @@
 	"cant_enter_vc": "Birbia no pudo entrar a tu chat. Esto es ilegal. Tomaremos medidas drásticas.",
 	"already_in_vc": "La radio de Birbia ya está en tu canal de voz.",
 	"no_vc": "Para usar Birbia Radio, conéctate a un canal de voz primero.",
-	"play_empty_query": "Don't play with Birbia. What is that you want to listen to?",
+	"play_empty_query": "No juegues con Birbia. Qué quieres escuchar?",
 	"play_fetching_query": "Birbia está mandando sus águilas mas rápidas a por tu pista de audio...",
 	"play_platform_not_supported": "Parece que Birbia not está preparada para procesar ese tipo de links ahora mismo. Intenta otra plataforma!",
 	"play_failed_query": "Birbia mando sus águilas mas rápidas, pero no encontraron tu pista de audio. Intentalo de nuevo!",
