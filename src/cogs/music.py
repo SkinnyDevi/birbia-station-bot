@@ -182,7 +182,7 @@ class MusicCog(commands.Cog):
         except Exception as error:
             await ctx.send(self.__language.play_failed_error)
             BirbiaLogger.error(
-                "An error ocurred while trying to play the requested audio", error
+                "An error ocurred while trying to play the requested audio:", error
             )
 
     @commands.command(name="pause", help="Pause Birbia's radio station.")

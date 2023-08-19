@@ -39,6 +39,16 @@ class InvalidBirbiaCacheError(FileNotFoundError):
 
 
 class LanguageFileNotFoundError(FileNotFoundError):
-    "Occurs when trying to load a non-existent language file"
+    """
+    Occurs when trying to load a non-existent language file
+    """
+
+    pass
+
+
+class InstaPostNotVideoError(ValueError):
+    """
+    Occurs when a loaded Instagram post is not a video.
+    """
 
     pass

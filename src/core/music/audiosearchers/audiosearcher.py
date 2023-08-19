@@ -4,6 +4,8 @@ from urllib.parse import urlparse
 from src.core.music.audiosearchers.base import OnlineAudioSearcher
 from src.core.music.audiosearchers.youtube import YoutubeSearcher
 from src.core.music.audiosearchers.tiktok import TikTokSearcher
+from src.core.music.audiosearchers.instagram import InstagramSeacher
+
 from src.core.exceptions import UnknownUrlAudioSearcherError
 
 
@@ -33,8 +35,8 @@ class AudioSearcher(OnlineAudioSearcher):
         parsed_uri = urlparse(url)
 
         match parsed_uri.netloc:
-            # case "instagram.com":
-            #     pass
+            case "www.instagram.com":
+                return InstagramSeacher()
             case "www.tiktok.com" | "vm.tiktok.com":
                 return TikTokSearcher()
             # case "soundcloud.com":
