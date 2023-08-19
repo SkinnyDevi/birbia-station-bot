@@ -26,12 +26,14 @@ class MusicCog(commands.Cog):
 
         self.started_quit_timeout = False
 
-        self.DISCONNECT_DELAY = int(os.environ.get("DISCONNECT_DELAY"))  # 300s = 5 min
-        self.CMD_TIMEOUT = int(os.environ.get("CMD_TIMEOUT"))  # seconds
+        MusicCog.DISCONNECT_DELAY = int(
+            os.environ.get("DISCONNECT_DELAY")
+        )  # 300s = 5 min
+        MusicCog.CMD_TIMEOUT = int(os.environ.get("CMD_TIMEOUT"))  # seconds
 
         BirbiaLogger.info("Running Music Cog with following config:")
-        BirbiaLogger.info(f" - DISCONNECT DELAY: {self.DISCONNECT_DELAY}")
-        BirbiaLogger.info(f" - CMD TIMEOUT: {self.CMD_TIMEOUT}")
+        BirbiaLogger.info(f" - DISCONNECT DELAY: {MusicCog.DISCONNECT_DELAY}")
+        BirbiaLogger.info(f" - CMD TIMEOUT: {MusicCog.CMD_TIMEOUT}")
 
     async def __disconnect(self):
         """
@@ -82,7 +84,7 @@ class MusicCog(commands.Cog):
 
             if self.vc is not None and self.vc.is_playing() and not self.vc.is_paused():
                 time = 0
-            if time >= self.DISCONNECT_DELAY:
+            if time >= MusicCog.DISCONNECT_DELAY:
                 await self.__disconnect()
                 is_vc_connected = False
 
@@ -91,7 +93,7 @@ class MusicCog(commands.Cog):
         A timeout of 2 seconds to wait for each command.
         """
         self.allow_cmd = False
-        await asyncio.sleep(self.CMD_TIMEOUT)
+        await asyncio.sleep(MusicCog.CMD_TIMEOUT)
         self.allow_cmd = True
 
     async def __timeout_warn(self, ctx: commands.Context):
@@ -159,6 +161,9 @@ class MusicCog(commands.Cog):
         except InstaPostNotVideoError as error:
             BirbiaLogger.error(str(error))
             return await ctx.send(self.__language.play_ig_not_video)
+        except NotImplementedError as error:
+            BirbiaLogger.error(str(error))
+            return await ctx.send(f"***Error*** - Not Implemented: {error}")
         except UnknownUrlAudioSearcherError as error:
             BirbiaLogger.error(str(error))
             return await ctx.send(self.__language.play_platform_not_supported)

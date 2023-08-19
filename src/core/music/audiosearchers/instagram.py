@@ -104,7 +104,12 @@ class InstagramSeacher(OnlineAudioSearcher):
         response = self.__query_requester(query)
         responseSoup = BeautifulSoup(response.text, "html.parser")
 
-        videoElement = responseSoup.find("video", {"class": "img-fluid"})
+        videoElement = responseSoup.find_all("video", {"class": "img-fluid"})
+
+        if len(videoElement) > 1:
+            raise NotImplementedError("Cannot handle IG video carousel")
+
+        videoElement = videoElement[0]
 
         if videoElement is None:
             raise InstaPostNotVideoError(
