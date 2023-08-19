@@ -27,7 +27,7 @@ class BirbiaCache(object):
 
         return cls.instance
 
-    def cache_audio(self, audio_id: str, audio_file):
+    def cache_audio(self, audio_id: str, audio_file, ext="mp3"):
         """
         Caches a `BirbiaAudio` object and returns the cached file's `Path`.
         """
@@ -38,7 +38,7 @@ class BirbiaCache(object):
         if not cache_dir.exists():
             cache_dir.mkdir()
 
-        audio_file_path = cache_dir.joinpath("audio.mp3")
+        audio_file_path = cache_dir.joinpath(f"audio.{ext}")
 
         self.__cache_online_audio(audio_file_path, audio_file)
 

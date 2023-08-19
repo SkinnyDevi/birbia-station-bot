@@ -24,6 +24,7 @@ def check_lang_entries(lang_code: str):
     assert lang.play_platform_not_supported
     assert lang.play_failed_query
     assert lang.play_failed_error
+    assert lang.play_ig_not_video
     assert lang.action_pause
     assert lang.action_pause_empty
     assert lang.action_resume

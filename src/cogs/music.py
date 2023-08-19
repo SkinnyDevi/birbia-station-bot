@@ -8,7 +8,7 @@ from src.core.logger import BirbiaLogger
 from src.core.language import BirbiaLanguage
 from src.core.music.audiosearchers.audiosearcher import AudioSearcher
 from src.core.music.birbia_queue import BirbiaQueue
-from src.core.exceptions import UnknownUrlAudioSearcherError
+from src.core.exceptions import UnknownUrlAudioSearcherError, InstaPostNotVideoError
 
 
 class MusicCog(commands.Cog):
@@ -156,6 +156,9 @@ class MusicCog(commands.Cog):
 
         try:
             audio_obj = self.audio_search.search(song_query)
+        except InstaPostNotVideoError as error:
+            BirbiaLogger.error(str(error))
+            return await ctx.send(self.__language.play_ig_not_video)
         except UnknownUrlAudioSearcherError as error:
             BirbiaLogger.error(str(error))
             return await ctx.send(self.__language.play_platform_not_supported)

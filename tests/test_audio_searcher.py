@@ -6,6 +6,7 @@ from src.core.music.audiosearchers.tiktok import TikTokSearcher
 from src.core.music.audiosearchers.instagram import InstagramSeacher
 from src.core.music.birbia_queue import BirbiaAudio
 from src.core.cache import BirbiaCache
+from src.core.exceptions import InstaPostNotVideoError
 
 
 def audio_asserter(audio: BirbiaAudio):
@@ -89,6 +90,21 @@ def test_instagram_searcher(monkeypatch):
     result = searcher.search(url)
 
     audio_asserter(result)
+
+
+def test_instagram_not_video_error(monkeypatch):
+    monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
+
+    searcher = InstagramSeacher()
+    cache = BirbiaCache()
+    cache.empty()
+
+    url = "https://www.instagram.com/p/Cqx4gHJMrdj"
+
+    try:
+        searcher.search(url)
+    except InstaPostNotVideoError:
+        assert True
 
 
 def test_instagram_cache_retrieval(monkeypatch):

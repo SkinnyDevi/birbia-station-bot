@@ -1,5 +1,7 @@
 import requests
 import discord
+import time
+from random import randint
 from bs4 import BeautifulSoup
 from mutagen.mp3 import MP3
 from urllib import parse, request
@@ -69,6 +71,7 @@ class TikTokSearcher(OnlineAudioSearcher):
                 BirbiaLogger.warn("Invalidating incomplete cache")
                 birbia_cache.invalidate(video_id)
 
+            time.sleep(randint(3, 7))
             return self.__online_search(birbia_cache, video_id, query)
 
     def __query_requester(self, query: str):
@@ -118,13 +121,13 @@ class TikTokSearcher(OnlineAudioSearcher):
 
         extraction = self.__extract_from_html(query)
         audio_cache = birbia_cache.cache_audio(video_id, extraction[1])
-        localFile = MP3(str(audio_cache.absolute()))
+        local_file = MP3(str(audio_cache.absolute()))
 
         audio = BirbiaAudio(
             str(audio_cache.absolute()),
             extraction[0],
             query,
-            localFile.info.length,
+            local_file.info.length,
             video_id,
             pcm_audio=discord.FFmpegPCMAudio(str(audio_cache.absolute())),
         )

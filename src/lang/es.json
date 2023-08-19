@@ -14,6 +14,7 @@
 	"play_platform_not_supported": "Parece que Birbia not está preparada para procesar ese tipo de links ahora mismo. Intenta otra plataforma!",
 	"play_failed_query": "Birbia mando sus águilas mas rápidas, pero no encontraron tu pista de audio. Intentalo de nuevo!",
 	"play_failed_error": "WOAH! Birbia tuvo una dura pelea para encontrar tu pista de audio. Intentalo de nuevo!",
+	"play_ig_not_video": "Birbia encontró que el link de Instagram no es un video o Reel. Usa un link distinto.",
 	"action_pause": "Birbia pausó la pista de audio actual en la radio",
 	"action_pause_empty": "La radio de Birbia no tiene nada que pausar!",
 	"action_resume": "La radio de Birbia ha resumido la pista de audio!",

@@ -14,6 +14,7 @@
 	"play_platform_not_supported": "It seems Birbia is not ready to process those URLs as of now. Try a different platform!",
 	"play_failed_query": "Birbia sent out it's fastest eagles, but could not get your audio back. Try again!",
 	"play_failed_error": "WOAH! Birbia had a tough time trying to play your audio. Try again!",
+	"play_ig_not_video": "Birbia found the Instagram link is not a video or Reel. Please use a different link.",
 	"action_pause": "Birbia paused the current audio in it's radio station.",
 	"action_pause_empty": "Birbia's radio station has nothing to pause!",
 	"action_resume": "Birbia has resumed playing on it's radio station!",
