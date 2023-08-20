@@ -1,4 +1,4 @@
-# Birbia's Radio Station [3.0.1]
+# Birbia's Radio Station [3.0.2]
 
 ![Birbia worker](https://thumbs.gfycat.com/RapidGlamorousGoldenretriever-size_restricted.gif)
 
@@ -144,6 +144,10 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.0.2]
+* Added a cookie regeneration system for when cookies expire for the `InstagramSearcher`
+* Fixed a bug that threw and error when passing URLs containing '/reel/'
 
 ### [3.0.1]
 * Changed Instagram downloader provider to a more reliable one

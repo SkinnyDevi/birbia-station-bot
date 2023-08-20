@@ -151,7 +151,7 @@ class MusicCog(commands.Cog):
         requester_in_voice = ctx.author.voice
 
         if requester_in_voice is None:
-            self.__command_timeout(ctx)
+            await self.__command_timeout()
             return await ctx.send(self.__language.no_vc)
 
         await ctx.send(self.__language.play_fetching_query)

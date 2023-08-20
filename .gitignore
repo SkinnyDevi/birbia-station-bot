@@ -10,3 +10,4 @@ __pycache__
 .pytest_cache
 .DS_Store
 birbiaplayer_cache
+searcher_cache

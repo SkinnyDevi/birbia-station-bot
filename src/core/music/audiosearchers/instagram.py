@@ -1,6 +1,7 @@
 import requests
 import discord
 import time
+import json
 import subprocess
 from random import randint
 from mutagen.mp3 import MP3
@@ -22,11 +23,6 @@ class InstagramSeacher(OnlineAudioSearcher):
     def __init__(self):
         super().__init__(
             {
-                "cookies": {
-                    "random_n": "eyJpdiI6InBuelFsQ0VHOE9Feks3bDRkTVNDeWc9PSIsInZhbHVlIjoiV3VoMy9adUdOSEVwTm56VktoM3pXK2h0NFIxQW5wN3VwWGpCK0NIbm5VSDgvUE1lMEs2dVZaVy8zSWQ4L015biIsIm1hYyI6IjcxMDFhNGZjYjFjYWE4N2JhYjM2NWJlYWZjNTBmNDBjN2NmMzViYmVlNWVkMTM2ZjI0Mzc4NzZjYjhmM2EyODUiLCJ0YWciOiIifQ%3D%3D",
-                    "XSRF-TOKEN": "eyJpdiI6Ik9DbGRQZEpHZXFvTFVGNGszS1lQSkE9PSIsInZhbHVlIjoiTCtKWTVhNmFraDJUVjhMTGw5eDNnb2dLQmFTb3NpaXJoWGE5c1RLSlpEVDAxejY2NFJmaEpCTFNJWmFsYjhpWVV1a3dGRUROMHNpZmIxNElCaSt6ZUZEY2NnMG13RnVDdmtjK2pqdHZ6VkJYNUFCQ28wNld0d2djeUxxS3JOZkMiLCJtYWMiOiJkM2ZiMTdkY2NlZTZiMDkzYjIxMzJhYWZlMmQzNmRjZTZjNjIzNDAzYzI5ZmQzNjljY2RlNjU0NjVmZDc2MWRjIiwidGFnIjoiIn0%3D",
-                    "sssinstagram_session": "eyJpdiI6Im9pK1JGNTBPbjR5UmNLb2tYVTZLN1E9PSIsInZhbHVlIjoiTkZ1bWsvN200ZDcxQnJoOFBZR3k0QXJJNGdvSjFoLzR2UjFSNTdOZktZbTFoY2FpbUZwTHpMMEhhZ1Jld2IxSlkvdlhzTXFhUEpYTUI5cW1wd2lHYjlKY3dzOERKamR0NzdhR1ZMdENGQzh0M1kxV1pxdlVrckE3UUxNYmZuQTAiLCJtYWMiOiIyMjNmMjY2Mzk1NjI0YzM3OWRlOGRhMzFhODc3Y2U5NjUxYjZjMzVkMjUzM2JkMmYyY2FhMjcyZjJmZjEyYjQ5IiwidGFnIjoiIn0%3D",
-                },
                 "headers": {
                     "authority": "sssinstagram.com",
                     "accept": "application/json, text/plain, */*",
@@ -42,7 +38,6 @@ class InstagramSeacher(OnlineAudioSearcher):
                     "sec-fetch-site": "same-origin",
                     "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
                     "x-requested-with": "XMLHttpRequest",
-                    "x-xsrf-token": "eyJpdiI6Ik9DbGRQZEpHZXFvTFVGNGszS1lQSkE9PSIsInZhbHVlIjoiTCtKWTVhNmFraDJUVjhMTGw5eDNnb2dLQmFTb3NpaXJoWGE5c1RLSlpEVDAxejY2NFJmaEpCTFNJWmFsYjhpWVV1a3dGRUROMHNpZmIxNElCaSt6ZUZEY2NnMG13RnVDdmtjK2pqdHZ6VkJYNUFCQ28wNld0d2djeUxxS3JOZkMiLCJtYWMiOiJkM2ZiMTdkY2NlZTZiMDkzYjIxMzJhYWZlMmQzNmRjZTZjNjIzNDAzYzI5ZmQzNjljY2RlNjU0NjVmZDc2MWRjIiwidGFnIjoiIn0=",
                 },
             }
         )
@@ -52,7 +47,8 @@ class InstagramSeacher(OnlineAudioSearcher):
         Extracts the Instagram short code from a given url.
         """
 
-        return url.split("/p/")[1][:11]
+        splitter = "/reel/" if "/reel/" in url else "/p/"
+        return url.split(splitter)[1][:11]
 
     def search(self, query: str) -> BirbiaAudio:
         cache_instance = BirbiaCache()
@@ -75,8 +71,61 @@ class InstagramSeacher(OnlineAudioSearcher):
             time.sleep(randint(3, 9))
             return self.__online_search(query, shortcode, cache_instance)
 
+    def __invalidate_cache_cookies(self):
+        """
+        Invalidates the cache if the cached cookies are not valid.
+        """
+
+        cache_path = Path("searcher_cache/ig_searcher.json")
+
+        if cache_path.exists():
+            cache_path.unlink()
+
+    def __regen_cookies(self):
+        """
+        Regenerates the page cookies.
+        """
+
+        cache_path = Path("searcher_cache")
+
+        if cache_path.exists():
+            cache_path = cache_path.joinpath("ig_searcher.json")
+
+            if cache_path.exists():
+                BirbiaLogger.info("Retrieving cached cookies")
+                with open(cache_path, "r") as cache:
+                    return json.load(cache)
+        else:
+            cache_path.mkdir()
+
+        BirbiaLogger.info("Regenerating cookies")
+
+        page = requests.get("https://sssinstagram.com")
+        cookie = page.headers["Set-Cookie"]
+
+        xsrf_tkn = cookie.split("XSRF-TOKEN=")[1].split(";")[0]
+        session = cookie.split("sssinstagram_session=")[1].split(";")[0]
+        random_n = cookie.split("random_n=")[1].split(";")[0]
+
+        cache_cookies = {
+            "random_n": random_n,
+            "XSRF-TOKEN": xsrf_tkn,
+            "sssinstagram_session": session,
+        }
+
+        cache_path = cache_path.joinpath("ig_searcher.json")
+        with open(cache_path, "w") as out:
+            out.write(json.dumps(cache_cookies))
+
+        return cache_cookies
+
     def __request_beautify(self, request: requests.Response):
-        response: dict = request.json()["data"]
+        """
+        Returns the necessary information of the post.
+        """
+
+        response = request
+        BirbiaLogger.info("Gathering necessary information from video response")
 
         if "items" not in response.keys():
             raise RuntimeError("No items were returned from the downloader API")
@@ -101,21 +150,41 @@ class InstagramSeacher(OnlineAudioSearcher):
         Sends a query request to the designated service.
         """
 
+        cookies = self.__regen_cookies()
+        headers = self.config["headers"].copy()
+        headers["x-xsrf-token"] = cookies["XSRF-TOKEN"].replace("%3D", "=")
+
         json_data = {
             "link": query,
             "token": "",
         }
 
-        response = requests.post(
-            "https://sssinstagram.com/r",
-            cookies=self.config["cookies"],
-            headers=self.config["headers"],
-            json=json_data,
-        )
+        def make_req(c: dict, h: dict):
+            response = requests.post(
+                "https://sssinstagram.com/r",
+                cookies=c,
+                headers=h,
+                json=json_data,
+            )
 
-        return self.__request_beautify(response)
+            return response.json()
+
+        try:
+            return self.__request_beautify(make_req(cookies, headers)["data"])
+        except KeyError:
+            self.__invalidate_cache_cookies()
+            cookies = self.__regen_cookies()
+            headers = self.config["headers"].copy()
+            headers["x-xsrf-token"] = cookies["XSRF-TOKEN"].replace("%3D", "=")
+
+            request = make_req(cookies, headers)
+            return self.__request_beautify(request["data"])
 
     def __convert_to_mp3(self, shortcode: str, mp4_path: Path, cache: BirbiaCache):
+        """
+        Converts the MP4 downloaded file to MP3 using FFmpeg.
+        """
+
         new_path = cache.CACHE_DIR.joinpath(shortcode).joinpath("audio.mp3")
 
         mp3abs = str(new_path.absolute())
@@ -139,7 +208,6 @@ class InstagramSeacher(OnlineAudioSearcher):
         Searches and downloads a video/reel using `Instaloader` class.
         """
 
-        # extraction = self.__extract_from_html(query)
         extraction = self.__query_requester(query)
         audio_cache = cache_instance.cache_audio(shortcode, extraction[1], ext="mp4")
         audio_cache = self.__convert_to_mp3(shortcode, audio_cache, cache_instance)
