@@ -3,9 +3,8 @@ import discord
 import time
 import subprocess
 from random import randint
-from bs4 import BeautifulSoup
 from mutagen.mp3 import MP3
-from urllib import request
+from urllib.request import urlopen
 from pathlib import Path
 
 from src.core.music.audiosearchers.base import OnlineAudioSearcher
@@ -24,27 +23,26 @@ class InstagramSeacher(OnlineAudioSearcher):
         super().__init__(
             {
                 "cookies": {
-                    "cf_clearance": "wD3TzRjXEln4J8qmb3KzwESGvHIOaBYlpXNfM1kn.gE-1692484429-0-1-9d92b54d.13fe6093.32c96999-0.2.1692484429",
-                    "XSRF-TOKEN": "eyJpdiI6ImRKcU5OR2JQWUg4TEt3VFlya2xjd1E9PSIsInZhbHVlIjoiT0tYci9tZEREZDZlaU9Qc05Gb29QdnJVY1Z0TkFWVmM1dG5xekZyeDBNOHdyT1FRcXZwaDNnQVFUb1NzeFhCTzZibVlkT0xKSFdoSktQNnJkSXhWaHlad0U2UGRiM052UHFZQzF6QWR6eCtBTGdlOStodTk0QmZrNER0dzJLdjMiLCJtYWMiOiI4MTY3ZGZmYjA3YWM3MTYxZjU5MWM5M2U1MzZkNTBjMTBjOTczODg3M2IxNzU2MDM0ZTcwZmM0MDQyMzc5NjIzIiwidGFnIjoiIn0%3D",
-                    "indown_session": "eyJpdiI6Ik5WRFRpTWZUWUxDWm9EaWtiTkhma2c9PSIsInZhbHVlIjoib00vYVNtSFBhbHIxWXc0SXRzWS9RckxiQzF4aEcyR1pKNVMvcWJDVCtzMFU2VVV4ck84aXJFd1hsZnFRN2xTcmJKcXpKZC9ZT3JtMkVuQTRoTGxTZG82WVlWbVZsVFl5aHZMbFRvN0JNamZLUyttdFBJSjQwMUF0V0pqaXVGK1QiLCJtYWMiOiI0MDM2YjJjMGJhNjQxZGU1OGQ2NzE0YzlmNTY1YWVmYjdjODcyMGQwN2E0OWU0ODg3ZWE1OWU2ZTNkMjQyYmI5IiwidGFnIjoiIn0%3D",
+                    "random_n": "eyJpdiI6InBuelFsQ0VHOE9Feks3bDRkTVNDeWc9PSIsInZhbHVlIjoiV3VoMy9adUdOSEVwTm56VktoM3pXK2h0NFIxQW5wN3VwWGpCK0NIbm5VSDgvUE1lMEs2dVZaVy8zSWQ4L015biIsIm1hYyI6IjcxMDFhNGZjYjFjYWE4N2JhYjM2NWJlYWZjNTBmNDBjN2NmMzViYmVlNWVkMTM2ZjI0Mzc4NzZjYjhmM2EyODUiLCJ0YWciOiIifQ%3D%3D",
+                    "XSRF-TOKEN": "eyJpdiI6Ik9DbGRQZEpHZXFvTFVGNGszS1lQSkE9PSIsInZhbHVlIjoiTCtKWTVhNmFraDJUVjhMTGw5eDNnb2dLQmFTb3NpaXJoWGE5c1RLSlpEVDAxejY2NFJmaEpCTFNJWmFsYjhpWVV1a3dGRUROMHNpZmIxNElCaSt6ZUZEY2NnMG13RnVDdmtjK2pqdHZ6VkJYNUFCQ28wNld0d2djeUxxS3JOZkMiLCJtYWMiOiJkM2ZiMTdkY2NlZTZiMDkzYjIxMzJhYWZlMmQzNmRjZTZjNjIzNDAzYzI5ZmQzNjljY2RlNjU0NjVmZDc2MWRjIiwidGFnIjoiIn0%3D",
+                    "sssinstagram_session": "eyJpdiI6Im9pK1JGNTBPbjR5UmNLb2tYVTZLN1E9PSIsInZhbHVlIjoiTkZ1bWsvN200ZDcxQnJoOFBZR3k0QXJJNGdvSjFoLzR2UjFSNTdOZktZbTFoY2FpbUZwTHpMMEhhZ1Jld2IxSlkvdlhzTXFhUEpYTUI5cW1wd2lHYjlKY3dzOERKamR0NzdhR1ZMdENGQzh0M1kxV1pxdlVrckE3UUxNYmZuQTAiLCJtYWMiOiIyMjNmMjY2Mzk1NjI0YzM3OWRlOGRhMzFhODc3Y2U5NjUxYjZjMzVkMjUzM2JkMmYyY2FhMjcyZjJmZjEyYjQ5IiwidGFnIjoiIn0%3D",
                 },
                 "headers": {
-                    "authority": "indown.io",
-                    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                    "authority": "sssinstagram.com",
+                    "accept": "application/json, text/plain, */*",
                     "accept-language": "en-US,en;q=0.9",
-                    "cache-control": "max-age=0",
-                    "content-type": "application/x-www-form-urlencoded",
+                    "content-type": "application/json;charset=UTF-8",
                     "dnt": "1",
-                    "origin": "https://indown.io",
-                    "referer": "https://indown.io/",
+                    "origin": "https://sssinstagram.com",
                     "sec-ch-ua": '"Not)A;Brand";v="24", "Chromium";v="116"',
                     "sec-ch-ua-mobile": "?0",
                     "sec-ch-ua-platform": '"macOS"',
                     "sec-fetch-dest": "empty",
-                    "sec-fetch-mode": "navigate",
+                    "sec-fetch-mode": "cors",
                     "sec-fetch-site": "same-origin",
-                    "upgrade-insecure-requests": "1",
                     "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+                    "x-requested-with": "XMLHttpRequest",
+                    "x-xsrf-token": "eyJpdiI6Ik9DbGRQZEpHZXFvTFVGNGszS1lQSkE9PSIsInZhbHVlIjoiTCtKWTVhNmFraDJUVjhMTGw5eDNnb2dLQmFTb3NpaXJoWGE5c1RLSlpEVDAxejY2NFJmaEpCTFNJWmFsYjhpWVV1a3dGRUROMHNpZmIxNElCaSt6ZUZEY2NnMG13RnVDdmtjK2pqdHZ6VkJYNUFCQ28wNld0d2djeUxxS3JOZkMiLCJtYWMiOiJkM2ZiMTdkY2NlZTZiMDkzYjIxMzJhYWZlMmQzNmRjZTZjNjIzNDAzYzI5ZmQzNjljY2RlNjU0NjVmZDc2MWRjIiwidGFnIjoiIn0=",
                 },
             }
         )
@@ -74,54 +72,48 @@ class InstagramSeacher(OnlineAudioSearcher):
                 BirbiaLogger.warn("Invalidating incomplete cache")
                 cache_instance.invalidate(shortcode)
 
-            time.sleep(randint(3, 7))
+            time.sleep(randint(3, 9))
             return self.__online_search(query, shortcode, cache_instance)
+
+    def __request_beautify(self, request: requests.Response):
+        response: dict = request.json()["data"]
+
+        if "items" not in response.keys():
+            raise RuntimeError("No items were returned from the downloader API")
+
+        if len(response["items"]) > 1:
+            raise NotImplementedError("Cannot handle IG video carousel")
+
+        entry = response["items"][0]
+
+        video_urls = entry["urls"][0]
+
+        if video_urls["extension"] != "mp4":
+            raise InstaPostNotVideoError("The link does not refer to a video post")
+
+        video_url = video_urls["urlDownloadable"]
+        title: str = entry["meta"]["title"]
+
+        return title[:255], urlopen(video_url)
 
     def __query_requester(self, query: str):
         """
         Sends a query request to the designated service.
         """
 
-        data = {
-            "referer": "https://indown.io",
-            "locale": "en",
-            "_token": "HFqSKLFpXN4jBU8nSc8S8bLt9BXrgeayaWZ9I5Ln",
+        json_data = {
             "link": query,
+            "token": "",
         }
 
-        return requests.post(
-            "https://indown.io/download",
+        response = requests.post(
+            "https://sssinstagram.com/r",
             cookies=self.config["cookies"],
             headers=self.config["headers"],
-            data=data,
+            json=json_data,
         )
 
-    def __extract_from_html(self, query: str):
-        """
-        Extracts data from the received HTML.
-        """
-
-        response = self.__query_requester(query)
-        responseSoup = BeautifulSoup(response.text, "html.parser")
-
-        videoElement = responseSoup.find_all("video", {"class": "img-fluid"})
-
-        if len(videoElement) > 1:
-            raise NotImplementedError("Cannot handle IG video carousel")
-
-        BirbiaLogger.debug(f"ELEMENT SIZE: {len(videoElement)}")
-
-        if len(videoElement) == 0:
-            raise InstaPostNotVideoError(
-                "IG URL does not correspond to a video or reel"
-            )
-
-        videoElement = videoElement[0]
-
-        videoParent = videoElement.parent.parent
-        downloadMp3BtnLink = videoParent.find_all("a")[0]["href"]
-
-        return request.urlopen(downloadMp3BtnLink)
+        return self.__request_beautify(response)
 
     def __convert_to_mp3(self, shortcode: str, mp4_path: Path, cache: BirbiaCache):
         new_path = cache.CACHE_DIR.joinpath(shortcode).joinpath("audio.mp3")
@@ -147,14 +139,15 @@ class InstagramSeacher(OnlineAudioSearcher):
         Searches and downloads a video/reel using `Instaloader` class.
         """
 
-        extraction = self.__extract_from_html(query)
-        audio_cache = cache_instance.cache_audio(shortcode, extraction, ext="mp4")
+        # extraction = self.__extract_from_html(query)
+        extraction = self.__query_requester(query)
+        audio_cache = cache_instance.cache_audio(shortcode, extraction[1], ext="mp4")
         audio_cache = self.__convert_to_mp3(shortcode, audio_cache, cache_instance)
         local_file = MP3(str(audio_cache.absolute()))
 
         audio = BirbiaAudio(
             str(audio_cache.absolute()),
-            f"IG Video - {shortcode}",
+            extraction[0],
             query,
             local_file.info.length,
             shortcode,

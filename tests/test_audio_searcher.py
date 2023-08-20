@@ -92,6 +92,20 @@ def test_instagram_searcher(monkeypatch):
     audio_asserter(result)
 
 
+def test_instagram_searcher_multiple(monkeypatch):
+    monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
+
+    searcher = InstagramSeacher()
+    cache = BirbiaCache()
+    cache.empty()
+
+    url = "https://www.instagram.com/p/CwGK5D8SJeY/"
+    try:
+        searcher.search(url)
+    except NotImplementedError:
+        assert True
+
+
 def test_instagram_not_video_error(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 

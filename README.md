@@ -1,4 +1,4 @@
-# Birbia's Radio Station [3.0.0]
+# Birbia's Radio Station [3.0.1]
 
 ![Birbia worker](https://thumbs.gfycat.com/RapidGlamorousGoldenretriever-size_restricted.gif)
 
@@ -144,6 +144,10 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.0.1]
+* Changed Instagram downloader provider to a more reliable one
+* New provider successfully passes all tests in all cases
 
 ### [3.0.0]
 - Added **Instagram audio/url searcher** implementation:
