@@ -24,6 +24,7 @@ The term itself derives from the funny way of saying 'bird' as 'birb', therefore
 - Supported audio request platforms:
 	- YouTube (URL and plain text search)
 	- TikTok videos (URL search only)
+	- Instagram videos (URL search only (Videos, Reels), videos in carousel not yet supported)
 
 All of the above support caching! 
 This means that if you frequently use URLs for audio requests, using the same URLs after the first use will provide you with your request exponentially quicker!
@@ -36,6 +37,10 @@ This means that if you frequently use URLs for audio requests, using the same UR
 Currently supported languages:
 - English (en)
 - Spanish (es)
+
+To contribute to language translations, please reference the existing language files
+and submit a pull request with your new language file. Pull requests run through a language key test
+to test if the language file has all the needed translations and are up-to-date.
 
 
 ## Future Updates and Objectives
@@ -53,7 +58,7 @@ Currently supported languages:
 - ~~Caching system~~ (2.1.0)
 
 - Multiple query platforms (now easier to implement with v2.0.0)
-  * Implement Instagram downloaders
+  * ~~Implement Instagram downloaders~~ (3.0.0)
   * ~~Implement TikTok downloaders~~ (2.1.0)
   * Implement Soundcloud downloaders
   * Implement Spotify downloaders
@@ -140,8 +145,15 @@ HelpCog(bot) // Hints help commands
 
 ## Changelog
 
+### [3.0.0]
+- Added **Instagram audio/url searcher** implementation:
+	- Supports Videos and Reels URLs
+	- Warns when a photo post is passed
+	- Currently doesn't support video carrousels
+
 ### [2.2.0]
 - Added language support!
+- Added `LANGUAGE` configuration to `.env`
 - Supported languages:
 	- English (en)
 	- Spanish (es)
