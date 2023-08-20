@@ -109,12 +109,13 @@ class InstagramSeacher(OnlineAudioSearcher):
         if len(videoElement) > 1:
             raise NotImplementedError("Cannot handle IG video carousel")
 
+        BirbiaLogger.debug(f"ELEMENT SIZE: {len(videoElement)}")
+
         if len(videoElement) == 0:
             raise InstaPostNotVideoError(
                 "IG URL does not correspond to a video or reel"
             )
 
-        print(videoElement)
         videoElement = videoElement[0]
 
         videoParent = videoElement.parent.parent

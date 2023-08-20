@@ -1,4 +1,4 @@
-# Birbia's Radio Station [2.2.0]
+# Birbia's Radio Station [3.0.0]
 
 ![Birbia worker](https://thumbs.gfycat.com/RapidGlamorousGoldenretriever-size_restricted.gif)
 
