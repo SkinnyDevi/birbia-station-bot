@@ -23,7 +23,7 @@ def cache_example():
         "ZGJpans2c",
     )
 
-    return (audio, urlopen(url))
+    return audio, url
 
 
 def test_audio_cache(monkeypatch):
