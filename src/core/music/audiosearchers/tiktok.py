@@ -92,7 +92,7 @@ class TikTokSearcher(OnlineAudioSearcher):
             data=data,
         )
 
-    def __extract_from_html(self, query: str):
+    def __extract_from_html(self, query: str) -> tuple[str, str]:
         """
         Extracts data from the received HTML.
         """
@@ -101,11 +101,12 @@ class TikTokSearcher(OnlineAudioSearcher):
         responseSoup = BeautifulSoup(response.text, "html.parser")
 
         parentElement = responseSoup.find("a", {"id": "direct_dl_link"}).parent
-        downloadMp3BtnLink = parentElement.find_all("a")[2]["href"]
+        downloadMp3BtnLink: str = parentElement.find_all("a")[2]["href"]
 
-        return responseSoup.find(
-            "p", {"class": "maintext"}
-        ).decode_contents(), request.urlopen(downloadMp3BtnLink)
+        return (
+            responseSoup.find("p", {"class": "maintext"}).decode_contents(),
+            downloadMp3BtnLink,
+        )
 
     def __online_search(
         self,

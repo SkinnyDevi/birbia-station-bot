@@ -2,6 +2,7 @@ import os
 import shutil
 import json
 import discord
+import requests
 from glob import glob
 from pathlib import Path
 
@@ -27,7 +28,7 @@ class BirbiaCache(object):
 
         return cls.instance
 
-    def cache_audio(self, audio_id: str, audio_file, ext="mp3"):
+    def cache_audio(self, audio_id: str, audio_file_url: str, ext="mp3"):
         """
         Caches a `BirbiaAudio` object and returns the cached file's `Path`.
         """
@@ -40,7 +41,7 @@ class BirbiaCache(object):
 
         audio_file_path = cache_dir.joinpath(f"audio.{ext}")
 
-        self.__cache_online_audio(audio_file_path, audio_file)
+        self.__cache_online_audio(audio_file_path, audio_file_url)
 
         BirbiaLogger.info(f"Cached audio file for audio id '{audio_id}'")
 
@@ -136,17 +137,16 @@ class BirbiaCache(object):
             pcm_audio=discord.FFmpegPCMAudio(str(audio_file_path.absolute())),
         )
 
-    def __cache_online_audio(self, cache_dir: Path, file):
+    def __cache_online_audio(self, cache_dir: Path, file_url: str):
         """
-        Specific caching method for open requests receiving constant mp3 file information.
+        Method for requesting and downloading files from URLs.
         """
 
-        with open(cache_dir, "wb") as output:
-            while True:
-                if data := file.read(4096):
-                    output.write(data)
-                else:
-                    break
+        BirbiaLogger.debug(file_url)
+        r = requests.get(file_url, allow_redirects=True)
+
+        with open(cache_dir, "wb") as f:
+            f.write(r.content)
 
     def __cache_limit_reached(self):
         """

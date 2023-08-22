@@ -122,7 +122,7 @@ class InstagramSeacher(OnlineAudioSearcher):
 
         return cache_cookies
 
-    def __request_beautify(self, response: requests.Response):
+    def __request_beautify(self, response: requests.Response) -> tuple[str, str]:
         """
         Returns the necessary information of the post.
         """
@@ -146,7 +146,7 @@ class InstagramSeacher(OnlineAudioSearcher):
         video_url = parse.unquote(raw_url.split("uri=")[1].split("&")[0])
         title: str = entry["meta"]["title"]
 
-        return title[:255], request.urlopen(video_url)
+        return title[:255], video_url
 
     def __query_requester(self, query: str):
         """

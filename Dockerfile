@@ -12,6 +12,8 @@ ENV LANGUAGE=en
 
 COPY . .
 
+RUN apt-get install ca-certificates
+
 RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
