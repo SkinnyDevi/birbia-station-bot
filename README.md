@@ -146,8 +146,11 @@ HelpCog(bot) // Hints help commands
 ## Changelog
 
 ### [3.0.4]
-* Fixed `TikTokSeacher` failing due to incorrect certificates inside Docker image
+* 'Fixed' `TikTokSeacher` failing due to incorrect certificates inside Docker image
+	* The bug still occurs when requesting the first time, then disappears
 * Changed method for caching URLs using the URL itself instead of the request object with `urllib.request.urlopen`
+* Added generic `Exception` fo any error that occurs during the query search process
+* Added title limiter fo TikToks
 
 ### [3.0.3]
 * Fixed parsing new URLs from Instagram downloader service

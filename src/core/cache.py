@@ -142,7 +142,6 @@ class BirbiaCache(object):
         Method for requesting and downloading files from URLs.
         """
 
-        BirbiaLogger.debug(file_url)
         r = requests.get(file_url, allow_redirects=True)
 
         with open(cache_dir, "wb") as f:

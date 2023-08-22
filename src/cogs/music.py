@@ -167,6 +167,9 @@ class MusicCog(commands.Cog):
         except UnknownUrlAudioSearcherError as error:
             BirbiaLogger.error(str(error))
             return await ctx.send(self.__language.play_platform_not_supported)
+        except Exception as error:
+            await ctx.send(self.__language.play_failed_error)
+            BirbiaLogger.error("An error ocurred while searching for the audio:", error)
 
         if audio_obj is None:
             return await ctx.send(self.__language.play_failed_query)

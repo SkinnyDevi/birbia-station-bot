@@ -126,7 +126,7 @@ class TikTokSearcher(OnlineAudioSearcher):
 
         audio = BirbiaAudio(
             str(audio_cache.absolute()),
-            extraction[0],
+            extraction[0][:255],
             query,
             local_file.info.length,
             video_id,
