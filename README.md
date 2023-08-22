@@ -1,4 +1,4 @@
-# Birbia's Radio Station [3.0.2]
+# Birbia's Radio Station [3.0.3]
 
 ![Birbia worker](https://thumbs.gfycat.com/RapidGlamorousGoldenretriever-size_restricted.gif)
 
@@ -144,6 +144,10 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.0.3]
+* Fixed parsing new URLs from Instagram downloader service
+* Fixed FFmpeg not converting from MP4 to MP3 when ran on Windows for `InstagramSearcher`
 
 ### [3.0.2]
 * Added a cookie regeneration system for when cookies expire for the `InstagramSearcher`

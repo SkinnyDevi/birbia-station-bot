@@ -5,7 +5,7 @@ import json
 import subprocess
 from random import randint
 from mutagen.mp3 import MP3
-from urllib.request import urlopen
+from urllib import parse, request
 from pathlib import Path
 
 from src.core.music.audiosearchers.base import OnlineAudioSearcher
@@ -95,6 +95,9 @@ class InstagramSeacher(OnlineAudioSearcher):
                 BirbiaLogger.info("Retrieving cached cookies")
                 with open(cache_path, "r") as cache:
                     return json.load(cache)
+            else:
+                cache_path = Path("searcher_cache")
+
         else:
             cache_path.mkdir()
 
@@ -119,12 +122,11 @@ class InstagramSeacher(OnlineAudioSearcher):
 
         return cache_cookies
 
-    def __request_beautify(self, request: requests.Response):
+    def __request_beautify(self, response: requests.Response):
         """
         Returns the necessary information of the post.
         """
 
-        response = request
         BirbiaLogger.info("Gathering necessary information from video response")
 
         if "items" not in response.keys():
@@ -140,10 +142,11 @@ class InstagramSeacher(OnlineAudioSearcher):
         if video_urls["extension"] != "mp4":
             raise InstaPostNotVideoError("The link does not refer to a video post")
 
-        video_url = video_urls["urlDownloadable"]
+        raw_url = video_urls["urlDownloadable"]
+        video_url = parse.unquote(raw_url.split("uri=")[1].split("&")[0])
         title: str = entry["meta"]["title"]
 
-        return title[:255], urlopen(video_url)
+        return title[:255], request.urlopen(video_url)
 
     def __query_requester(self, query: str):
         """
@@ -191,7 +194,7 @@ class InstagramSeacher(OnlineAudioSearcher):
         mp4abs = str(mp4_path.absolute())
 
         subprocess.run(
-            f"ffmpeg -i {mp4abs} {mp3abs}",
+            f'ffmpeg -i "{mp4abs}" "{mp3abs}"',
             shell=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.STDOUT,

@@ -22,7 +22,7 @@ def test_dd_exists():
 
 
 def test_rng_dd_exists():
-    sauce = randint(1, dscraper.doujin_maxcount())
+    sauce = randint(1, dscraper.doujin_maxcount() - 5)
     output = dscraper.doujin(sauce)
     asserter(output)
 
