@@ -1,4 +1,4 @@
-# Birbia's Radio Station [3.0.3]
+# Birbia's Radio Station [3.0.4]
 
 ![Birbia worker](https://thumbs.gfycat.com/RapidGlamorousGoldenretriever-size_restricted.gif)
 
@@ -144,6 +144,10 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.0.4]
+* Fixed `TikTokSeacher` failing due to incorrect certificates inside Docker image
+* Changed method for caching URLs using the URL itself instead of the request object with `urllib.request.urlopen`
 
 ### [3.0.3]
 * Fixed parsing new URLs from Instagram downloader service
