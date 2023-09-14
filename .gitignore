@@ -1,5 +1,6 @@
 # Developer routes
-.env
+*.env
+!.env.example
 testing.py
 .vscode
 .venv

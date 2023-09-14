@@ -85,6 +85,7 @@ def test_instagram_searcher(monkeypatch):
     searcher = InstagramSeacher()
     cache = BirbiaCache()
     cache.empty()
+    time.sleep(3)
 
     url = "https://www.instagram.com/p/CvXwz9mAKmw/"
     result = searcher.search(url)
@@ -112,8 +113,9 @@ def test_instagram_not_video_error(monkeypatch):
     searcher = InstagramSeacher()
     cache = BirbiaCache()
     cache.empty()
+    time.sleep(3)
 
-    url = "https://www.instagram.com/p/Cqx4gHJMrdj"
+    url = "https://www.instagram.com/p/CxHkfktLUGC"
 
     try:
         searcher.search(url)

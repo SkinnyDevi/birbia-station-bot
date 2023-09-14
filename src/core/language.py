@@ -9,6 +9,53 @@ from src.core.exceptions import LanguageFileNotFoundError
 class BirbiaLanguage:
     __instance = None
 
+    def __name_replacer(self, s: str, bot_prefix: str):
+        """
+        Replaces the entry string with the desired replacer.
+        """
+
+        def replace_all(text: str, old: str, new: str):
+            """
+            Replace all instances of a string in a desired string.
+            """
+
+            while old in text:
+                text = text.replace(old, new)
+            return text
+
+        if "$botname" in s:
+            s = replace_all(s, "$botname", bot_prefix.capitalize())
+
+        if "$prefix" in s:
+            s = replace_all(s, "$prefix", bot_prefix)
+
+        return s
+
+    def __format_entries(self, data: dict):
+        """
+        Parses any '$botname' or '$prefix' keywords in the language file
+        to the respective entries.
+        """
+
+        dev_prefix = environ.get("DEV_PREFIX")
+        prefix = environ.get("PREFIX")
+        is_dev = environ.get("ENV_IS_DEV") == "True"
+        bot_prefix = dev_prefix if is_dev else prefix
+
+        for k, v in data.items():
+            # replace any $botname entry
+            if type(v) == type(""):
+                v = self.__name_replacer(v, bot_prefix)
+
+            if type(v) == type({}):
+                # loops command help entries and values
+                # for dicts with depth of 2
+                for dict in v.values():
+                    for key, val in dict.items():
+                        dict[key] = self.__name_replacer(val, bot_prefix)
+
+            self.__dict__[k] = v
+
     def change_lang(self, lang: str):
         """
         Change the current language assigned to the bot.
@@ -25,9 +72,7 @@ class BirbiaLanguage:
 
         with open(lang_path) as lang_file:
             data: dict = json.load(lang_file)
-
-            for k, v in data.items():
-                self.__dict__[k] = v
+            self.__format_entries(data)
 
     def __init__(self):
         if BirbiaLanguage.__instance:

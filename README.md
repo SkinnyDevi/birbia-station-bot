@@ -81,6 +81,9 @@ A custom `.env.example` file has been provided for you to play around with the s
 ENV_IS_DEV=True
 BOT_TOKEN="Production_token_here"
 BOT_DEV_TOKEN="Developer_token_here"
+# Change the bot's prefix (don't include spaces)
+PREFIX="birbia"
+DEV_PREFIX="birbia-beta"
 # Default delay = 300s = 5 min
 DISCONNECT_DELAY=600
 # Timeout in seconds
@@ -117,6 +120,8 @@ WORKDIR /birbia-station
 ENV ENV_IS_DEV=False
 ENV BOT_TOKEN="Production_token_here"
 ENV BOT_DEV_TOKEN="Developer_token_here"
+ENV PREFIX="birbia"
+ENV DEV_PREFIX="birbia-beta"
 ENV DISCONNECT_DELAY=600
 ENV CMD_TIMEOUT=2
 ENV MAX_CACHE_ENTRIES=20
@@ -144,6 +149,14 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.0.5]
+- Implemented a keyword parsing system to use when declaring language files:
+	- `$botname`: Uses an uppercase version of the bot prefix when referenced in text
+	- `$prefix`: Uses the literal bot prefix when referenced in text
+	* Example: "$botname has successfully launched! Uses $prefix play to play a song."
+- Added `prefix` configuration to `.env`
+- Added `dev_prefix` configuration to `.env`
 
 ### [3.0.4]
 * 'Fixed' `TikTokSeacher` failing due to incorrect certificates inside Docker image

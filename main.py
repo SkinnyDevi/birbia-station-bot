@@ -14,9 +14,12 @@ from src.constants.version import __version__
 
 load_dotenv()
 
+dev_prefix = environ.get("DEV_PREFIX")
+prefix = environ.get("PREFIX")
+
 is_dev = environ.get("ENV_IS_DEV") == "True"
-prefix = "birbia-beta " if is_dev else "birbia "
-bot = commands.Bot(command_prefix=prefix, intents=discord.Intents.all())
+bot_prefix = dev_prefix if is_dev else prefix
+bot = commands.Bot(command_prefix=f"{bot_prefix} ", intents=discord.Intents.all())
 
 
 @bot.event
