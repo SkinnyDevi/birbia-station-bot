@@ -1,4 +1,11 @@
+from os import environ
 from src.core.language import BirbiaLanguage
+
+
+def declare_environ():
+    environ["ENV_IS_DEV"] = "True"
+    environ["PREFIX"] = "birbia"
+    environ["DEV_PREFIX"] = "birbia-beta"
 
 
 def check_lang_entries(lang_code: str):
@@ -81,8 +88,10 @@ def check_lang_entries(lang_code: str):
 
 
 def test_english_lang():
+    declare_environ()
     check_lang_entries("en")
 
 
 def test_spanish_lang():
+    declare_environ()
     check_lang_entries("es")
