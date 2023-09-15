@@ -19,6 +19,9 @@ class BirbiaLanguage:
             Replace all instances of a string in a desired string.
             """
 
+            if s is None:
+                return s
+
             while old in text:
                 text = text.replace(old, new)
             return text
