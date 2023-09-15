@@ -1,5 +1,6 @@
 # Developer routes
 *.env
+*.private.yml
 !.env.example
 testing.py
 .vscode
