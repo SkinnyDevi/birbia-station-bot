@@ -20,6 +20,7 @@ class MusicCog(commands.Cog):
         self.bot = bot
         self.vc: discord.VoiceClient = None
         self.allow_cmd = True
+        self.loop_current = False
         self.music_queue = BirbiaQueue()
         self.audio_search = AudioSearcher()
         self.__language = BirbiaLanguage.instance()
@@ -108,11 +109,17 @@ class MusicCog(commands.Cog):
         Queues another audio for playback.
         """
 
-        if self.music_queue.queue_length() == 0:
+        if self.music_queue.is_queue_empty():  # and self.music_queue.now() is None:
             self.music_queue.now_to_history()
             return
 
-        next_song = self.music_queue.next()
+        if self.loop_current:
+            BirbiaLogger.debug("GRABBING FROM NOW")
+            next_song = self.music_queue.now()
+        else:
+            next_song = self.music_queue.next()
+
+        BirbiaLogger.debug(f"NEXT_SONG_QNEXT: {next_song.title}")
         self.vc.play(next_song.pcm_audio, after=lambda e=None: self.__queue_next())
 
     async def __play_audio(self, ctx: commands.Context):
@@ -130,6 +137,7 @@ class MusicCog(commands.Cog):
             await self.vc.move_to(up_next.get_requester_vc())
 
         next_song = self.music_queue.next()
+        BirbiaLogger.debug(f"NEXT_SONG_PLAY: {next_song.title}")
         self.vc.play(next_song.pcm_audio, after=lambda e=None: self.__queue_next())
 
     @commands.command(
@@ -339,6 +347,44 @@ class MusicCog(commands.Cog):
 
         self.music_queue.empty_queue()
         await ctx.send(self.__language.action_clear)
+        await self.__command_timeout()
+
+    @commands.command(name="loop", help="Loops the current audio playing")
+    async def loop(self, ctx: commands.Context):
+        if not self.allow_cmd:
+            await self.__timeout_warn(ctx)
+
+        if self.vc is None:
+            return await ctx.send(self.__language.no_vc)
+
+        if self.loop_current:
+            await self.__command_timeout()
+            return await ctx.send("DUMMY: looping is already enabled")
+
+        if self.music_queue.now() is None:
+            await self.__command_timeout()
+            return await ctx.send("DUMMY: now is empty")
+
+        self.loop_current = True
+
+        await ctx.send("DUMMY: looping has been enabled")
+        await self.__command_timeout()
+
+    @commands.command(name="unloop", help="Removes looping the current song")
+    async def unloop(self, ctx: commands.Context):
+        if not self.allow_cmd:
+            await self.__timeout_warn(ctx)
+
+        if self.vc is None:
+            return await ctx.send(self.__language.no_vc)
+
+        if not self.loop_current:
+            await self.__command_timeout()
+            return await ctx.send("DUMMY: looping is already disabled")
+
+        self.loop_current = False
+
+        await ctx.send("DUMMY: looping has been disabled")
         await self.__command_timeout()
 
     @commands.command(
