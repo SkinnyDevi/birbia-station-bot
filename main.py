@@ -12,7 +12,7 @@ from src.core.logger import BirbiaLogger
 from src.constants.version import __version__
 
 
-load_dotenv()
+load_dotenv("../.env")
 
 dev_prefix = environ.get("DEV_PREFIX")
 prefix = environ.get("PREFIX")

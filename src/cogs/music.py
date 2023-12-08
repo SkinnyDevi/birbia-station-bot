@@ -306,7 +306,7 @@ class MusicCog(commands.Cog):
             return await self.__timeout_warn(ctx)
 
         if self.vc is None:
-            return await ctx.end(self.__language.no_vc)
+            return await ctx.send(self.__language.no_vc)
 
         now = self.music_queue.now()
         if now is None:
