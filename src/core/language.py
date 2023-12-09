@@ -48,7 +48,7 @@ class BirbiaLanguage:
                 v = self.__name_replacer(v, bot_prefix)
 
             if type(v) == type({}):
-                # loops command help entries and values
+                # loops command "help" entries and values
                 # for dicts with depth of 2
                 for dict in v.values():
                     for key, val in dict.items():

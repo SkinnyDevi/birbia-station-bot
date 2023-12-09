@@ -109,18 +109,16 @@ class MusicCog(commands.Cog):
         Queues another audio for playback.
         """
 
-        if self.music_queue.is_queue_empty():  # and self.music_queue.now() is None:
+        if self.music_queue.now() is not None and self.loop_current:
+            next_song = self.music_queue.now().regenerate()
+        elif self.music_queue.is_queue_empty():
             self.music_queue.now_to_history()
             return
-
-        if self.loop_current:
-            BirbiaLogger.debug("GRABBING FROM NOW")
-            next_song = self.music_queue.now()
         else:
             next_song = self.music_queue.next()
 
-        BirbiaLogger.debug(f"NEXT_SONG_QNEXT: {next_song.title}")
-        self.vc.play(next_song.pcm_audio, after=lambda e=None: self.__queue_next())
+        if self.vc is not None:
+            self.vc.play(next_song.pcm_audio, after=lambda e=None: self.__queue_next())
 
     async def __play_audio(self, ctx: commands.Context):
         """
@@ -137,8 +135,8 @@ class MusicCog(commands.Cog):
             await self.vc.move_to(up_next.get_requester_vc())
 
         next_song = self.music_queue.next()
-        BirbiaLogger.debug(f"NEXT_SONG_PLAY: {next_song.title}")
-        self.vc.play(next_song.pcm_audio, after=lambda e=None: self.__queue_next())
+        if self.vc is not None:
+            self.vc.play(next_song.pcm_audio, after=lambda e=None: self.__queue_next())
 
     @commands.command(
         name="play", help="Play audio through Birbia's most famous radio station."
@@ -359,15 +357,15 @@ class MusicCog(commands.Cog):
 
         if self.loop_current:
             await self.__command_timeout()
-            return await ctx.send("DUMMY: looping is already enabled")
+            return await ctx.send(self.__language.play_loop_already_on)
 
         if self.music_queue.now() is None:
             await self.__command_timeout()
-            return await ctx.send("DUMMY: now is empty")
+            return await ctx.send(self.__language.now_empty)
 
         self.loop_current = True
 
-        await ctx.send("DUMMY: looping has been enabled")
+        await ctx.send(self.__language.play_loop_on)
         await self.__command_timeout()
 
     @commands.command(name="unloop", help="Removes looping the current song")
@@ -380,11 +378,15 @@ class MusicCog(commands.Cog):
 
         if not self.loop_current:
             await self.__command_timeout()
-            return await ctx.send("DUMMY: looping is already disabled")
+            return await ctx.send(self.__language.play_loop_already_off)
+
+        if self.music_queue.now() is None:
+            await self.__command_timeout()
+            return await ctx.send(self.__language.now_empty)
 
         self.loop_current = False
 
-        await ctx.send("DUMMY: looping has been disabled")
+        await ctx.send(self.__language.play_loop_off)
         await self.__command_timeout()
 
     @commands.command(

@@ -1,4 +1,4 @@
-# Birbia's Radio Station [3.0.4]
+# Birbia's Radio Station [3.1.0]
 
 ![Birbia worker](https://thumbs.gfycat.com/RapidGlamorousGoldenretriever-size_restricted.gif)
 
@@ -54,6 +54,7 @@ to test if the language file has all the needed translations and are up-to-date.
 	* Queue pagination
 	* Remove certain audio in X position of the queue
 
+- ~~Looping the current song~~ (3.1.0)
 - Ability to load and play playlists
 - ~~Caching system~~ (2.1.0)
 
@@ -149,6 +150,10 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.1.0]
+- Added looping the current songs with commands `loop` and `unloop`
+- Implemented new language keys for new command
 
 ### [3.0.5]
 - Implemented a keyword parsing system to use when declaring language files:

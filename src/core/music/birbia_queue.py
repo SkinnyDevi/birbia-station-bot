@@ -31,7 +31,7 @@ class BirbiaAudio:
         self._pcm_audio = (
             pcm_audio
             if pcm_audio is not None
-            else discord.FFmpegPCMAudio(source_url, **BirbiaAudio.FFMPEG_CFG)
+            else discord.FFmpegPCMAudio(self._source_url, **BirbiaAudio.FFMPEG_CFG)
         )
         self.__requester_vc: discord.VoiceChannel | None = None
 
@@ -116,6 +116,20 @@ class BirbiaAudio:
             return "%02d:%02d" % (minutes, seconds)
 
         return "%ds" % (seconds)
+
+    def regenerate(self):
+        """
+        Regenerates the PCMAudio. Mainly used for looping.
+        """
+
+        if "https" in self._source_url:
+            self._pcm_audio = discord.FFmpegPCMAudio(
+                self._source_url, **BirbiaAudio.FFMPEG_CFG
+            )
+        else:
+            self._pcm_audio = discord.FFmpegPCMAudio(self._source_url)
+
+        return self
 
     def to_dict(self):
         """
