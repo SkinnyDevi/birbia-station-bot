@@ -57,7 +57,9 @@
 			"queue": "[q] Display $botname's radio station pending play requests.",
 			"clear": "Removes every current request from $botname's radio station.",
 			"leave": "[stop] Make $botname's Radio Station stop for the day.",
-			"now": "Display the radio's currently playing song."
+			"now": "Display the radio's currently playing song.",
+			"loop": "Loops the curent playing song.",
+			"unloop": "Disables looping for the currently playing song."
 		},
 		"doujin": {
 			"title": "Doujin Commands",

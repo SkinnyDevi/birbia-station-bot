@@ -20,7 +20,7 @@ class TikTokSearcher(OnlineAudioSearcher):
                 "headers": {
                     "authority": "ssstik.io",
                     "accept": "*/*",
-                    "accept-language": "en-GB,en;q=0.5",
+                    "accept-language": "en-GB,en;q=0.9",
                     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
                     "hx-current-url": "https://ssstik.io/en",
                     "hx-request": "true",
@@ -82,7 +82,7 @@ class TikTokSearcher(OnlineAudioSearcher):
         data = {
             "id": query,
             "locale": "en",
-            "tt": "dEQ4dnY3",
+            "tt": "RjU5bWlk",
         }
 
         return requests.post(
@@ -101,7 +101,7 @@ class TikTokSearcher(OnlineAudioSearcher):
         responseSoup = BeautifulSoup(response.text, "html.parser")
 
         parentElement = responseSoup.find("a", {"id": "direct_dl_link"}).parent
-        downloadMp3BtnLink: str = parentElement.find_all("a")[2]["href"]
+        downloadMp3BtnLink: str = parentElement.find_all("a")[-1]["href"]
 
         return (
             responseSoup.find("p", {"class": "maintext"}).decode_contents(),

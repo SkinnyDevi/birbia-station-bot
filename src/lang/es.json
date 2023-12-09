@@ -57,7 +57,9 @@
 			"queue": "[q] Muestra la cola actual de audios de la radio.",
 			"clear": "Vacia la cola actual.",
 			"leave": "[stop] Apaga la radio y se marcha del canal de voz.",
-			"now": "Muestra información acerca de la cancion en reproducción ahora."
+			"now": "Muestra información acerca de la cancion en reproducción ahora.",
+			"loop": "Activa el bucle infinito para la cancion actual.",
+			"unloop": "Desactiva el bucle infinito para la cancion actual."
 		},
 		"doujin": {
 			"title": "Commandos de doujin",

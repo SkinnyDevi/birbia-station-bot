@@ -154,6 +154,7 @@ HelpCog(bot) // Hints help commands
 ### [3.1.0]
 - Added looping the current songs with commands `loop` and `unloop`
 - Implemented new language keys for new command
+* Fixed TikTok service request errors
 
 ### [3.0.5]
 - Implemented a keyword parsing system to use when declaring language files:
