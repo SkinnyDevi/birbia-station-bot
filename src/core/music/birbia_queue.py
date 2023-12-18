@@ -222,6 +222,19 @@ class BirbiaQueue:
 
         return self.__now
 
+    def jump_to_pos(self, position: int):
+        """
+        Make the passed position the next audio to queue in after the current audio.
+        """
+
+        if position <= 0 or position > len(self.__queue):
+            return None
+
+        jumped_audio = self.__queue.pop(position - 1)
+        self.__queue.insert(0, jumped_audio)
+
+        return True
+
     def is_queue_empty(self):
         """
         Tests if the queue is empty.

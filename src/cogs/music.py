@@ -118,7 +118,7 @@ class MusicCog(commands.Cog):
         else:
             next_song = self.music_queue.next()
 
-        if self.vc is not None:
+        if self.vc is not None and self.vc.is_connected():
             self.vc.play(next_song.pcm_audio, after=lambda e=None: self.__queue_next())
 
     async def __play_audio(self, ctx: commands.Context):
@@ -136,7 +136,7 @@ class MusicCog(commands.Cog):
             await self.vc.move_to(up_next.get_requester_vc())
 
         next_song = self.music_queue.next()
-        if self.vc is not None:
+        if self.vc is not None and self.vc.is_connected():
             self.vc.play(next_song.pcm_audio, after=lambda e=None: self.__queue_next())
 
     @commands.command(
@@ -175,8 +175,8 @@ class MusicCog(commands.Cog):
             BirbiaLogger.error(str(error))
             return await ctx.send(self.__language.play_platform_not_supported)
         except Exception as error:
-            await ctx.send(self.__language.play_failed_error)
             BirbiaLogger.error("An error ocurred while searching for the audio:", error)
+            return await ctx.send(self.__language.play_failed_error)
 
         if audio_obj is None:
             return await ctx.send(self.__language.play_failed_query)
@@ -302,6 +302,24 @@ class MusicCog(commands.Cog):
             )
         )
         await self.__command_timeout()
+
+    @commands.command(name="jump", help="Jump to X position of the queue.")
+    async def jump(self, ctx: commands.Context, q_pos: int):
+        if not self.allow_cmd:
+            return await self.__timeout_warn(ctx)
+
+        if self.vc is None:
+            return await ctx.send(self.__language.no_vc)
+
+        if self.music_queue.is_queue_empty():
+            return await ctx.send("DUMMY: Queue is empty!")
+
+        success = self.music_queue.jump_to_pos(q_pos)
+        if not success:
+            return await ctx.send("DUMMY: Invalid position to jump to in queue.")
+
+        self.vc.stop()
+        await ctx.send(f"DUMMY: jumped to pos {q_pos}")
 
     @commands.command(name="now", help="Display the radio's currently playing song.")
     async def now(self, ctx: commands.Context):
