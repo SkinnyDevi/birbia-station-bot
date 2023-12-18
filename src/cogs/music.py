@@ -311,7 +311,7 @@ class MusicCog(commands.Cog):
         await self.__command_timeout()
 
     @commands.command(name="jump", help="Jump to X position of the queue.")
-    async def jump(self, ctx: commands.Context, q_pos: int):
+    async def jump(self, ctx: commands.Context, q_pos: int = -99):
         if not self.allow_cmd:
             return await self.__timeout_warn(ctx)
 
@@ -323,10 +323,26 @@ class MusicCog(commands.Cog):
 
         success = self.music_queue.jump_to_pos(q_pos)
         if not success:
-            return await ctx.send(self.__language.invalid_jump_pos)
+            return await ctx.send(self.__language.invalid_queue_pos)
 
         self.vc.stop()
         await ctx.send(f"{self.__language.queue_jumped} {q_pos}")
+
+    @commands.command(name="remove", help="Remove X position of the queue.")
+    async def remove(self, ctx: commands.Context, q_pos: int = -99):
+        if not self.allow_cmd:
+            return await self.__timeout_warn(ctx)
+
+        if self.vc is None:
+            return await ctx.send(self.__language.no_vc)
+
+        if self.music_queue.is_queue_empty():
+            return await ctx.send(self.__language.queue_empty)
+
+        if not self.music_queue.remove_pos(q_pos):
+            return await ctx.send(self.__language.invalid_queue_pos)
+
+        await ctx.send(f"{self.__language.queue_pos_removed} {q_pos}")
 
     @commands.command(name="now", help="Display the radio's currently playing song.")
     async def now(self, ctx: commands.Context):

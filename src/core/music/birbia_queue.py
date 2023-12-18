@@ -222,6 +222,17 @@ class BirbiaQueue:
 
         return self.__now
 
+    def remove_pos(self, position: int):
+        """
+        Removes a audio in the passed position.
+        """
+
+        if position <= 0 or position > len(self.__queue):
+            return None
+
+        self.__queue.pop(position - 1)
+        return True
+
     def jump_to_pos(self, position: int):
         """
         Make the passed position the next audio to queue in after the current audio.
