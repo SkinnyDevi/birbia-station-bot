@@ -28,6 +28,7 @@
 	"action_clear": "Cleared all requests from $botname's Radio Station.",
 	"action_stop": "$botname's Radio Station will stop for today sadly.",
 	"queue_empty": "$botname radio station is currently waiting for new requests. Send one!",
+	"no_content_found": "No video content was found for the url",
 	"invalid_jump_pos": "Invalid queue position to jump.",
 	"queue_jumped": "Jumped to queue position",
 	"queue_title": "$botname Station's Pending Requests",

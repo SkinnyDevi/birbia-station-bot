@@ -8,7 +8,11 @@ from src.core.logger import BirbiaLogger
 from src.core.language import BirbiaLanguage
 from src.core.music.audiosearchers.audiosearcher import AudioSearcher
 from src.core.music.birbia_queue import BirbiaQueue
-from src.core.exceptions import UnknownUrlAudioSearcherError, InstaPostNotVideoError
+from src.core.exceptions import (
+    UnknownUrlAudioSearcherError,
+    InstaPostNotVideoError,
+    VideoContentNotFound,
+)
 
 
 class MusicCog(commands.Cog):
@@ -171,6 +175,9 @@ class MusicCog(commands.Cog):
         except NotImplementedError as error:
             BirbiaLogger.error(str(error))
             return await ctx.send(f"***Error*** - Not Implemented: {error}")
+        except VideoContentNotFound as error:
+            BirbiaLogger.error(str(error))
+            return await ctx.send(f"{self.__language.no_content_found} {song_query}")
         except UnknownUrlAudioSearcherError as error:
             BirbiaLogger.error(str(error))
             return await ctx.send(self.__language.play_platform_not_supported)

@@ -4,13 +4,17 @@ import time
 from random import randint
 from bs4 import BeautifulSoup
 from mutagen.mp3 import MP3
-from urllib import parse, request
+from urllib import parse
 
 from src.core.music.audiosearchers.base import OnlineAudioSearcher
 from src.core.music.birbia_queue import BirbiaAudio
 from src.core.logger import BirbiaLogger
 from src.core.cache import BirbiaCache
-from src.core.exceptions import BirbiaCacheNotFoundError, InvalidBirbiaCacheError
+from src.core.exceptions import (
+    BirbiaCacheNotFoundError,
+    InvalidBirbiaCacheError,
+    VideoContentNotFound,
+)
 
 
 class TikTokSearcher(OnlineAudioSearcher):
@@ -100,7 +104,11 @@ class TikTokSearcher(OnlineAudioSearcher):
         response = self.__query_requester(query)
         responseSoup = BeautifulSoup(response.text, "html.parser")
 
-        parentElement = responseSoup.find("a", {"id": "direct_dl_link"}).parent
+        parentElement = responseSoup.find("a", {"id": "direct_dl_link"})
+        if parentElement is None:
+            raise VideoContentNotFound(f"TikTok video for url not found: {query}")
+
+        parentElement = parentElement.parent
         downloadMp3BtnLink: str = parentElement.find_all("a")[-1]["href"]
 
         return (

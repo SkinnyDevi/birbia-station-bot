@@ -1,6 +1,6 @@
 class UnknownUrlAudioSearcherError(Exception):
     """
-    Occures when a URL does not match any supported searcher
+    Occurs when a URL does not match any supported searcher
     """
 
     pass
@@ -8,7 +8,15 @@ class UnknownUrlAudioSearcherError(Exception):
 
 class EmptyQueueError(Exception):
     """
-    Occures when trying to manipulate the `BirbiaQueue`, but it was empty unintentionally.
+    Occurs when trying to manipulate the `BirbiaQueue`, but it was empty unintentionally.
+    """
+
+    pass
+
+
+class VideoContentNotFound(Exception):
+    """
+    Occurs when no video content is found for downloading as audio.
     """
 
     pass
@@ -16,7 +24,7 @@ class EmptyQueueError(Exception):
 
 class QueueAudioValueError(ValueError):
     """
-    Occures when trying to manipulate a `BirbiaAudio` object in the queue, but it was `None`.
+    Occurs when trying to manipulate a `BirbiaAudio` object in the queue, but it was `None`.
     """
 
     pass

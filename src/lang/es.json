@@ -28,6 +28,7 @@
 	"action_clear": "Se vació la cola de audios de la radio de $botname.",
 	"action_stop": "La radio de $botname parará su emisión por hoy.",
 	"queue_empty": "La cola esta vacia. Manda una nueva petición de audio!",
+	"no_content_found": "No se encontró ningun video en el enlace",
 	"invalid_jump_pos": "Posición en cola no válida.",
 	"queue_jumped": "Se ha saltado a la posicion de la cola",
 	"queue_title": "Cola de audios de la radio de $botname",
