@@ -55,7 +55,7 @@ def test_tiktok_searcher(monkeypatch):
     cache = BirbiaCache()
     cache.empty()
 
-    url = "https://vm.tiktok.com/ZGJpAqKQs/"
+    url = "https://vm.tiktok.com/ZGeL9oW9M/"
     result = searcher.search(url)
 
     audio_asserter(result)
@@ -69,8 +69,8 @@ def test_tiktok_cache_retrieval(monkeypatch):
     cache.empty()
     time.sleep(10)
 
-    url = "https://vm.tiktok.com/ZGJpAqKQs/"
-    url_id = "ZGJpAqKQs"
+    url = "https://vm.tiktok.com/ZGeL9oW9M/"
+    url_id = "ZGeL9oW9M"
 
     searcher.search(url)  # first search for caching
     recovered = cache.retrieve_audio(url_id)
