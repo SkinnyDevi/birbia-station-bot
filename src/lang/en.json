@@ -28,6 +28,8 @@
 	"action_clear": "Cleared all requests from $botname's Radio Station.",
 	"action_stop": "$botname's Radio Station will stop for today sadly.",
 	"queue_empty": "$botname radio station is currently waiting for new requests. Send one!",
+	"invalid_jump_pos": "Invalid queue position to jump.",
+	"queue_jumped": "Jumped to queue position",
 	"queue_title": "$botname Station's Pending Requests",
 	"now_empty": "$botname's radio isn't playing anything right now. Submit a request now with ***$botname play***!",
 	"now_title": "$botname Station's Currently Playing Song",

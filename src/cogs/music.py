@@ -312,14 +312,14 @@ class MusicCog(commands.Cog):
             return await ctx.send(self.__language.no_vc)
 
         if self.music_queue.is_queue_empty():
-            return await ctx.send("DUMMY: Queue is empty!")
+            return await ctx.send(self.__language.queue_empty)
 
         success = self.music_queue.jump_to_pos(q_pos)
         if not success:
-            return await ctx.send("DUMMY: Invalid position to jump to in queue.")
+            return await ctx.send(self.__language.invalid_jump_pos)
 
         self.vc.stop()
-        await ctx.send(f"DUMMY: jumped to pos {q_pos}")
+        await ctx.send(f"{self.__language.queue_jumped} {q_pos}")
 
     @commands.command(name="now", help="Display the radio's currently playing song.")
     async def now(self, ctx: commands.Context):
