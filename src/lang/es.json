@@ -63,7 +63,9 @@
 			"leave": "[stop] Apaga la radio y se marcha del canal de voz.",
 			"now": "Muestra información acerca de la cancion en reproducción ahora.",
 			"loop": "Activa el bucle infinito para la cancion actual.",
-			"unloop": "Desactiva el bucle infinito para la cancion actual."
+			"unloop": "Desactiva el bucle infinito para la cancion actual.",
+			"jump": "Salta a la posicion X en cola.",
+			"remove": "Borra el audio en la posicion X de la cola."
 		},
 		"doujin": {
 			"title": "Commandos de doujin",

@@ -63,7 +63,9 @@
 			"leave": "[stop] Make $botname's Radio Station stop for the day.",
 			"now": "Display the radio's currently playing song.",
 			"loop": "Loops the curent playing song.",
-			"unloop": "Disables looping for the currently playing song."
+			"unloop": "Disables looping for the currently playing song.",
+			"jump": "Jumps to X position in queue.",
+			"remove": "Removes X position in queue."
 		},
 		"doujin": {
 			"title": "Doujin Commands",
