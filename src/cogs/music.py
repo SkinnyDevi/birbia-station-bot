@@ -59,6 +59,7 @@ class MusicCog(commands.Cog):
         self.music_queue.reset()
         self.vc = None
         self.started_quit_timeout = False
+        self.loop_current = False
 
     async def __timeout_quit(self):
         """
