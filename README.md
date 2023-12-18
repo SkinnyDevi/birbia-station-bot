@@ -1,6 +1,6 @@
-# Birbia's Radio Station [3.1.0]
+# Birbia's Radio Station [3.2.0]
 
-![Birbia worker](https://thumbs.gfycat.com/RapidGlamorousGoldenretriever-size_restricted.gif)
+![Birbia worker](https://media.tenor.com/tsjQt9PdSwoAAAAC/you-want.gif)
 
 From the all well known radio of Birbia's nation, we are now introducing Birbia's Radio Station in Discord!
 
@@ -50,9 +50,9 @@ to test if the language file has all the needed translations and are up-to-date.
 
 ### Music
 - Expand queue commands
-	* Jump to number in queue
+	* ~~Jump to number in queue~~ (3.2.0)
 	* Queue pagination
-	* Remove certain audio in X position of the queue
+	* ~~Remove certain audio in X position of the queue~~ (3.2.0)
 
 - ~~Looping the current song~~ (3.1.0)
 - Ability to load and play playlists
@@ -150,6 +150,12 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.2.0]
+- Added jump to position in queue
+- Added remove position in queue
+* Implemented fail-safe for tiktok audios which have invalid links
+
 
 ### [3.1.0]
 - Added looping the current songs with commands `loop` and `unloop`
