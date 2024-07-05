@@ -29,9 +29,20 @@ class FranksAICog(commands.Cog):
         self.__instances: dict[int, FranksChatInstance] = {}
 
     def __consistent_hash(self, s: str):
+        """Creates a consistent hash for each common chat."""
+
         return int(hashlib.md5(s.encode()).hexdigest(), 16)
 
     def __delete_chat(self, user: discord.User):
+        """
+        Deletes the chat with the AI from the API.
+
+        Returns:
+        - [0] Success.
+        - [-1] An error occurred while trying to get the sessions.
+        - [-2] No chat found to close.
+        """
+
         session_id: FranksChatID | None = None
         if user.id in self.__instances.keys():
             instance = self.__instances[user.id]
@@ -59,10 +70,6 @@ class FranksAICog(commands.Cog):
 
         return -1
 
-    def __on_exit(self, user: discord.User):
-        output = self.__delete_chat(user)
-        return -1 if output == -1 else 0
-
     def __new_chat(self, user: discord.User):
         output = self.__delete_chat(user)
         if output == -1:
@@ -73,16 +80,19 @@ class FranksAICog(commands.Cog):
             return -1  # An error occurred while trying to create a new chat.
 
         self.__instances[user.id] = FranksChatInstance(user, session.uid)
-        self.__instances[user.id].ext_on_close = lambda inst_user: self.__on_exit(
+        self.__instances[user.id].ext_on_close = lambda inst_user: self.__delete_chat(
             inst_user
         )
 
         return 0
 
-    def clean_query(self, message: discord.Message):
+    def clean_query(
+        self, message: discord.Message, user_to_remove: discord.User = None
+    ):
         """
         Removes the username from the message.
         """
+
         msg = message.clean_content
         BirbiaLogger.debug(f"Message: {msg}")
 
@@ -91,6 +101,8 @@ class FranksAICog(commands.Cog):
     async def __ask(
         self, ctx: commands.Context = None, message: discord.Message = None, *args
     ):
+        """Asks the AI a question."""
+
         if ctx is None and message is None:
             raise ValueError("Either ctx or message must be provided.")
 
@@ -147,22 +159,24 @@ class FranksAICog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        """Overrides the on_message event to allow the AI to answer questions upon mentioned. This query is made in the common chat."""
+
         if self.bot.user not in message.mentions:
             await self.bot.process_commands(message)
             return
 
         await self.__ask(None, message)
 
-    @commands.command(name="gptask", help="Ask a question to GPT-4o.")
+    @commands.command(name="ask", help="Ask a question to an AI.")
     async def gptask(self, ctx: commands.Context, *args):
-        """
-        Ask a question to an AI.
-        """
+        """Ask a question to an AI. This query is made in a privat user chat."""
 
         await self.__ask(ctx, None, *args)
 
     @commands.command(name="gptreset", help="Closes the chat with the AI.")
     async def gptreset(self, ctx: commands.Context):
+        """Closes the chat with the AI."""
+
         requester = ctx.author
         output = self.__delete_chat(requester)
 

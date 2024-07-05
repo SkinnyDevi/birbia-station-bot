@@ -1,8 +1,11 @@
 class FranksChatID:
+    """Represents a chat ID in the Franks API"""
+
     def __init__(self, chat_id: str):
         self.__chat_id = chat_id
 
     def get(self) -> str:
+        """Get the chat ID (UID)"""
         return self.__chat_id
 
     def __hash__(self) -> int:
@@ -12,7 +15,7 @@ class FranksChatID:
         return self.__chat_id
 
 
-class FranksAPIResponse:
+class _FranksAPIResponse:
     def __init__(self, response: dict):
         for key, value in response.items():
             self.__dict__[f"__{key}"] = value
@@ -26,7 +29,9 @@ class FranksAPIResponse:
         return str(self.__dict__)
 
 
-class FranksAPIUser(FranksAPIResponse):
+class FranksAPIUser(_FranksAPIResponse):
+    """Represents a user in the Franks API"""
+
     def __init__(self, user: dict):
         super().__init__(user)
 
@@ -61,7 +66,9 @@ class FranksAPIUser(FranksAPIResponse):
         return self.__getattribute__("__uid")
 
 
-class FranksAPISessionResponse(FranksAPIResponse):
+class FranksAPISessionResponse(_FranksAPIResponse):
+    """Represents a session in the Franks API"""
+
     def __init__(self, response: dict):
         super().__init__(response)
 
@@ -99,7 +106,9 @@ class FranksAPISessionResponse(FranksAPIResponse):
         return FranksChatID(self.__getattribute__("__uid"))
 
 
-class FranksAPIGetSessionResponse(FranksAPIResponse):
+class FranksAPIGetSessionResponse(_FranksAPIResponse):
+    """Response from the Franks API when getting sessions"""
+
     def __init__(self, response: dict):
         super().__init__(response)
 
@@ -118,7 +127,9 @@ class FranksAPIGetSessionResponse(FranksAPIResponse):
         return [FranksAPISessionResponse(session) for session in results]
 
 
-class FranksAPIDeleteSessionResponse(FranksAPIResponse):
+class FranksAPIDeleteSessionResponse(_FranksAPIResponse):
+    """Response from the Franks API when deleting a session"""
+
     def __init__(self, response: dict):
         super().__init__(response)
 
