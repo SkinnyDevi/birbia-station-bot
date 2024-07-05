@@ -1,4 +1,4 @@
-# Birbia's Radio Station [3.2.0]
+# Birbia's Radio Station [3.2.1]
 
 ![Birbia worker](https://media.tenor.com/tsjQt9PdSwoAAAAC/you-want.gif)
 
@@ -93,6 +93,8 @@ CMD_TIMEOUT=2
 MAX_CACHE_ENTRIES=20
 # If none, defaults to english
 LANGUAGE=en
+# Log level
+LOG_LEVEL="INFO"
 ```
 
 As of v2.1.0, a `docker-compose` has been provided to make the setup process of a docker container much more simpler.
@@ -127,6 +129,7 @@ ENV DISCONNECT_DELAY=600
 ENV CMD_TIMEOUT=2
 ENV MAX_CACHE_ENTRIES=20
 ENV LANGUAGE=en
+ENV LOG_LEVEL="INFO"
 
 COPY . .
 
@@ -150,6 +153,9 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.2.1]
+* Implemented log level for the logger.
 
 ### [3.2.0]
 - Added jump to position in queue

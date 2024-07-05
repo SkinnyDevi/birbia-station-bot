@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 
 
 class bcolors:
@@ -19,6 +20,16 @@ class BirbiaLogger:
     Birbia's own custom logger.
     """
 
+    class LogLevel(Enum):
+        """Enum for log levels."""
+
+        INFO = 1
+        WARN = 2
+        ERROR = 3
+        DEBUG = 4
+
+    LOG_LEVEL = LogLevel.DEBUG
+
     __PREFIX = bcolors.ENDC + bcolors.OKCYAN + " [BIRBIA] "
     __INFO = bcolors.OKBLUE + "INFO" + __PREFIX
     __WARN = bcolors.WARNING + "WARN" + __PREFIX
@@ -33,6 +44,10 @@ class BirbiaLogger:
         General logging of actions.
         """
 
+        if BirbiaLogger.LOG_LEVEL != BirbiaLogger.LogLevel.DEBUG:
+            if BirbiaLogger.LOG_LEVEL.value > BirbiaLogger.LogLevel.INFO.value:
+                return
+
         msg = bcolors.ENDC + msg + bcolors.ENDC
         log = f"{BirbiaLogger.__now()} {BirbiaLogger.__INFO}{msg}"
         BirbiaLogger.__log.append(log)
@@ -43,6 +58,10 @@ class BirbiaLogger:
         """
         Logging for any warning presented.
         """
+
+        if BirbiaLogger.LOG_LEVEL != BirbiaLogger.LogLevel.DEBUG:
+            if BirbiaLogger.LOG_LEVEL.value > BirbiaLogger.LogLevel.WARN.value:
+                return
 
         if args != ():
             msg += f" {str(*args)}"
@@ -58,6 +77,10 @@ class BirbiaLogger:
         Used to called on try/except statements.
         """
 
+        if BirbiaLogger.LOG_LEVEL != BirbiaLogger.LogLevel.DEBUG:
+            if BirbiaLogger.LOG_LEVEL.value > BirbiaLogger.LogLevel.ERROR.value:
+                return
+
         if args != ():
             msg += f" {str(*args)}"
 
@@ -71,6 +94,8 @@ class BirbiaLogger:
         """
         General debug. Not recorded in the internal log history.
         """
+        if BirbiaLogger.LOG_LEVEL != BirbiaLogger.LogLevel.DEBUG:
+            return
 
         msg = bcolors.ENDC + msg + bcolors.ENDC
         print(f"{BirbiaLogger.__now()} {BirbiaLogger.__DEBUG}{msg}")
