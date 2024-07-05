@@ -28,9 +28,18 @@ async def on_ready():
     BirbiaLogger.info(f" - MAX CACHE ENTRIES: {environ.get('MAX_CACHE_ENTRIES')}")
 
     if is_dev:
-        BirbiaLogger.warn("Running bot in development mode")
+        BirbiaLogger.debug("Running bot in development mode")
 
     BirbiaLogger.info(f"Birbia's Radio Station ({__version__}) is Live!")
+
+    if is_dev:
+        BirbiaLogger.LOG_LEVEL = BirbiaLogger.LogLevel.DEBUG
+    else:
+        env_loglevel = environ.get("LOG_LEVEL")
+        if env_loglevel:
+            BirbiaLogger.LOG_LEVEL = BirbiaLogger.LogLevel[str(env_loglevel).upper()]
+        else:
+            BirbiaLogger.LOG_LEVEL = BirbiaLogger.LogLevel.INFO
 
 
 cogs = [MusicCog(bot), UtilityCog(bot), XCog(bot), HelpCog(bot)]
