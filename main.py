@@ -8,6 +8,7 @@ from src.cogs.music import MusicCog
 from src.cogs.help import HelpCog
 from src.cogs.utility import UtilityCog
 from src.cogs.xcog import XCog
+from src.cogs.franksai import FranksAICog
 from src.core.logger import BirbiaLogger
 from src.constants.version import __version__
 
@@ -33,7 +34,7 @@ async def on_ready():
     BirbiaLogger.info(f"Birbia's Radio Station ({__version__}) is Live!")
 
 
-cogs = [MusicCog(bot), UtilityCog(bot), XCog(bot), HelpCog(bot)]
+cogs = [MusicCog(bot), UtilityCog(bot), XCog(bot), FranksAICog(bot), HelpCog(bot)]
 
 
 async def main():

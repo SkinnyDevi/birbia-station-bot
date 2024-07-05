@@ -6,7 +6,7 @@ from src.core.language import BirbiaLanguage
 
 
 class HelpCog(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.__language = BirbiaLanguage.instance()
 
