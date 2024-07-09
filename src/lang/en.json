@@ -44,6 +44,7 @@
 	"doujin_invalid_sauce": "Sauce is invalid.",
 	"doujin_minimum": "There's nothing lower than 2.",
 	"doujin_unknown_opt": "Unknown option. Use ***-s*** for a specific doujin.",
+	"ai_init_message": "You are helpful assistant in charge of helping people in this chat. Their names will be sent before each query such as '{name}: {query}'. Make sure to address the correct sender each time.\n\nIf you understand, continue with this first message as if it was a casual conversation:\n",
 	"help_commands": {
 		"general": {
 			"description": "All available command categories provided by $botname.\nUse '$prefix [category]' to see all commands from that category.",

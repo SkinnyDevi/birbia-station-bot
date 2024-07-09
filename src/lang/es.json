@@ -44,6 +44,7 @@
 	"doujin_invalid_sauce": "El código no es correcto.",
 	"doujin_minimum": "No hay códigos por debajo al 2.",
 	"doujin_unknown_opt": "Opción desconocida. Usa ***-s*** para especificar un doujin.",
+	"ai_init_message": "",
 	"help_commands": {
 		"general": {
 			"description": "Todas las categorias de comandos de $botname.\nUsa '$prefix [categoria]' para ver todas las opciones de ese comando.",

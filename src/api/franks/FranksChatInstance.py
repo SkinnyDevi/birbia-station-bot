@@ -9,6 +9,7 @@ import websocket
 
 from src.api.franks.FranksAPIResponse import FranksChatID
 from src.core.logger import BirbiaLogger
+from src.core.language import BirbiaLanguage
 
 
 class ParseableEnum(Enum):
@@ -297,7 +298,10 @@ class FranksChatInstance:
         if auth is None:
             raise ValueError("AI_MODEL_AUTH_TOKEN not set.")
         self.__socket_url = f"wss://api.franks.ai/?Authorization={auth}"
+        self.__lang = BirbiaLanguage.instance()
+
         self.__websocket = None
+        self.__first_message = False
         self.__thread = None
         self.__phrase: list[str] = []
 
@@ -355,6 +359,9 @@ class FranksChatInstance:
                 case FranksWebsocketStatus.Success.value:
                     self.__state_manager.set_state(FranksChatResponseState.SUCCESS)
 
+                    if not self.__first_message:
+                        self.__first_message = True
+
                     if self.ext_on_message is not None:
                         self.ext_on_message(message)
                     return
@@ -407,7 +414,7 @@ class FranksChatInstance:
         while not self.__active:
             await asyncio.sleep(0.5)
 
-    async def send_message(self, message: str):
+    async def send_message(self, message: str, requester: discord.User):
         """Send a message to the AI."""
 
         if self.__websocket is None:
@@ -420,7 +427,12 @@ class FranksChatInstance:
         msg.set_type(FranksWebsocketMessageType.Post)
         msg.set_return_session_uid(self.__chat_id)
         msg.set_session_uid(self.__chat_id)
-        msg.set_prompt(message)
+
+        formatted_message = f"{requester.name}: {message}"
+        if not self.__first_message:
+            msg.set_prompt(self.__lang.ai_init_message + formatted_message)
+        else:
+            msg.set_prompt(formatted_message)
 
         if not msg.validate():
             return -1

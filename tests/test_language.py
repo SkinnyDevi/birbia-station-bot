@@ -53,6 +53,7 @@ def check_lang_entries(lang_code: str):
     assert lang.doujin_invalid_sauce
     assert lang.doujin_minimum
     assert lang.doujin_unknown_opt
+    assert lang.ai_init_message
 
     # Help commands
     assert lang.help_commands["general"]

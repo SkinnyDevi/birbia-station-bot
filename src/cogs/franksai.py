@@ -71,6 +71,14 @@ class FranksAICog(commands.Cog):
         return -1
 
     def __new_chat(self, user: discord.User):
+        """
+        Creates a new chat with the AI.
+
+        Returns:
+        - [0] Success.
+        - [-1] An error occurred while trying to create a new chat.
+        """
+
         output = self.__delete_chat(user)
         if output == -1:
             return -1
@@ -86,14 +94,12 @@ class FranksAICog(commands.Cog):
 
         return 0
 
-    def clean_query(
-        self, message: discord.Message, user_to_remove: discord.User = None
-    ):
+    def clean_query(self, message: discord.Message):
         """
         Removes the username from the message.
         """
 
-        msg = message.clean_content
+        msg = message.clean_content.replace(f"@{self.bot.user.name}", "").strip()
         BirbiaLogger.debug(f"Message: {msg}")
 
         return msg
@@ -115,16 +121,19 @@ class FranksAICog(commands.Cog):
             return post
 
         if ctx is not None:
+            # The query is made in a private chat.
             requester = ctx.author
+            chat_author = requester
             ai_query = " ".join(args)
         else:
-            requester = self.__COMMON_USER
+            # The query is made in the common chat.
+            chat_author = self.__COMMON_USER
+            requester = message.author
             ai_query = self.clean_query(message)
-            await self.bot.process_commands(message)
 
-        instance_id = requester.id
+        instance_id = chat_author.id
         if instance_id not in self.__instances.keys():
-            output = self.__new_chat(requester)
+            output = self.__new_chat(chat_author)
             if output != 0:
                 await send_msg("An error occurred while trying to create a new chat.")
                 return -1
@@ -138,7 +147,7 @@ class FranksAICog(commands.Cog):
             return -1
 
         prcs_msg = await send_msg("Processing...")
-        msg_parts = await instance.send_message(ai_query)
+        msg_parts = await instance.send_message(ai_query, requester)
         if msg_parts == -1:
             await send_msg("An error occurred while trying to send the message.")
             return -1
@@ -166,6 +175,7 @@ class FranksAICog(commands.Cog):
             return
 
         await self.__ask(None, message)
+        await self.bot.process_commands(message)
 
     @commands.command(name="ask", help="Ask a question to an AI.")
     async def gptask(self, ctx: commands.Context, *args):
