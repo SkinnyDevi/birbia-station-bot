@@ -163,7 +163,9 @@ class FranksChatWebsocketSendMessage:
 
     def __str__(self):
         if not self.__is_valid:
-            raise ValueError("Message is not valid/has not been validated.")
+            raise ValueError(
+                f"{self.__class__.__name__} is not valid/has not been validated."
+            )
 
         as_dict = {
             "attachments": self.__attachments,
@@ -369,13 +371,13 @@ class FranksChatInstance:
                     return
         except Exception as e:
             msg = f"Failed to decode message for {self.__user.id}, thread: {self.__thread.ident}, stack:"
-            BirbiaLogger.error(f"{msg}\n{e.with_traceback(None)}")
+            BirbiaLogger.error(f"{msg}\n{e}")
 
     def __on_error(self, _: websocket.WebSocketApp, error: Exception):
         """Function to call when an error occurs with the websocket."""
 
         msg = f"Websocket error for {self.__user.id}, thread: {self.__thread.ident}, stack:"
-        BirbiaLogger.error(f"{msg}\n{error.with_traceback(None)}")
+        BirbiaLogger.error(f"{msg}\n{error}")
 
     def __on_close(
         self, _: websocket.WebSocketApp, close_status_code: int, close_msg: str

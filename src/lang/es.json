@@ -44,7 +44,14 @@
 	"doujin_invalid_sauce": "El código no es correcto.",
 	"doujin_minimum": "No hay códigos por debajo al 2.",
 	"doujin_unknown_opt": "Opción desconocida. Usa ***-s*** para especificar un doujin.",
-	"ai_init_message": "",
+	"ai_init_message": "Eres un asistente útil encargado de ayudar a las personas en este chat. Sus nombres se enviarán antes de cada consulta como '{nombre}: {consulta}'. Asegúrate de dirigirte al remitente correcto cada vez.\n\nSi lo entiendes, continúa con este primer mensaje como si fuera una conversación informal:\n",
+	"ai_init_error": "Hubo un error al inicializar la IA. Por favor, inténtalo de nuevo.",
+	"ai_not_ready": "La IA aún no está lista. Por favor, espera unos segundos e inténtalo de nuevo.",
+	"ai_processing": "Procesando...",
+	"ai_error": "Hubo un error al procesar la respuesta. Por favor, inténtalo de nuevo.",
+	"ai_chat_close_error": "Hubo un error al cerrar el chat. Por favor, inténtalo de nuevo.",
+	"ai_chat_closed_not_found": "No había ningun chat para cerrar.",
+	"ai_chat_closed": "Chat cerrado con éxito.",
 	"help_commands": {
 		"general": {
 			"description": "Todas las categorias de comandos de $botname.\nUsa '$prefix [categoria]' para ver todas las opciones de ese comando.",

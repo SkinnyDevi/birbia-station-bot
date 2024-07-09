@@ -26,6 +26,7 @@ def check_lang_entries(lang_code: str):
     assert lang.cant_enter_vc
     assert lang.already_in_vc
     assert lang.no_vc
+
     assert lang.play_empty_query
     assert lang.play_fetching_query
     assert lang.play_platform_not_supported
@@ -33,6 +34,7 @@ def check_lang_entries(lang_code: str):
     assert lang.play_failed_error
     assert lang.play_ig_not_video
     assert lang.action_pause
+
     assert lang.action_pause_empty
     assert lang.action_resume
     assert lang.action_resume_empty
@@ -40,20 +42,30 @@ def check_lang_entries(lang_code: str):
     assert lang.action_skip_empty
     assert lang.action_clear
     assert lang.action_stop
+
     assert lang.queue_empty
     assert lang.queue_title
+
     assert lang.now_empty
     assert lang.now_title
+
     assert lang.invite_zero
     assert lang.invite_gen
+
     assert lang.purge_amount
     assert lang.purge_success
+
     assert lang.doujin_not_in_source
     assert lang.doujin_no_sauce
     assert lang.doujin_invalid_sauce
     assert lang.doujin_minimum
     assert lang.doujin_unknown_opt
+
     assert lang.ai_init_message
+    assert lang.ai_init_error
+    assert lang.ai_not_ready
+    assert lang.ai_processing
+    assert lang.ai_error
 
     # Help commands
     assert lang.help_commands["general"]

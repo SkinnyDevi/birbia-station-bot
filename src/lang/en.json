@@ -45,6 +45,13 @@
 	"doujin_minimum": "There's nothing lower than 2.",
 	"doujin_unknown_opt": "Unknown option. Use ***-s*** for a specific doujin.",
 	"ai_init_message": "You are helpful assistant in charge of helping people in this chat. Their names will be sent before each query such as '{name}: {query}'. Make sure to address the correct sender each time.\n\nIf you understand, continue with this first message as if it was a casual conversation:\n",
+	"ai_init_error": "There was an error initializing the AI. Please try again.",
+	"ai_not_ready": "The AI is not ready yet. Please wait a few seconds and try again.",
+	"ai_processing": "Processing...",
+	"ai_error": "There was an error processing the message. Please try again.",
+	"ai_chat_close_error": "There was an error closing the chat. Please try again.",
+	"ai_chat_closed_not_found": "There was no chat to close.",
+	"ai_chat_closed": "Chat closed successfully.",
 	"help_commands": {
 		"general": {
 			"description": "All available command categories provided by $botname.\nUse '$prefix [category]' to see all commands from that category.",

@@ -135,7 +135,7 @@ class FranksAICog(commands.Cog):
         if instance_id not in self.__instances.keys():
             output = self.__new_chat(chat_author)
             if output != 0:
-                await send_msg("An error occurred while trying to create a new chat.")
+                await send_msg(self.__language.ai_init_error)
                 return -1
 
         instance = self.__instances[instance_id]
@@ -143,13 +143,13 @@ class FranksAICog(commands.Cog):
             await instance.start_chat()
 
         if not instance.can_ask():
-            await send_msg("The AI is not ready to receive a message.")
+            await send_msg(self.__language.ai_not_ready)
             return -1
 
-        prcs_msg = await send_msg("Processing...")
+        prcs_msg = await send_msg(self.__language.ai_processing)
         msg_parts = await instance.send_message(ai_query, requester)
         if msg_parts == -1:
-            await send_msg("An error occurred while trying to send the message.")
+            await send_msg(self.__language.ai_error)
             return -1
 
         await prcs_msg.edit(content=msg_parts.pop(0))
@@ -192,8 +192,8 @@ class FranksAICog(commands.Cog):
 
         match output:
             case -1:
-                await ctx.send("An error occurred while trying to close the chat.")
+                await ctx.send(self.__language.ai_chat_close_error)
             case -2:
-                await ctx.send("No chat found to close.")
+                await ctx.send(self.__language.ai_chat_closed_not_found)
             case 0:
-                await ctx.send("Chat closed successfully.")
+                await ctx.send(self.__language.ai_chat_closed)
