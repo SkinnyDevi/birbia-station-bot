@@ -23,4 +23,5 @@ class OnlineAudioSearcher(ABC):
         """
         Searches for a query in the specified platform.
         """
-        pass
+
+        raise NotImplementedError("The search method must be implemented")

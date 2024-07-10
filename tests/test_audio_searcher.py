@@ -8,6 +8,12 @@ from src.core.music.birbia_queue import BirbiaAudio
 from src.core.cache import BirbiaCache
 from src.core.exceptions import InstaPostNotVideoError
 
+TIKTOK_VIDEO_TEST = "https://vm.tiktok.com/ZGeGqbSC8"
+INSTAGRAM_MULTIPLE_TEST = "https://www.instagram.com/p/C5EJ0H7IS2X/"
+INSTAGRAM_IMAGE_TEST = "https://www.instagram.com/p/C5PMrj-LOMz/"
+INSTAGRAM_POST_TEST = "https://www.instagram.com/p/CvXwz9mAKmw/"
+YOUTUBE_VIDEO_TEST = "https://www.youtube.com/watch?v=a_cOaRNqjvQ"
+
 
 def audio_asserter(audio: BirbiaAudio):
     assert type(audio.source) is str
@@ -38,7 +44,7 @@ def test_youtube_cache_retrieval(monkeypatch):
     cache = BirbiaCache()
     cache.empty()
 
-    url = "https://www.youtube.com/watch?v=a_cOaRNqjvQ"
+    url = YOUTUBE_VIDEO_TEST
     url_id = url.split("?v=")[1]
 
     searcher.search(url)  # first search for caching
@@ -55,7 +61,7 @@ def test_tiktok_searcher(monkeypatch):
     cache = BirbiaCache()
     cache.empty()
 
-    url = "https://vm.tiktok.com/ZGeL9oW9M/"
+    url = TIKTOK_VIDEO_TEST
     result = searcher.search(url)
 
     audio_asserter(result)
@@ -69,8 +75,8 @@ def test_tiktok_cache_retrieval(monkeypatch):
     cache.empty()
     time.sleep(10)
 
-    url = "https://vm.tiktok.com/ZGeL9oW9M/"
-    url_id = "ZGeL9oW9M"
+    url = TIKTOK_VIDEO_TEST
+    url_id = TIKTOK_VIDEO_TEST.split("/")[-2]
 
     searcher.search(url)  # first search for caching
     recovered = cache.retrieve_audio(url_id)
@@ -87,7 +93,7 @@ def test_instagram_searcher(monkeypatch):
     cache.empty()
     time.sleep(3)
 
-    url = "https://www.instagram.com/p/CvXwz9mAKmw/"
+    url = INSTAGRAM_POST_TEST
     result = searcher.search(url)
 
     audio_asserter(result)
@@ -100,7 +106,7 @@ def test_instagram_searcher_multiple(monkeypatch):
     cache = BirbiaCache()
     cache.empty()
 
-    url = "https://www.instagram.com/p/CwGK5D8SJeY/"
+    url = INSTAGRAM_MULTIPLE_TEST
     try:
         searcher.search(url)
     except NotImplementedError:
@@ -115,7 +121,7 @@ def test_instagram_not_video_error(monkeypatch):
     cache.empty()
     time.sleep(3)
 
-    url = "https://www.instagram.com/p/CxHkfktLUGC"
+    url = INSTAGRAM_IMAGE_TEST
 
     try:
         searcher.search(url)
@@ -131,8 +137,8 @@ def test_instagram_cache_retrieval(monkeypatch):
     cache.empty()
     time.sleep(3)
 
-    url = "https://www.instagram.com/p/CvXwz9mAKmw/"
-    url_id = "CvXwz9mAKmw"
+    url = INSTAGRAM_POST_TEST
+    url_id = INSTAGRAM_POST_TEST.split("/")[-2]
 
     searcher.search(url)  # first search for caching
     recovered = cache.retrieve_audio(url_id)

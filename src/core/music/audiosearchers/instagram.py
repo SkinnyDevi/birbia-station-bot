@@ -1,11 +1,10 @@
 import requests
 import discord
 import time
-import json
 import subprocess
 from random import randint
 from mutagen.mp3 import MP3
-from urllib import parse, request
+from bs4 import BeautifulSoup, ResultSet, PageElement
 from pathlib import Path
 
 from src.core.music.audiosearchers.base import OnlineAudioSearcher
@@ -15,6 +14,7 @@ from src.core.exceptions import (
     BirbiaCacheNotFoundError,
     InvalidBirbiaCacheError,
 )
+from src.api.instagram.InstagramAPI import InstagramAPI
 from src.core.cache import BirbiaCache
 from src.core.logger import BirbiaLogger
 
@@ -24,23 +24,14 @@ class InstagramSeacher(OnlineAudioSearcher):
         super().__init__(
             {
                 "headers": {
-                    "authority": "sssinstagram.com",
-                    "accept": "application/json, text/plain, */*",
-                    "accept-language": "en-US,en;q=0.9",
-                    "content-type": "application/json;charset=UTF-8",
-                    "dnt": "1",
-                    "origin": "https://sssinstagram.com",
-                    "sec-ch-ua": '"Not)A;Brand";v="24", "Chromium";v="116"',
-                    "sec-ch-ua-mobile": "?0",
-                    "sec-ch-ua-platform": '"macOS"',
-                    "sec-fetch-dest": "empty",
-                    "sec-fetch-mode": "cors",
-                    "sec-fetch-site": "same-origin",
-                    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
-                    "x-requested-with": "XMLHttpRequest",
+                    "Accept": "*/*",
+                    "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+                    "Content-Type": "application/x-www-form-urlencoded",
                 },
             }
         )
+
+        self.__ig_api = InstagramAPI()
 
     def __shortcode_extractor(self, url: str):
         """
@@ -68,120 +59,73 @@ class InstagramSeacher(OnlineAudioSearcher):
                 BirbiaLogger.warn("Invalidating incomplete cache")
                 cache_instance.invalidate(shortcode)
 
-            time.sleep(randint(3, 9))
+            time.sleep(randint(1, 4))
             return self.__online_search(query, shortcode, cache_instance)
 
-    def __invalidate_cache_cookies(self):
+    def __create_payload(self, post_url: str) -> str:
         """
-        Invalidates the cache if the cached cookies are not valid.
-        """
-
-        cache_path = Path("searcher_cache/ig_searcher.json")
-
-        if cache_path.exists():
-            cache_path.unlink()
-
-    def __regen_cookies(self):
-        """
-        Regenerates the page cookies.
+        Creates the payload for the Instagram query.
         """
 
-        cache_path = Path("searcher_cache")
-
-        if cache_path.exists():
-            cache_path = cache_path.joinpath("ig_searcher.json")
-
-            if cache_path.exists():
-                BirbiaLogger.info("Retrieving cached cookies")
-                with open(cache_path, "r") as cache:
-                    return json.load(cache)
-            else:
-                cache_path = Path("searcher_cache")
-
-        else:
-            cache_path.mkdir()
-
-        BirbiaLogger.info("Regenerating cookies")
-
-        page = requests.get("https://sssinstagram.com")
-        cookie = page.headers["Set-Cookie"]
-
-        xsrf_tkn = cookie.split("XSRF-TOKEN=")[1].split(";")[0]
-        session = cookie.split("sssinstagram_session=")[1].split(";")[0]
-        random_n = cookie.split("random_n=")[1].split(";")[0]
-
-        cache_cookies = {
-            "random_n": random_n,
-            "XSRF-TOKEN": xsrf_tkn,
-            "sssinstagram_session": session,
+        payload = {
+            "k_token": "b97a2deb55a25b2501d9928f9e565ab55f453dcf6ea87d4690bb595f27ba7533",
+            "t": "media",
+            "lang": "en",
+            "k_exp": 3000000000,
+            "q": post_url,
         }
 
-        cache_path = cache_path.joinpath("ig_searcher.json")
-        with open(cache_path, "w") as out:
-            out.write(json.dumps(cache_cookies))
+        return "&".join([f"{k}={v}" for k, v in payload.items()])
 
-        return cache_cookies
-
-    def __request_beautify(self, response: requests.Response) -> tuple[str, str]:
+    def __get_post_info(self, query: str):
         """
-        Returns the necessary information of the post.
+        Retrieves the post information.
         """
 
-        BirbiaLogger.info("Gathering necessary information from video response")
+        self.__ig_api.use_timed_request(False)
+        post_info = self.__ig_api.post_info(query)
 
-        if "items" not in response.keys():
-            raise RuntimeError("No items were returned from the downloader API")
+        return post_info[1][:255]
 
-        if len(response["items"]) > 1:
-            raise NotImplementedError("Cannot handle IG video carousel")
-
-        entry = response["items"][0]
-
-        video_urls = entry["urls"][0]
-
-        if video_urls["extension"] != "mp4":
-            raise InstaPostNotVideoError("The link does not refer to a video post")
-
-        raw_url = video_urls["urlDownloadable"]
-        video_url = parse.unquote(raw_url.split("uri=")[1].split("&")[0])
-        title: str = entry["meta"]["title"]
-
-        return title[:255], video_url
-
-    def __query_requester(self, query: str):
+    def __query_requester(self, query: str, shortcode: str) -> tuple[str, str]:
         """
         Sends a query request to the designated service.
         """
 
-        cookies = self.__regen_cookies()
-        headers = self.config["headers"].copy()
-        headers["x-xsrf-token"] = cookies["XSRF-TOKEN"].replace("%3D", "=")
+        REQ_URL = "https://v3.saveinsta.app/api/ajaxSearch"
 
-        json_data = {
-            "link": query,
-            "token": "",
-        }
+        req_payload = self.__create_payload(query)
+        response = requests.post(
+            REQ_URL, data=req_payload, headers=self.config["headers"]
+        )
+        parsed = response.json()
+        if "data" not in parsed.keys():
+            raise ValueError("No data found in the response")
 
-        def make_req(c: dict, h: dict):
-            response = requests.post(
-                "https://sssinstagram.com/r",
-                cookies=c,
-                headers=h,
-                json=json_data,
-            )
+        soup = BeautifulSoup(parsed["data"], "html.parser")
+        list_tags: ResultSet[PageElement] = soup.find_all("li")
+        if len(list_tags) < 1:
+            raise ValueError("No download link found")
 
-            return response.json()
+        if len(list_tags) > 1:
+            BirbiaLogger.warn("Multiple download links found (Multiple Post)")
+            raise NotImplementedError("Multiple download links found (Multiple Post)")
 
-        try:
-            return self.__request_beautify(make_req(cookies, headers)["data"])
-        except KeyError:
-            self.__invalidate_cache_cookies()
-            cookies = self.__regen_cookies()
-            headers = self.config["headers"].copy()
-            headers["x-xsrf-token"] = cookies["XSRF-TOKEN"].replace("%3D", "=")
+        download_link: str = None
+        for tag in list_tags:
+            videoIcon = tag.find_all("i", {"class": "icon icon-dlvideo"})
+            is_video = len(videoIcon) > 0
 
-            request = make_req(cookies, headers)
-            return self.__request_beautify(request["data"])
+            if is_video:
+                link: ResultSet[PageElement] = tag.find_all("a")
+                download_link = link[1]["href"]
+                break
+            else:
+                raise InstaPostNotVideoError(f"Post '{shortcode}' is not a video")
+
+        post_info = self.__get_post_info(query)
+
+        return post_info, download_link
 
     def __convert_to_mp3(self, shortcode: str, mp4_path: Path, cache: BirbiaCache):
         """
@@ -208,10 +152,10 @@ class InstagramSeacher(OnlineAudioSearcher):
         self, query: str, shortcode: str, cache_instance: BirbiaCache
     ) -> BirbiaAudio:
         """
-        Searches and downloads a video/reel using `Instaloader` class.
+        Searches and downloads a video/reel.
         """
 
-        extraction = self.__query_requester(query)
+        extraction = self.__query_requester(query, shortcode)
         audio_cache = cache_instance.cache_audio(shortcode, extraction[1], ext="mp4")
         audio_cache = self.__convert_to_mp3(shortcode, audio_cache, cache_instance)
         local_file = MP3(str(audio_cache.absolute()))
