@@ -1,4 +1,4 @@
-# Birbia's Radio Station [3.2.1]
+# Birbia's Radio Station [3.2.2]
 
 ![Birbia worker](https://media.tenor.com/tsjQt9PdSwoAAAAC/you-want.gif)
 
