@@ -2,6 +2,10 @@
 .env
 testing.py
 .venv
+.github
+.vscode
+.env.example
+.git
 
 # Caches
 __pycache__

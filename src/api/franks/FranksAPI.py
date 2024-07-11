@@ -9,6 +9,7 @@ from src.api.franks.FranksAPIResponse import (
     FranksAPIDeleteSessionResponse,
     FranksChatID,
 )
+from src.core.logger import BirbiaLogger
 
 
 class FranksAPI:
@@ -40,6 +41,7 @@ class FranksAPI:
     def __init__(self):
         self.__auth_token = environ.get("AI_MODEL_AUTH_TOKEN")
         if self.__auth_token is None:
+            BirbiaLogger.error("AI_MODEL_AUTH_TOKEN not set.")
             raise ValueError("AI_MODEL_AUTH_TOKEN not set.")
 
         FranksAPI.__headers["authorization"] = self.__auth_token.replace("%20", " ")
