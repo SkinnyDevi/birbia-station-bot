@@ -170,12 +170,8 @@ class FranksAICog(commands.Cog):
     async def on_message(self, message: discord.Message):
         """Overrides the on_message event to allow the AI to answer questions upon mentioned. This query is made in the common chat."""
 
-        if self.bot.user not in message.mentions:
-            await self.bot.process_commands(message)
-            return
-
-        await self.__ask(None, message)
-        await self.bot.process_commands(message)
+        if self.bot.user in message.mentions:
+            await self.__ask(None, message)
 
     @commands.command(name="ask", help="Ask a question to an AI.")
     async def gptask(self, ctx: commands.Context, *args):
