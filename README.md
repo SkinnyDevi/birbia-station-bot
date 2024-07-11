@@ -1,4 +1,4 @@
-# Birbia's Radio Station [3.2.1]
+# Birbia's Radio Station [3.2.2]
 
 ![Birbia worker](https://media.tenor.com/tsjQt9PdSwoAAAAC/you-want.gif)
 
@@ -153,6 +153,10 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.2.2]
+* Fixed Instagram queries with a new search method
+* Fixed TikTok queries no caching the correct video ID
 
 ### [3.2.1]
 * Implemented log level for the logger.

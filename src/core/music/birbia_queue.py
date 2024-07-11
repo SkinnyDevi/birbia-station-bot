@@ -205,7 +205,7 @@ class BirbiaQueue:
             raise QueueAudioValueError(f"Cannot append {type(None)} to queue.")
 
         self.__queue.append(audio)
-        BirbiaLogger.info(f"Appended audio '{audio.title}' to queue")
+        BirbiaLogger.info(f"Appended audio '{audio.title[:30]}' to queue")
 
     def now_to_history(self):
         """

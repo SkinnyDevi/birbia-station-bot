@@ -50,10 +50,13 @@ class TikTokSearcher(OnlineAudioSearcher):
     def __extract_video_id(self, video_url: str):
         parsed_uri = parse.urlparse(video_url)
 
+        if video_url[-1] == "/":
+            video_url = video_url[:-1]
+
         if "www.tiktok.com" in parsed_uri.hostname:
             return video_url.split("/video/")[1].split("?")[0]
 
-        return video_url.split(".com/")[1][:-1]
+        return video_url.split("/")[-1]
 
     def search(self, query: str) -> BirbiaAudio:
         """

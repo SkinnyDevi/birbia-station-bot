@@ -1,7 +1,7 @@
 async-timeout==4.0.3
-aiohttp==3.9.0
+aiohttp==3.9.4
 beautifulsoup4==4.12.2
-certifi==2023.7.22
+certifi==2024.07.04
 discord.py==2.3.2
 ffmpeg==1.4
 ffmpeg-python==0.2.0
@@ -11,8 +11,9 @@ mutagen==1.46.0
 PyNaCl==1.5.0
 python-dotenv==1.0.0
 pytest==7.4.0
-requests==2.31.0
-websockets==11.0.3
-yt-dlp==2023.11.14
 fake-useragent==1.5.1
 websocket-client==1.8.0
+requests==2.32.3
+websockets==12.0
+yt-dlp==2024.07.07
+lxml == 5.2.2
