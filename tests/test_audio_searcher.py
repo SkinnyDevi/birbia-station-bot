@@ -9,9 +9,9 @@ from src.core.cache import BirbiaCache
 from src.core.exceptions import InstaPostNotVideoError
 
 TIKTOK_VIDEO_TEST = "https://vm.tiktok.com/ZGeGqbSC8"
-INSTAGRAM_MULTIPLE_TEST = "https://www.instagram.com/p/C5EJ0H7IS2X/"
-INSTAGRAM_IMAGE_TEST = "https://www.instagram.com/p/C5PMrj-LOMz/"
-INSTAGRAM_POST_TEST = "https://www.instagram.com/p/CvXwz9mAKmw/"
+INSTAGRAM_MULTIPLE_TEST = "https://www.instagram.com/p/C5EJ0H7IS2X"
+INSTAGRAM_IMAGE_TEST = "https://www.instagram.com/p/C5PMrj-LOMz"
+INSTAGRAM_POST_TEST = "https://www.instagram.com/p/CvXwz9mAKmw"
 YOUTUBE_VIDEO_TEST = "https://www.youtube.com/watch?v=a_cOaRNqjvQ"
 
 
@@ -76,7 +76,7 @@ def test_tiktok_cache_retrieval(monkeypatch):
     time.sleep(10)
 
     url = TIKTOK_VIDEO_TEST
-    url_id = TIKTOK_VIDEO_TEST.split("/")[-2]
+    url_id = TIKTOK_VIDEO_TEST.split("/")[-1]
 
     searcher.search(url)  # first search for caching
     recovered = cache.retrieve_audio(url_id)
@@ -138,7 +138,7 @@ def test_instagram_cache_retrieval(monkeypatch):
     time.sleep(3)
 
     url = INSTAGRAM_POST_TEST
-    url_id = INSTAGRAM_POST_TEST.split("/")[-2]
+    url_id = INSTAGRAM_POST_TEST.split("/")[-1]
 
     searcher.search(url)  # first search for caching
     recovered = cache.retrieve_audio(url_id)

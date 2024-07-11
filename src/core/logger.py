@@ -48,7 +48,7 @@ class BirbiaLogger:
             if BirbiaLogger.LOG_LEVEL.value > BirbiaLogger.LogLevel.INFO.value:
                 return
 
-        msg = bcolors.ENDC + msg
+        msg = bcolors.ENDC + msg + bcolors.ENDC
         log = f"{BirbiaLogger.__now()} {BirbiaLogger.__INFO}{msg}"
         BirbiaLogger.__log.append(log)
         print(log)
@@ -66,7 +66,7 @@ class BirbiaLogger:
         if args != ():
             msg += f" {str(*args)}"
 
-        msg = bcolors.ENDC + msg
+        msg = bcolors.ENDC + msg + bcolors.ENDC
         log = f"{BirbiaLogger.__now()} {BirbiaLogger.__WARN}{msg}"
         BirbiaLogger.__log.append(log)
         print(log)
@@ -84,7 +84,7 @@ class BirbiaLogger:
         if args != ():
             msg += f" {str(*args)}"
 
-        msg = bcolors.ENDC + bcolors.FAIL + msg
+        msg = bcolors.ENDC + bcolors.FAIL + msg + bcolors.ENDC
         log = f"{BirbiaLogger.__now()} {BirbiaLogger.__ERROR}{msg}"
         BirbiaLogger.__log.append(log)
         print(log)
@@ -97,7 +97,7 @@ class BirbiaLogger:
         if BirbiaLogger.LOG_LEVEL != BirbiaLogger.LogLevel.DEBUG:
             return
 
-        msg = bcolors.ENDC + msg
+        msg = bcolors.ENDC + msg + bcolors.ENDC
         print(f"{BirbiaLogger.__now()} {BirbiaLogger.__DEBUG}{msg}")
 
     @staticmethod
