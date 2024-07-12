@@ -289,6 +289,8 @@ class FranksChatInstance:
         def get_response(self) -> list[str]:
             return self.__response
 
+    CHAT_RESET_TIMEOUT = 600  # secs # 10 minutes
+
     def __init__(self, user: discord.User, session_id: FranksChatID):
         self.__user = user
         self.__chat_id = session_id
@@ -306,6 +308,7 @@ class FranksChatInstance:
         self.__first_message = False
         self.__thread = None
         self.__phrase: list[str] = []
+        self.__timer_task: asyncio.Task = None
 
         self.ext_on_message: Callable[[str], None] = None
         """Function to call when a message is received from the AI. Will be executed when it has received last token."""
@@ -407,6 +410,33 @@ class FranksChatInstance:
         self.__thread.daemon = True
         self.__thread.start()
 
+    async def __timer(self):
+        """Timer task that will close the chat after a certain amount of time."""
+
+        try:
+            await asyncio.sleep(self.CHAT_RESET_TIMEOUT)
+            while self.__state_manager.get_state() != FranksChatResponseState.WAITING:
+                await asyncio.sleep(0.5)
+
+            self.close_chat()
+        except asyncio.CancelledError:
+            pass
+
+    def __create_timer(self) -> asyncio.Task:
+        """
+        Create a timer task that will close the chat after a certain amount of time.
+        """
+
+        self.__timer_task = asyncio.create_task(self.__timer())
+
+    def __restart_timer(self):
+        """Restart the timer task."""
+
+        if self.__timer_task is not None:
+            self.__timer_task.cancel()
+
+        self.__create_timer()
+
     async def start_chat(self):
         """Start the chat instance."""
 
@@ -447,6 +477,8 @@ class FranksChatInstance:
 
         self.__state_manager.set_state(FranksChatResponseState.WAITING)
         self.__query_manager.set_allow_query(True)
+        self.__restart_timer()
+
         return self.__state_manager.get_response()
 
     def can_ask(self) -> bool:
