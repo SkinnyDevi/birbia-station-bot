@@ -57,7 +57,8 @@
 			"description": "Todas las categorias de comandos de $botname.\nUsa '$prefix [categoria]' para ver todas las opciones de ese comando.",
 			"help": "Muestra todas las acciones posibles de $botname.",
 			"music": "Reproduce música en tus chats de voz!",
-			"doujin": "Busca doujins online desde nuestras fuentes."
+			"doujin": "Busca doujins online desde nuestras fuentes.",
+			"ai": "Interactua con la IA de $botname."
 		},
 		"music": {
 			"title": "Comandos de musica [alias]",
@@ -81,6 +82,14 @@
 			"doujin": "Muestra un doujin random de nuestras fuentes-",
 			"arguments": "-s",
 			"arg_sauce": "[-s XXXX] Busca un doujin con ese número en concreto."
+		},
+		"ai": {
+			"title": "Comandos de IA",
+			"description": "Comandos para interactuar con la IA de $botname.",
+			"@mentionme!": "Mencioname en tu mensaje para empezar/continuar una conversacion con otros usuarios.",
+			"ask": "Empieza una conversacion privada con la IA.",
+			"aireset": "Cierra la conversacion privada con la IA.",
+			"commonreset": "Cierra la conversacion común con la IA."
 		}
 	}
 }

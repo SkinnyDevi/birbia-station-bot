@@ -69,6 +69,17 @@ class HelpCog(commands.Cog):
             doujin, self.__language.help_commands["doujin"].copy()
         )
 
+    def ai_help(self) -> discord.Embed:
+        """Creates the AI help embed."""
+
+        ai = discord.Embed(
+            title=self.__language.get_cmd_help("ai", "title"),
+            description=self.__language.get_cmd_help("ai", "description"),
+            color=0xD0D2D6,
+        )
+
+        return self.__add_to_embed(ai, self.__language.help_commands["ai"].copy())
+
     @commands.command(name="help", help="Displayes all of Birbia's available actions.")
     async def help(self, ctx: commands.Context, category: str = None):
         """Displays the help embed."""
@@ -78,6 +89,8 @@ class HelpCog(commands.Cog):
                 embed = self.music_help()
             case "doujin":
                 embed = self.doujin_help()
+            case "ai":
+                embed = self.ai_help()
             case _:
                 embed = self.general_help()
 

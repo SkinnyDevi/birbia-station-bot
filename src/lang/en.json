@@ -57,7 +57,8 @@
 			"description": "All available command categories provided by $botname.\nUse '$prefix [category]' to see all commands from that category.",
 			"help": "Displayes all of $botname's available actions.",
 			"music": "Play music through your voice chats!",
-			"doujin": "Search available doujins from our sources."
+			"doujin": "Search available doujins from our sources.",
+			"ai": "Interact with $botname's AI."
 		},
 		"music": {
 			"title": "Music Commands [aliases]",
@@ -81,6 +82,14 @@
 			"doujin": "Displays a random doujin from our sources.",
 			"arguments": "-s",
 			"arg_sauce": "Specifies a sauce to look for within our sources."
+		},
+		"ai": {
+			"title": "AI Commands",
+			"description": "Commands to interact with the AI.",
+			"@mentionme!": "Mention me in your message to start/continue a public conversation with other users.",
+			"ask": "Starts a one-to-one conversation with the AI.",
+			"aireset": "Closes the current one-to-one conversation with the AI.",
+			"commonreset": "Closes the current common conversation with the AI."
 		}
 	}
 }

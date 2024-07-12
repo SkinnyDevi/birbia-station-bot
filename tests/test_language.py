@@ -71,12 +71,14 @@ def check_lang_entries(lang_code: str):
     assert lang.help_commands["general"]
     assert lang.help_commands["music"]
     assert lang.help_commands["doujin"]
+    assert lang.help_commands["ai"]
 
     # General commands
     assert lang.get_cmd_help("general", "description")
     assert lang.get_cmd_help("general", "help")
     assert lang.get_cmd_help("general", "music")
     assert lang.get_cmd_help("general", "doujin")
+    assert lang.get_cmd_help("general", "ai")
 
     # Music commands
     assert lang.get_cmd_help("music", "title")
@@ -98,6 +100,14 @@ def check_lang_entries(lang_code: str):
     assert lang.get_cmd_help("doujin", "doujin")
     assert lang.get_cmd_help("doujin", "arguments")
     assert lang.get_cmd_help("doujin", "arg_sauce")
+
+    # AI commands
+    assert lang.get_cmd_help("ai", "title")
+    assert lang.get_cmd_help("ai", "description")
+    assert lang.get_cmd_help("ai", "@mentionme!")
+    assert lang.get_cmd_help("ai", "ask")
+    assert lang.get_cmd_help("ai", "aireset")
+    assert lang.get_cmd_help("ai", "commonreset")
 
 
 def test_english_lang():

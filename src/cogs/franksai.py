@@ -166,6 +166,19 @@ class FranksAICog(commands.Cog):
 
         return 0
 
+    async def __close_chat(self, ctx: commands.Context, user: discord.User):
+        """Closes the chat with the AI."""
+
+        output = self.__delete_chat(user)
+
+        match output:
+            case -1:
+                await ctx.send(self.__language.ai_chat_close_error)
+            case -2:
+                await ctx.send(self.__language.ai_chat_closed_not_found)
+            case 0:
+                await ctx.send(self.__language.ai_chat_closed)
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         """Overrides the on_message event to allow the AI to answer questions upon mentioned. This query is made in the common chat."""
@@ -179,17 +192,14 @@ class FranksAICog(commands.Cog):
 
         await self.__ask(ctx, None, *args)
 
-    @commands.command(name="gptreset", help="Closes the chat with the AI.")
+    @commands.command(name="commonreset", help="Closes the common chat with the AI.")
+    async def gptcommonreset(self, ctx: commands.Context):
+        """Closes the common chat with the AI."""
+
+        await self.__close_chat(ctx, self.__COMMON_USER)
+
+    @commands.command(name="aireset", help="Closes the chat with the AI.")
     async def gptreset(self, ctx: commands.Context):
         """Closes the chat with the AI."""
 
-        requester = ctx.author
-        output = self.__delete_chat(requester)
-
-        match output:
-            case -1:
-                await ctx.send(self.__language.ai_chat_close_error)
-            case -2:
-                await ctx.send(self.__language.ai_chat_closed_not_found)
-            case 0:
-                await ctx.send(self.__language.ai_chat_closed)
+        await self.__close_chat(ctx, ctx.author)
