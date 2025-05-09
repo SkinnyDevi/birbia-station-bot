@@ -26,6 +26,7 @@ def check_lang_entries(lang_code: str):
     assert lang.cant_enter_vc
     assert lang.already_in_vc
     assert lang.no_vc
+    assert lang.no_content_found
 
     assert lang.play_empty_query
     assert lang.play_fetching_query
@@ -33,8 +34,9 @@ def check_lang_entries(lang_code: str):
     assert lang.play_failed_query
     assert lang.play_failed_error
     assert lang.play_ig_not_video
-    assert lang.action_pause
+    assert lang.play_video_age_restricted
 
+    assert lang.action_pause
     assert lang.action_pause_empty
     assert lang.action_resume
     assert lang.action_resume_empty

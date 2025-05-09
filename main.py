@@ -43,7 +43,8 @@ async def on_ready():
             BirbiaLogger.LOG_LEVEL = BirbiaLogger.LogLevel.INFO
 
 
-cogs = [MusicCog(bot), UtilityCog(bot), XCog(bot), FranksAICog(bot), HelpCog(bot)]
+# cogs = [MusicCog(bot), UtilityCog(bot), XCog(bot), FranksAICog(bot), HelpCog(bot)]
+cogs = [MusicCog(bot), UtilityCog(bot), FranksAICog(bot), HelpCog(bot)]
 
 
 async def main():

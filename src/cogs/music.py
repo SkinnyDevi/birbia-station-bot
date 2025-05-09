@@ -12,6 +12,7 @@ from src.core.exceptions import (
     UnknownUrlAudioSearcherError,
     InstaPostNotVideoError,
     VideoContentNotFound,
+    YoutubeAgeRestrictedVideoRequestError
 )
 
 
@@ -169,6 +170,9 @@ class MusicCog(commands.Cog):
 
         try:
             audio_obj = self.audio_search.search(song_query)
+        except YoutubeAgeRestrictedVideoRequestError as error:
+            BirbiaLogger.error(str(error))
+            return await ctx.send(self.__language.play_video_age_restricted)
         except InstaPostNotVideoError as error:
             BirbiaLogger.error(str(error))
             return await ctx.send(self.__language.play_ig_not_video)

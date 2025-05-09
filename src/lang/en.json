@@ -19,6 +19,7 @@
 	"play_loop_off": "Looping has been disabled.",
 	"play_loop_already_on": "Looping is already enabled!",
 	"play_loop_already_off": "Looping is already disabled!",
+	"play_video_age_restricted": "$prefix cannot play the youtube video because it's age restriced!",
 	"action_pause": "$botname paused the current audio in it's radio station.",
 	"action_pause_empty": "$botname's radio station has nothing to pause!",
 	"action_resume": "$botname has resumed playing on it's radio station!",
