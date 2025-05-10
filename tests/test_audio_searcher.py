@@ -6,9 +6,9 @@ from src.core.music.audiosearchers.tiktok import TikTokSearcher
 from src.core.music.audiosearchers.instagram import InstagramSeacher
 from src.core.music.birbia_queue import BirbiaAudio
 from src.core.cache import BirbiaCache
-from src.core.exceptions import InstaPostNotVideoError
+from src.core.exceptions import InstaPostNotVideoError, YoutubeAgeRestrictedVideoRequestError
 
-TIKTOK_VIDEO_TEST = "https://vm.tiktok.com/ZGeGqbSC8"
+TIKTOK_VIDEO_TEST = "https://vm.tiktok.com/ZNdMNHnYU"
 INSTAGRAM_MULTIPLE_TEST = "https://www.instagram.com/p/C5EJ0H7IS2X"
 INSTAGRAM_IMAGE_TEST = "https://www.instagram.com/p/C5PMrj-LOMz"
 INSTAGRAM_POST_TEST = "https://www.instagram.com/p/CvXwz9mAKmw"
@@ -33,8 +33,11 @@ def test_youtube_searcher(monkeypatch):
 
     audio_asserter(searcher.search("melissa porno graffiti"))
     audio_asserter(searcher.search("https://www.youtube.com/watch?v=uGGQGoht6ic"))
-    audio_asserter(searcher.search("dross coñooo"))
     audio_asserter(searcher.search("ayyy me cago en la puta yaaaaa"))
+    try:
+        audio_asserter(searcher.search("dross coñooo"))
+    except YoutubeAgeRestrictedVideoRequestError:
+        assert True
 
 
 def test_youtube_cache_retrieval(monkeypatch):

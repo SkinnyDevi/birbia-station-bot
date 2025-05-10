@@ -8,14 +8,15 @@ class DoujinManga:
         sauce: int,
         cover: str,
         titles: dict[str, str],
+        artist: str,
         tags: list[str],
         pages: int,
         url: str,
     ):
         self._sauce = sauce
         self._cover = cover
-        #
         self._titles = titles
+        self._artist = artist
         self._tags = tags
         self._pages = pages
         self._url = url
@@ -42,6 +43,13 @@ class DoujinManga:
         Titles are in the format of {language || original}: title.
         """
         return self._titles
+    
+    @property
+    def artist(self):
+        """
+        Artist of the manga.
+        """
+        return self._artist
 
     @property
     def tags(self):
@@ -72,6 +80,7 @@ class DoujinManga:
             "sauce": self._sauce,
             "cover": self._cover,
             "titles": self._titles,
+            "artist": self._artist,
             "tags": self._tags,
             "pages": self._pages,
             "url": self._url,

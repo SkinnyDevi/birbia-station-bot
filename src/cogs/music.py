@@ -12,6 +12,7 @@ from src.core.exceptions import (
     UnknownUrlAudioSearcherError,
     InstaPostNotVideoError,
     VideoContentNotFound,
+    YoutubeAgeRestrictedVideoRequestError
 )
 
 
@@ -39,6 +40,7 @@ class MusicCog(commands.Cog):
         BirbiaLogger.info("Running Music Cog with following config:")
         BirbiaLogger.info(f" - DISCONNECT DELAY: {MusicCog.DISCONNECT_DELAY}")
         BirbiaLogger.info(f" - CMD TIMEOUT: {MusicCog.CMD_TIMEOUT}")
+        BirbiaLogger.info("Initialized Music cog successfully.")
 
     async def __disconnect(self):
         """
@@ -169,6 +171,9 @@ class MusicCog(commands.Cog):
 
         try:
             audio_obj = self.audio_search.search(song_query)
+        except YoutubeAgeRestrictedVideoRequestError as error:
+            BirbiaLogger.error(str(error))
+            return await ctx.send(self.__language.play_video_age_restricted)
         except InstaPostNotVideoError as error:
             BirbiaLogger.error(str(error))
             return await ctx.send(self.__language.play_ig_not_video)

@@ -5,7 +5,7 @@ from src.core.music.audiosearchers.base import OnlineAudioSearcher
 from src.core.music.birbia_queue import BirbiaAudio
 from src.core.logger import BirbiaLogger
 from src.core.cache import BirbiaCache
-from src.core.exceptions import BirbiaCacheNotFoundError, InvalidBirbiaCacheError
+from src.core.exceptions import BirbiaCacheNotFoundError, InvalidBirbiaCacheError, YoutubeAgeRestrictedVideoRequestError
 
 
 class YoutubeSearcher(OnlineAudioSearcher):
@@ -138,10 +138,18 @@ class YoutubeSearcher(OnlineAudioSearcher):
                 if "entries" in info.keys():
                     info = info["entries"][0]
             except Exception as error:
-                BirbiaLogger.error(
-                    "There was an error trying to find the specified youtube video: ",
-                    error.with_traceback(),
-                )
+                if "Sign in to confirm your age" in str(error):
+                    BirbiaLogger.error(
+                        "The video that was requested has age verification, and no account cookies were provided: ",
+                        error.with_traceback(None)
+                    )
+                    raise YoutubeAgeRestrictedVideoRequestError("Age verification required for video: " + query)
+                else:
+                    BirbiaLogger.error(
+                        "There was an error trying to find the specified youtube video: ",
+                        error.with_traceback(None),
+                    )
+                
                 return None
 
         return info

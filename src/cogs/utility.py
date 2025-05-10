@@ -9,6 +9,7 @@ class UtilityCog(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.__language = BirbiaLanguage.instance()
+        BirbiaLogger.info("Initialized Utility cog successfully.")
 
     @commands.command(name="ping", help="Returns sender's ping in ms.")
     async def ping(self, ctx):
@@ -16,7 +17,7 @@ class UtilityCog(commands.Cog):
         Returns sender's ping in ms.
         """
 
-        await ctx.send(f"Pong - {round(self.bot.latency * 1000)}ms")
+        await ctx.send(f"Pong! - {round(self.bot.latency * 1000)}ms")
 
     @commands.command(
         name="invite", help="Generates invites, default = 1 use per invite."

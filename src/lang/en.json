@@ -5,6 +5,7 @@
 	"original_title": "Original Title",
 	"categories": "Categories",
 	"pages": "Pages",
+	"author": "Author",
 	"timeout_warn": "$botname warns you to wait at least 2 seconds before running the next command.",
 	"cant_enter_vc": "$botname could not enter your voice chat. This is illegal. We will take action.",
 	"already_in_vc": "$botname Radio is already in your voice channel.",
@@ -19,6 +20,7 @@
 	"play_loop_off": "Looping has been disabled.",
 	"play_loop_already_on": "Looping is already enabled!",
 	"play_loop_already_off": "Looping is already disabled!",
+	"play_video_age_restricted": "$prefix cannot play the youtube video because it's age restriced!",
 	"action_pause": "$botname paused the current audio in it's radio station.",
 	"action_pause_empty": "$botname's radio station has nothing to pause!",
 	"action_resume": "$botname has resumed playing on it's radio station!",
@@ -44,12 +46,22 @@
 	"doujin_invalid_sauce": "Sauce is invalid.",
 	"doujin_minimum": "There's nothing lower than 2.",
 	"doujin_unknown_opt": "Unknown option. Use ***-s*** for a specific doujin.",
+	"ai_init_message": "You are helpful assistant in charge of helping people in this chat. Their names will be sent before each query such as '{name}: {query}'. Make sure to address the correct sender each time and use the same language of the query.\n\nIf you understand, continue with this first message as if it was a casual conversation:\n",
+	"ai_init_error": "There was an error initializing the AI. Please try again.",
+	"ai_not_ready": "The AI is not ready yet. Please wait a few seconds and try again.",
+	"ai_processing": "Processing...",
+	"ai_error": "There was an error processing the message. Please try again.",
+	"ai_chat_close_error": "There was an error closing the chat. Please try again.",
+	"ai_chat_closed_not_found": "There was no chat to close.",
+	"ai_chat_closed": "Chat closed successfully.",
 	"help_commands": {
 		"general": {
 			"description": "All available command categories provided by $botname.\nUse '$prefix [category]' to see all commands from that category.",
 			"help": "Displayes all of $botname's available actions.",
 			"music": "Play music through your voice chats!",
-			"doujin": "Search available doujins from our sources."
+			"doujin": "Search available doujins from our sources.",
+			"ai": "Interact with $botname's AI.",
+			"utility": "Useful commands for discord servers."
 		},
 		"music": {
 			"title": "Music Commands [aliases]",
@@ -73,6 +85,19 @@
 			"doujin": "Displays a random doujin from our sources.",
 			"arguments": "-s",
 			"arg_sauce": "Specifies a sauce to look for within our sources."
+		},
+		"ai": {
+			"title": "AI Commands",
+			"description": "Commands to interact with the AI.",
+			"@mentionme!": "Mention me in your message to start/continue a public conversation with other users.",
+			"ask": "Starts a one-to-one conversation with the AI.",
+			"newchat": "Closes the current one-to-one conversation with the AI.",
+			"reset": "Closes the current common conversation with the AI."
+		},
+		"utility": {
+			"ping": "Returns sender's ping in ms.",
+			"invite": "Generates invites. Specify a number after the command to modify it's uses. Default is 1 use per invite.",
+			"purge": "Deletes recursively n number of messages specified."
 		}
 	}
 }

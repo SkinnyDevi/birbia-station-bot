@@ -13,6 +13,7 @@ from src.core.exceptions import (
     InstaPostNotVideoError,
     BirbiaCacheNotFoundError,
     InvalidBirbiaCacheError,
+    VideoContentNotFound
 )
 from src.api.instagram.InstagramAPI import InstagramAPI
 from src.core.cache import BirbiaCache
@@ -26,7 +27,7 @@ class InstagramSeacher(OnlineAudioSearcher):
                 "headers": {
                     "Accept": "*/*",
                     "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                 },
             }
         )
@@ -67,15 +68,9 @@ class InstagramSeacher(OnlineAudioSearcher):
         Creates the payload for the Instagram query.
         """
 
-        payload = {
-            "k_token": "b97a2deb55a25b2501d9928f9e565ab55f453dcf6ea87d4690bb595f27ba7533",
-            "t": "media",
-            "lang": "en",
-            "k_exp": 3000000000,
-            "q": post_url,
+        return {
+            "url": post_url
         }
-
-        return "&".join([f"{k}={v}" for k, v in payload.items()])
 
     def __get_post_info(self, query: str):
         """
@@ -92,7 +87,7 @@ class InstagramSeacher(OnlineAudioSearcher):
         Sends a query request to the designated service.
         """
 
-        REQ_URL = "https://v3.saveinsta.app/api/ajaxSearch"
+        REQ_URL = "https://snapins.ai/action.php"
 
         req_payload = self.__create_payload(query)
         response = requests.post(
@@ -101,28 +96,24 @@ class InstagramSeacher(OnlineAudioSearcher):
         parsed = response.json()
         if "data" not in parsed.keys():
             raise ValueError("No data found in the response")
+        
+        parsed_posts: list[dict] = parsed["data"]
 
-        soup = BeautifulSoup(parsed["data"], "html.parser")
-        list_tags: ResultSet[PageElement] = soup.find_all("li")
-        if len(list_tags) < 1:
-            raise ValueError("No download link found")
+        if len(parsed_posts) > 1:
+            BirbiaLogger.warn("Multiple download links found (Multiple Posts)")
+            raise NotImplementedError("Multiple download links found (Multiple Posts)")
 
-        if len(list_tags) > 1:
-            BirbiaLogger.warn("Multiple download links found (Multiple Post)")
-            raise NotImplementedError("Multiple download links found (Multiple Post)")
+        post = parsed_posts[0]
+        
+        if "video" not in post["type"]:
+            BirbiaLogger.warn("Post is not a video: " + query)
+            raise InstaPostNotVideoError("Post is not a video: " + query)
+        
+        if "downloadUrl" not in post:
+            BirbiaLogger.error("No downloadable URL for Instagram post: " + query)
+            raise VideoContentNotFound("No downloadable URL for Instagram post: " + query)
 
-        download_link: str = None
-        for tag in list_tags:
-            videoIcon = tag.find_all("i", {"class": "icon icon-dlvideo"})
-            is_video = len(videoIcon) > 0
-
-            if is_video:
-                link: ResultSet[PageElement] = tag.find_all("a")
-                download_link = link[1]["href"]
-                break
-            else:
-                raise InstaPostNotVideoError(f"Post '{shortcode}' is not a video")
-
+        download_link: str = post["downloadUrl"]
         post_info = self.__get_post_info(query)
 
         return post_info, download_link

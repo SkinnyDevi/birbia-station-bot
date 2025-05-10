@@ -37,10 +37,7 @@ class BirbiaLanguage:
         to the respective entries.
         """
 
-        dev_prefix = environ.get("DEV_PREFIX")
-        prefix = environ.get("PREFIX")
-        is_dev = environ.get("ENV_IS_DEV") == "True"
-        bot_prefix = dev_prefix if is_dev else prefix
+        bot_prefix = self.get_prefix()
 
         for k, v in data.items():
             # replace any $botname entry
@@ -99,6 +96,17 @@ class BirbiaLanguage:
             raise AttributeError("Language values are read-only")
 
         super().__setattr__(name, value)
+
+    @staticmethod
+    def get_prefix():
+        """
+        Get the current bot prefix.
+        """
+
+        dev_prefix = environ.get("DEV_PREFIX")
+        prefix = environ.get("PREFIX")
+        is_dev = environ.get("ENV_IS_DEV") == "True"
+        return dev_prefix if is_dev else prefix
 
     @property
     def LANG_CODE(self):

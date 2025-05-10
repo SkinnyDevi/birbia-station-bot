@@ -2,87 +2,144 @@ import requests
 
 from bs4 import BeautifulSoup
 
+from src.core.logger import BirbiaLogger 
 from src.core.doujin.doujin import DoujinManga
-
 
 class DoujinWebScraper:
     """
     Scrapes a doujin hub and returns it's data.
     """
-
-    DOUJIN_DATA_ROOT = "https://nhentai.net/api/gallery/"
-    WEB_ROOT = "https://www.nhentai.net/g/"
-    FETCH_ROOT = "https://nhentai.to"
-
-    def doujin(self, sauce: int):
+    
+    BASE_URL = "https://nhentai.net"
+    USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) GSA/300.0.598994205 Mobile/15E148 Safari/604"
+    
+    def doujin(self, sauce: int) -> DoujinManga:
         """
         Retrieves all doujin information from the sauce.
         """
 
-        request = requests.get(f"{DoujinWebScraper.FETCH_ROOT}/g/{sauce}").text
-        doujin_site = BeautifulSoup(request, "html.parser")
-
-        titles = self.__get_titles(doujin_site)
-
+        parsed_site = self.__html_requester(sauce)
+        titles = self.__get_titles(parsed_site)
+        
         return DoujinManga(
             sauce,
-            self.__get_dcover(doujin_site),
+            self.__get_cover(parsed_site),
             {"english": titles[0], "original": titles[1]},
-            self.__get_tags(doujin_site),
-            self.__get_pages(doujin_site),
-            DoujinWebScraper.WEB_ROOT + str(sauce),
+            self.__get_artist(parsed_site),
+            self.__get_tags(parsed_site),
+            self.__get_pages(parsed_site),
+            f"{DoujinWebScraper.BASE_URL}/g/{sauce}",
         )
-
+        
     def doujin_maxcount(self) -> int:
         """
         Retrieves the latest doujin ID from the source.
         """
-
-        request = requests.get(DoujinWebScraper.FETCH_ROOT).text
-        home_site = BeautifulSoup(request, "html.parser")
-
-        recents = home_site.findAll("div", {"class": "container index-container"})[1]
-        recents = BeautifulSoup(str(recents), "html.parser")
-
-        recent_id = recents.find("a", {"class": "cover"})["href"]
-
-        return int(recent_id.replace("g/", "").replace("/", ""))
-
-    def __get_dcover(self, site: BeautifulSoup) -> str:
+        
+        parsed_site = self.__recents_requester()
+        recents_container = parsed_site.select("#content .container:nth-child(3)")
+        
+        if len(recents_container) < 1:
+            BirbiaLogger.error("Could not get recents container.")
+            return -1
+        
+        recent_alink = recents_container[0].select_one(".cover")
+        
+        if not recent_alink:
+            BirbiaLogger.error("Could not find latest doujin.")
+            return -1
+        
+        return int(recent_alink["href"][3:-1])
+    
+    def __html_requester(self, sauce: int) -> BeautifulSoup:
         """
-        Retrieves the doujin cover.
+        Gets and parses de HTML for the manga.
         """
-
-        coverdiv = site.find("div", {"id": "cover"}).children
-        atag = list(map(lambda v: v, coverdiv))[1].children
-        return list(map(lambda v: v, atag))[1]["src"]
-
-    def __get_titles(self, site: BeautifulSoup) -> list[str]:
+        
+        request = requests.get(f"{DoujinWebScraper.BASE_URL}/g/{sauce}", headers={"User-Agent":DoujinWebScraper.USER_AGENT}).text
+        return BeautifulSoup(request, "html.parser")
+    
+    def __recents_requester(self) -> BeautifulSoup:
+        """
+        Gets and parses the base url's home page.
+        """
+        
+        request = requests.get(f"{DoujinWebScraper.BASE_URL}", headers={"User-Agent":DoujinWebScraper.USER_AGENT}).text
+        return BeautifulSoup(request, "html.parser")
+    
+    def __get_id_from_html(self, doujin_site: BeautifulSoup) -> int:
+        """
+        Gets the manga id from the doujin HTML.
+        """
+        
+        span = doujin_site.select_one("#gallery_id")
+        
+        if span:
+            return int(span.contents[1])
+        
+        BirbiaLogger.error("Could not find sauce from html site.")
+        return -1
+    
+    def __get_titles(self, doujin_site: BeautifulSoup) -> list[str]:
         """
         Gets the doujin's titles. Can be either english and/or japanese/chinese (original) title.
         """
-
-        infodiv = site.find("div", {"id": "info"}).children
-        titles = list(map(lambda t: t, infodiv))
-
-        return [titles[1].getText(), titles[3].getText()]
-
-    def __get_tags(self, site: BeautifulSoup) -> list[str]:
+        
+        title_elements = doujin_site.select("#info .title span.pretty")
+        return list(map(lambda t: t.contents[0], title_elements))
+    
+    def __get_cover(self, doujin_site: BeautifulSoup) -> str | None:
         """
-        Gets the tags attached to the doujin.
+        Retrieves the doujin cover.
         """
-
-        alltags = site.findAll("a", {"class": "tag"})
-
-        return [
-            spantag["href"].replace("/tag/", "").replace("/", "")
-            for spantag in alltags
-            if "/tag/" in spantag["href"]
-        ]
-
-    def __get_pages(self, site: BeautifulSoup) -> int:
+        
+        cover_src: dict = doujin_site.select_one("#cover img")
+        
+        if cover_src:
+            return cover_src["data-src"]
+    
+        sauce_id = self.__get_id_from_html(doujin_site)
+        BirbiaLogger.error("Could not find doujin image for:", sauce_id)
+        return None
+    
+    def __get_artist(self, doujin_site: BeautifulSoup) -> str:
+        """
+        Gets the artist attached to the doujin.
+        """
+        
+        tags = doujin_site.select(".tag-container")
+        
+        if len(tags) < 1:
+            BirbiaLogger.error("No tag container found for:", self.__get_id_from_html(doujin_site))
+            return []
+        
+        artist_tag = tags[3].select_one(".tag .name")
+        if artist_tag:
+            return artist_tag.contents[0].getText()
+        
+        BirbiaLogger.warn("Could not find manga artist name for:", self.__get_id_from_html(doujin_site))
+        return "unknown"
+    
+    def __get_pages(self, doujin_site: BeautifulSoup) -> int:
         """
         Retrieves the number of pages the doujin has.
         """
-
-        return int(site.find("a", {"href": "#"}).getText().strip())
+        
+        return len(doujin_site.select("#thumbnail-container .thumb-container"))    
+    
+    def __get_tags(self, doujin_site: BeautifulSoup) -> list[str]:
+        """
+        Gets the tags attached to the doujin.
+        """
+        
+        tags = doujin_site.select(".tag-container")
+        
+        if len(tags) < 1:
+            BirbiaLogger.warn("No tag container found for:", self.__get_id_from_html(doujin_site))
+            return []
+        
+        category_tags = tags[2].select(".tag .name")
+        if len(category_tags) < 1:
+            return []
+        
+        return list(map(lambda t: t.contents[0], category_tags))
