@@ -16,7 +16,7 @@ class UtilityCog(commands.Cog):
         Returns sender's ping in ms.
         """
 
-        await ctx.send(f"Pong - {round(self.bot.latency * 1000)}ms")
+        await ctx.send(f"Pong! - {round(self.bot.latency * 1000)}ms")
 
     @commands.command(
         name="invite", help="Generates invites, default = 1 use per invite."

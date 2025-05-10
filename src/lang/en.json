@@ -60,7 +60,8 @@
 			"help": "Displayes all of $botname's available actions.",
 			"music": "Play music through your voice chats!",
 			"doujin": "Search available doujins from our sources.",
-			"ai": "Interact with $botname's AI."
+			"ai": "Interact with $botname's AI.",
+			"utility": "Useful commands for discord servers."
 		},
 		"music": {
 			"title": "Music Commands [aliases]",
@@ -90,8 +91,13 @@
 			"description": "Commands to interact with the AI.",
 			"@mentionme!": "Mention me in your message to start/continue a public conversation with other users.",
 			"ask": "Starts a one-to-one conversation with the AI.",
-			"aireset": "Closes the current one-to-one conversation with the AI.",
-			"commonreset": "Closes the current common conversation with the AI."
+			"newchat": "Closes the current one-to-one conversation with the AI.",
+			"reset": "Closes the current common conversation with the AI."
+		},
+		"utility": {
+			"ping": "Returns sender's ping in ms.",
+			"invite": "Generates invites. Specify a number after the command to modify it's uses. Default is 1 use per invite.",
+			"purge": "Deletes recursively n number of messages specified."
 		}
 	}
 }

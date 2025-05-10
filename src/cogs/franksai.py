@@ -196,13 +196,13 @@ class FranksAICog(commands.Cog):
 
         await self.__ask(ctx, None, *args)
 
-    @commands.command(name="commonreset", help="Closes the common chat with the AI.")
+    @commands.command(name="reset", help="Closes the common chat with the AI.")
     async def gptcommonreset(self, ctx: commands.Context):
         """Closes the common chat with the AI."""
 
         await self.__close_chat(ctx, self.__COMMON_USER)
 
-    @commands.command(name="aireset", help="Closes the chat with the AI.")
+    @commands.command(name="newchat", help="Closes the chat with the AI.")
     async def gptreset(self, ctx: commands.Context):
         """Closes the chat with the AI."""
 

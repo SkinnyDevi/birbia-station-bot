@@ -38,7 +38,7 @@
 	"now_empty": "No hay nada en reproducción ahora mismo. Manda una nueva peticion de audio usando ***$botname play***!",
 	"now_title": "Audio actual en la radio de $botname",
 	"invite_zero": "Los usos de la invitación no pueden ser menores a 1.",
-	"invite_gen": "Invitacion generada. \nUsos máximos: {uses}\n{invite}",
+	"invite_gen": "Invitacion generada. \nUsos maximos: {uses}\n{invite}",
 	"purge_amount": "Debes especificar la cantidad de mensajes a purgar.",
 	"purge_success": "{nmsgs} mensajes fueron purgados.",
 	"doujin_not_in_source": "No pudimos encontrar el doujin en nuestras fuentes, pero aquí tienes el enlace al oficial:",
@@ -60,7 +60,8 @@
 			"help": "Muestra todas las acciones posibles de $botname.",
 			"music": "Reproduce musica en tus chats de voz!",
 			"doujin": "Busca doujins online desde nuestras fuentes.",
-			"ai": "Interactua con la IA de $botname."
+			"ai": "Interactua con la IA de $botname.",
+			"utility": "Comandos utiles para servidores de Discord."
 		},
 		"music": {
 			"title": "Comandos de musica [alias]",
@@ -90,8 +91,13 @@
 			"description": "Comandos para interactuar con la IA de $botname.",
 			"@mentionme!": "Mencioname en tu mensaje para empezar/continuar una conversacion con otros usuarios.",
 			"ask": "Empieza una conversacion privada con la IA.",
-			"aireset": "Cierra la conversacion privada con la IA.",
-			"commonreset": "Cierra la conversacion comun con la IA."
+			"newchat": "Cierra la conversacion privada con la IA.",
+			"reset": "Cierra la conversacion comun con la IA."
+		},
+		"utility": {
+			"ping": "Devuelve el ping del bot ms.",
+			"invite": "Genera invitaciones para este servidor. Especifica un numero despues del comando para aumentar sus usos. Por defecto, es 1 uso por invitacion.",
+			"purge": "Borra N mensajes consecutivos."
 		}
 	}
 }
