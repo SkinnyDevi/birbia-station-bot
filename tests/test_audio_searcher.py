@@ -8,7 +8,7 @@ from src.core.music.birbia_queue import BirbiaAudio
 from src.core.cache import BirbiaCache
 from src.core.exceptions import InstaPostNotVideoError, YoutubeAgeRestrictedVideoRequestError
 
-TIKTOK_VIDEO_TEST = "https://vm.tiktok.com/ZGeGqbSC8"
+TIKTOK_VIDEO_TEST = "https://vm.tiktok.com/ZNdMNHnYU"
 INSTAGRAM_MULTIPLE_TEST = "https://www.instagram.com/p/C5EJ0H7IS2X"
 INSTAGRAM_IMAGE_TEST = "https://www.instagram.com/p/C5PMrj-LOMz"
 INSTAGRAM_POST_TEST = "https://www.instagram.com/p/CvXwz9mAKmw"

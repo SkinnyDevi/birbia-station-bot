@@ -58,7 +58,6 @@ class XCog(commands.Cog):
         )
 
         embed.set_author(name="Doujinshi", icon_url=self.LOGO)
-        # TODO: assert that covers display correctly
         embed.set_thumbnail(url=doujin_data.cover)
 
         embed.add_field(
@@ -82,6 +81,10 @@ class XCog(commands.Cog):
             )
 
         embed.add_field(
+            name=self.__language.author, value=doujin_data.artist, inline=False
+        )
+
+        embed.add_field(
             name=self.__language.pages, value=doujin_data.pages, inline=False
         )
 
@@ -98,7 +101,7 @@ class XCog(commands.Cog):
 
         embed.add_field(
             name=self.__language.doujin_not_in_source,
-            value=self.dscraper.WEB_ROOT + str(sauce),
+            value="Not found: " + str(sauce),
             inline=False,
         )
 

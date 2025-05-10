@@ -27,6 +27,7 @@ def check_lang_entries(lang_code: str):
     assert lang.already_in_vc
     assert lang.no_vc
     assert lang.no_content_found
+    assert lang.author
 
     assert lang.play_empty_query
     assert lang.play_fetching_query

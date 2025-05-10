@@ -63,7 +63,11 @@ class FranksAICog(commands.Cog):
             return -2  # No chat found to close.
 
         output = self.__api.delete_session(session_id)
-        if output.success:
+        
+        if output is None:
+            BirbiaLogger.warn("Chat closed, but no delete response was received.")
+            return 0
+        elif output.success:
             if user.id in self.__instances.keys():
                 del self.__instances[user.id]
             return 0

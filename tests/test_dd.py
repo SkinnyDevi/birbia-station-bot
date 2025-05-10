@@ -10,13 +10,14 @@ def asserter(dd: DoujinManga):
     assert type(dd.sauce) is int
     assert type(dd.cover) is str
     assert type(dd.titles) is dict
+    assert type(dd.artist) is str
     assert type(dd.tags) is list
     assert type(dd.pages) is int
     assert type(dd.url) is str
 
 
 def test_dd_exists():
-    sauce = 177013
+    sauce = 572283
     output = dscraper.doujin(sauce)
     asserter(output)
 

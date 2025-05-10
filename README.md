@@ -1,4 +1,4 @@
-# Birbia's Radio Station [3.2.2]
+# Birbia's Radio Station [3.3.0]
 
 ![Birbia worker](https://media.tenor.com/tsjQt9PdSwoAAAAC/you-want.gif)
 
@@ -153,6 +153,12 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.3.0]
+* Fixed all audio searchers
+* Fixed the manga searcher
+* Updated all dependencies
+* General bot maintenance
 
 ### [3.2.2]
 * Fixed Instagram queries with a new search method

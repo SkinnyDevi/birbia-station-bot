@@ -1,10 +1,11 @@
 {
 	"commands": "Comandos",
 	"version": "Version",
-	"title": "Título",
+	"title": "Titulo",
 	"original_title": "Titulo Original",
 	"categories": "Categorias",
 	"pages": "Paginas",
+	"author": "Autor",
 	"timeout_warn": "$botname te advierte que deberias esperar 2 segundos antes de pedir otro comando.",
 	"cant_enter_vc": "$botname no pudo entrar a tu chat. Esto es ilegal. Tomaremos medidas drasticas.",
 	"already_in_vc": "La radio de $botname ya está en tu canal de voz.",
@@ -46,13 +47,13 @@
 	"doujin_minimum": "No hay codigos por debajo al 2.",
 	"doujin_unknown_opt": "Opcion desconocida. Usa ***-s*** para especificar un doujin.",
 	"ai_init_message": "Eres un asistente util encargado de ayudar a las personas en este chat. Sus nombres se enviaran antes de cada consulta como '{nombre}: {consulta}'. Asegurate de dirigirte al remitente correcto cada vez y que usas el mismo idioma que la consulta.\n\nSi lo entiendes, continua con este primer mensaje como si fuera una conversacion informal:\n",
-	"ai_init_error": "Hubo un error al inicializar la IA. Por favor, inténtalo de nuevo.",
+	"ai_init_error": "Hubo un error al inicializar la IA. Por favor, intentalo de nuevo.",
 	"ai_not_ready": "La IA aun no esta lista. Por favor, espera unos segundos e intentalo de nuevo.",
 	"ai_processing": "Procesando...",
 	"ai_error": "Hubo un error al procesar la respuesta. Por favor, intentalo de nuevo.",
 	"ai_chat_close_error": "Hubo un error al cerrar el chat. Por favor, intentalo de nuevo.",
 	"ai_chat_closed_not_found": "No habia ningun chat para cerrar.",
-	"ai_chat_closed": "Chat cerrado con éxito.",
+	"ai_chat_closed": "Chat cerrado con exito.",
 	"help_commands": {
 		"general": {
 			"description": "Todas las categorias de comandos de $botname.\nUsa '$prefix [categoria]' para ver todas las opciones de ese comando.",
@@ -64,7 +65,7 @@
 		"music": {
 			"title": "Comandos de musica [alias]",
 			"description": "Comandos disponibles para controlar la radio de $botname.",
-			"play": "Reproduce audio mediante búsquedas o URLs!",
+			"play": "Reproduce audio mediante busquedas o URLs!",
 			"pause": "Pausa la radio de $botname.",
 			"resume": "Resume el audio reproducido actualmente.",
 			"skip": "Salta esa cancion que no te gusta de la radio de $botname.",

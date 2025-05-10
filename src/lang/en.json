@@ -5,6 +5,7 @@
 	"original_title": "Original Title",
 	"categories": "Categories",
 	"pages": "Pages",
+	"author": "Author",
 	"timeout_warn": "$botname warns you to wait at least 2 seconds before running the next command.",
 	"cant_enter_vc": "$botname could not enter your voice chat. This is illegal. We will take action.",
 	"already_in_vc": "$botname Radio is already in your voice channel.",
