@@ -26,5 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Test with pytest
+        env:
+          CI: true
         run: |
           pytest

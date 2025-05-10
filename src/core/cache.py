@@ -141,6 +141,9 @@ class BirbiaCache(object):
         """
 
         r = requests.get(file_url, allow_redirects=True)
+        if r.content is None or len(r.content) < 1:
+            BirbiaLogger.error("Could not cache audio (empty or no mp3) in dir:", cache_dir)
+            return
 
         with open(cache_dir, "wb") as f:
             f.write(r.content)

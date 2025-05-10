@@ -1,5 +1,7 @@
 import discord
 import time
+import pytest
+import os
 
 from src.core.music.audiosearchers.youtube import YoutubeSearcher
 from src.core.music.audiosearchers.tiktok import TikTokSearcher
@@ -23,7 +25,7 @@ def audio_asserter(audio: BirbiaAudio):
     assert type(audio.audio_id) is str
     assert type(audio.pcm_audio) is None or discord.FFmpegPCMAudio
 
-
+@pytest.mark.skipif(os.getenv('CI') == 'true', reason="Only run locally.")
 def test_youtube_searcher(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
@@ -40,6 +42,7 @@ def test_youtube_searcher(monkeypatch):
         assert True
 
 
+@pytest.mark.skipif(os.getenv('CI') == 'true', reason="Only run locally.")
 def test_youtube_cache_retrieval(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
@@ -57,6 +60,7 @@ def test_youtube_cache_retrieval(monkeypatch):
     audio_asserter(recovered)
 
 
+@pytest.mark.skipif(os.getenv('CI') == 'true', reason="Only run locally.")
 def test_tiktok_searcher(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
@@ -70,6 +74,7 @@ def test_tiktok_searcher(monkeypatch):
     audio_asserter(result)
 
 
+@pytest.mark.skipif(os.getenv('CI') == 'true', reason="Only run locally.")
 def test_tiktok_cache_retrieval(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
@@ -88,6 +93,7 @@ def test_tiktok_cache_retrieval(monkeypatch):
     audio_asserter(recovered)
 
 
+@pytest.mark.skipif(os.getenv('CI') == 'true', reason="Only run locally.")
 def test_instagram_searcher(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
@@ -102,6 +108,7 @@ def test_instagram_searcher(monkeypatch):
     audio_asserter(result)
 
 
+@pytest.mark.skipif(os.getenv('CI') == 'true', reason="Only run locally.")
 def test_instagram_searcher_multiple(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
@@ -116,6 +123,7 @@ def test_instagram_searcher_multiple(monkeypatch):
         assert True
 
 
+@pytest.mark.skipif(os.getenv('CI') == 'true', reason="Only run locally.")
 def test_instagram_not_video_error(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
@@ -132,6 +140,7 @@ def test_instagram_not_video_error(monkeypatch):
         assert True
 
 
+@pytest.mark.skipif(os.getenv('CI') == 'true', reason="Only run locally.")
 def test_instagram_cache_retrieval(monkeypatch):
     monkeypatch.setenv("MAX_CACHE_ENTRIES", "20")
 
