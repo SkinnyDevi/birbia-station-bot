@@ -43,7 +43,9 @@ async def on_ready():
             BirbiaLogger.LOG_LEVEL = BirbiaLogger.LogLevel.INFO
 
 
-cogs = [MusicCog(bot), UtilityCog(bot), XCog(bot), FranksAICog(bot), HelpCog(bot)]
+cogs = [MusicCog(bot), UtilityCog(bot), XCog(bot), HelpCog(bot)]
+if environ.get("AI_MODEL_AUTH_TOKEN") is not None:
+    cogs.append(FranksAICog(bot))
 
 
 async def main():

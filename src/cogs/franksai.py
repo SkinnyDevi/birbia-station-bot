@@ -27,6 +27,7 @@ class FranksAICog(commands.Cog):
 
         self.__api = FranksAPI()
         self.__instances: dict[int, FranksChatInstance] = {}
+        BirbiaLogger.info("Initialized AI cog successfully.")
 
     def __consistent_hash(self, s: str):
         """Creates a consistent hash for each common chat."""

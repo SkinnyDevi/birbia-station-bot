@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+from src.core.logger import BirbiaLogger
 from src.constants import version
 from src.core.language import BirbiaLanguage
 
@@ -9,6 +10,7 @@ class HelpCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.__language = BirbiaLanguage.instance()
+        BirbiaLogger.info("Initialized Help cog successfully.")
 
     def __add_version_number(self, embed: discord.Embed) -> discord.Embed:
         embed.add_field(

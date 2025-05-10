@@ -40,6 +40,7 @@ class MusicCog(commands.Cog):
         BirbiaLogger.info("Running Music Cog with following config:")
         BirbiaLogger.info(f" - DISCONNECT DELAY: {MusicCog.DISCONNECT_DELAY}")
         BirbiaLogger.info(f" - CMD TIMEOUT: {MusicCog.CMD_TIMEOUT}")
+        BirbiaLogger.info("Initialized Music cog successfully.")
 
     async def __disconnect(self):
         """

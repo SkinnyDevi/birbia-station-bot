@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from random import randint
 
+from src.core.logger import BirbiaLogger
 from src.core.language import BirbiaLanguage
 from src.core.doujin.scraper import DoujinWebScraper
 
@@ -16,6 +17,8 @@ class XCog(commands.Cog):
         self.dscraper = DoujinWebScraper()
         self.MAX_SAUCE = self.dscraper.doujin_maxcount()
         self.__language = BirbiaLanguage.instance()
+        
+        BirbiaLogger.info("Initialized Doujin cog successfully.")
 
     def __sauceCheck(self, sauce_id) -> int:
         """
