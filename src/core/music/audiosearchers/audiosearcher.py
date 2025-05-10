@@ -18,8 +18,8 @@ class AudioSearcher(OnlineAudioSearcher):
         super().__init__({})
 
     def search(self, query: str):
-        is_url = re.search(r"^(http|https):\/\/.*$", query)
-        if is_url is None:
+        has_url = re.search(r"^(http|https):\/\/.*$", query)
+        if has_url is None:
             yt = YoutubeSearcher()
             return yt.search(query)
 
