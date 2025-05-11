@@ -1,4 +1,4 @@
-# Birbia's Radio Station [3.3.0]
+# Birbia's Radio Station [3.3.1]
 
 ![Birbia worker](https://media.tenor.com/tsjQt9PdSwoAAAAC/you-want.gif)
 
@@ -153,6 +153,10 @@ HelpCog(bot) // Hints help commands
 ```
 
 ## Changelog
+
+### [3.3.1]
+* Added an additional fix for the Tiktok audio searcher.
+* Fixed titles on XCog when only one title is present.
 
 ### [3.3.0]
 * Fixed all audio searchers

@@ -20,11 +20,15 @@ class DoujinWebScraper:
 
         parsed_site = self.__html_requester(sauce)
         titles = self.__get_titles(parsed_site)
+        if len(titles) > 1:
+            doujin_titles = {"english": titles[0], "original": titles[1]}
+        else:
+            doujin_titles = {"original": titles[0]}
         
         return DoujinManga(
             sauce,
             self.__get_cover(parsed_site),
-            {"english": titles[0], "original": titles[1]},
+            doujin_titles,
             self.__get_artist(parsed_site),
             self.__get_tags(parsed_site),
             self.__get_pages(parsed_site),

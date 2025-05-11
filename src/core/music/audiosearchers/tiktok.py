@@ -78,7 +78,7 @@ class TikTokSearcher(OnlineAudioSearcher):
                 BirbiaLogger.warn("Invalidating incomplete cache")
                 birbia_cache.invalidate(video_id)
 
-            time.sleep(randint(3, 7))
+            time.sleep(randint(6, 9))
             return self.__online_search(birbia_cache, video_id, query)
 
     def __query_requester(self, query: str):
@@ -106,16 +106,23 @@ class TikTokSearcher(OnlineAudioSearcher):
 
         response = self.__query_requester(query)
         responseSoup = BeautifulSoup(response.text, "html.parser")
+        
 
-        parentElement = responseSoup.find("a", {"id": "direct_dl_link"})
-        if parentElement is None:
+        downloadMp3Button = responseSoup.select_one("a.music")
+        if downloadMp3Button is None:
             raise VideoContentNotFound(f"TikTok video for url not found: {query}")
 
-        parentElement = parentElement.parent
-        downloadMp3BtnLink: str = parentElement.find_all("a")[-1]["href"]
+        downloadMp3BtnLink: str = downloadMp3Button["href"]
+        
+        video_description = "unknown video description."
+        element_description = responseSoup.select_one("p.maintext")
+        if element_description is None:
+            BirbiaLogger.warn("Could not get Tiktok video description.")
+        else:
+            video_description = element_description.contents[0]
 
         return (
-            responseSoup.find("p", {"class": "maintext"}).decode_contents(),
+            video_description,
             downloadMp3BtnLink,
         )
 

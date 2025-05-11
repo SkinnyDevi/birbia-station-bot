@@ -63,13 +63,14 @@ class XCog(commands.Cog):
         embed.set_author(name="Doujinshi", icon_url=self.LOGO)
         embed.set_thumbnail(url=doujin_data.cover)
 
-        embed.add_field(
-            name=self.__language.title,
-            value=doujin_data.titles["english"],
-            inline=False,
-        )
+        if "english" in doujin_data.titles.keys():
+            embed.add_field(
+                name=self.__language.title,
+                value=doujin_data.titles["english"],
+                inline=False,
+            )
 
-        if doujin_data.titles["original"] != "":
+        if "original" in doujin_data.titles.keys():
             embed.add_field(
                 name=self.__language.original_title,
                 value=doujin_data.titles["original"],
